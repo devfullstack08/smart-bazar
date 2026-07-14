@@ -4,9 +4,9 @@ import { cn } from '@/lib/utils/cn';
 import { Sparkles, Coins, Zap, Shield } from 'lucide-react';
 
 const FEATURES = [
-  { label: 'Staking', icon: Coins },
-  { label: 'Play-to-Earn', icon: Zap },
-  { label: 'Secure', icon: Shield },
+  { label: 'Referral Payouts', icon: Coins },
+  { label: 'Binary Matching', icon: Zap },
+  { label: 'Secure Accounts', icon: Shield },
 ] as const;
 
 export interface PlatformAdsProps {
@@ -18,7 +18,7 @@ export interface PlatformAdsProps {
 
 export default function PlatformAds({
   title = 'More coming soon',
-  subtitle = 'Staking, gaming & exchange — one platform.',
+  subtitle = 'Direct referral, binary matching & global auto-pool — one platform.',
   compact = false,
   className = '',
 }: PlatformAdsProps) {

@@ -9,7 +9,6 @@ import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, UserPlus, CheckCircle2, Loader2, Copy, Check, Download } from 'lucide-react';
 import AppBrand from '@/components/ui/AppBrand';
-import FloatingUpcomingFeatures from '@/components/ui/FloatingUpcomingFeatures';
 import { authApi } from '@/lib/api/services';
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from '@/constants';
 
@@ -18,6 +17,7 @@ const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     countryCode: z.string().min(1, 'Country code is required'),
     phone: z.string().min(7, 'Phone number must be at least 7 digits').max(15, 'Phone number is too long'),
+    walletAddress: z.string().trim().min(1, 'Wallet address is required').regex(/^0x[a-fA-F0-9]{40}$/, 'Enter a valid wallet address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
     sponsorId: z.string().optional(),
@@ -45,6 +45,7 @@ function RegisterForm() {
         email: string;
         name: string;
         password: string;
+        walletAddress?: string;
         vaultUserId?: string;
         vaultKey?: string;
     } | null>(null);
@@ -179,6 +180,7 @@ function RegisterForm() {
                 email: data.email,
                 phone: `${data.countryCode}${data.phone}`,
                 password: data.password,
+                walletAddress: data.walletAddress,
                 ...(data.sponsorId && data.sponsorId.trim() && { sponsorId: data.sponsorId.trim() }),
             }) as { user?: { userId?: string; id?: string }; userId?: string; data?: { user?: { userId?: string; id?: string }; userId?: string; vaultCredentials?: { userId: string; vaultKey: string } }; vaultCredentials?: { userId: string; vaultKey: string } };
 
@@ -193,6 +195,7 @@ function RegisterForm() {
                 email: data.email,
                 name: data.fullName,
                 password: data.password,
+                walletAddress: data.walletAddress,
                 vaultUserId: vault?.userId ?? userId ?? '',
                 vaultKey: vault?.vaultKey ?? undefined,
             });
@@ -260,7 +263,8 @@ function RegisterForm() {
         return (
             <div className="flex items-start justify-center min-h-[calc(100vh-4rem)] py-6 px-4">
                 <div className="w-full max-w-lg">
-                    <div className="auth-panel rounded-2xl p-5 sm:p-8">
+                    {/* Form card - native styling on mobile, boxed on desktop */}
+                    <div className="border-0 sm:border border-[var(--border)] bg-transparent sm:bg-[var(--surface-elevated)] sm:auth-panel rounded-none sm:rounded-2xl p-0 sm:p-8 shadow-none">
                         <div className="text-center mb-6">
                             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[var(--pw-primary)]/15 flex items-center justify-center text-[var(--pw-primary)]">
                                 <CheckCircle2 className="w-8 h-8" />
@@ -274,6 +278,9 @@ function RegisterForm() {
                             <CredentialRow label="User ID" value={creds.userId} field="userId" />
                             <CredentialRow label="Email" value={creds.email} field="email" />
                             <CredentialRow label="Name" value={creds.name} field="name" />
+                            {creds.walletAddress && (
+                                <CredentialRow label="Wallet Address" value={creds.walletAddress} field="walletAddress" />
+                            )}
                             <CredentialRow label="Password" value={creds.password} field="password" />
                         </div>
 
@@ -332,25 +339,18 @@ function RegisterForm() {
     // ── Register form ──
     return (
         // flex-1 min-h-full: fill auth content area; overflow only when form is tall. pb-20 for mobile feature strip
-        <div className="relative flex-1 flex items-center justify-center min-h-full py-6 pb-20 md:pb-12 sm:py-8 md:py-12 px-4 overflow-x-hidden">
-            {/* Desktop floating pills */}
-            <FloatingUpcomingFeatures showFrom="md" />
-
+        <div className="relative flex-1 flex items-center justify-center min-h-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 overflow-x-hidden">
             <div className="relative z-10 w-full max-w-2xl">
-                {/* Header */}
-                <div className="text-center mb-6 sm:mb-8">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[var(--pw-primary)]/25 to-violet-500/25 border border-[var(--pw-primary)]/30 flex items-center justify-center text-[var(--pw-primary)]">
-                        <UserPlus className="w-6 h-6 sm:w-7 sm:h-7" />
-                    </div>
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[var(--foreground)] mb-1.5">
-                        Join <AppBrand size="lg" />
-                    </h1>
-                    <p className="text-sm text-[var(--muted-foreground)]">Create your account and start earning</p>
-                </div>
-
-                {/* Form card */}
-                <div className="auth-panel rounded-2xl p-4 sm:p-6 md:p-8">
+                {/* Form card - native styling on mobile, boxed on desktop */}
+                <div className="border-0 sm:border border-[var(--border)] bg-transparent sm:bg-[var(--surface-elevated)] sm:auth-panel rounded-none sm:rounded-2xl p-0 sm:p-6 md:p-8 shadow-none">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+                        {/* Clean Inline Header */}
+                        <div className="mb-4 sm:mb-6">
+                            <h1 className="text-xl sm:text-2xl font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>
+                                Create Account
+                            </h1>
+                            <p className="text-xs text-[var(--muted-foreground)]">Register a new affiliate profile on Smart Bazar</p>
+                        </div>
 
                         {/* ── Personal Information ── */}
                         <div>
@@ -424,6 +424,33 @@ function RegisterForm() {
                                         <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* ── Web3 Wallet ── */}
+                        <div className="border-t border-[var(--border)] pt-5">
+                            <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
+                                Web3 Wallet
+                            </h3>
+                            <div>
+                                <label htmlFor="walletAddress" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                    Wallet Address
+                                </label>
+                                <input
+                                    {...register('walletAddress')}
+                                    type="text"
+                                    id="walletAddress"
+                                    className="premium-input w-full text-base"
+                                    placeholder="0x..."
+                                    autoComplete="off"
+                                    spellCheck={false}
+                                />
+                                {errors.walletAddress && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.walletAddress.message}</p>
+                                )}
+                                <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">
+                                    This becomes your primary wallet address for contract payouts and must be unique.
+                                </p>
                             </div>
                         </div>
 

@@ -57,6 +57,7 @@ export const authApi = {
         email: string;
         phone: string;
         password: string;
+        walletAddress?: string; // Web3 Wallet Address
         sponsorId?: string; // Optional
         placement?: {
             position: 'left' | 'right';
@@ -68,6 +69,7 @@ export const authApi = {
             email: data.email,
             phone: data.phone,
             password: data.password,
+            ...(data.walletAddress && { walletAddress: data.walletAddress }),
             ...(data.sponsorId && { sponsorId: data.sponsorId }),
             ...(data.placement && { placement: data.placement }),
             ...(projectId && { projectId }),
@@ -87,6 +89,51 @@ export const authApi = {
         return response.data;
     },
 
+    loginWithPin: async (emailOrUserId: string, pin: string) => {
+        const response = await apiClient.post<AuthResponse>(
+            '/users/login/pin',
+            { emailOrUserId, pin },
+            { headers: { 'x-project-id': projectId || '' } }
+        );
+        return response.data;
+    },
+
+    getPasskeyLoginOptions: async (emailOrUserId: string) => {
+        const response = await apiClient.post(
+            '/users/passkey/login/options',
+            { emailOrUserId },
+            { headers: { 'x-project-id': projectId || '' } }
+        );
+        return response.data;
+    },
+
+    verifyPasskeyLogin: async (emailOrUserId: string, assertionResponse: any) => {
+        const response = await apiClient.post<AuthResponse>(
+            '/users/passkey/login/verify',
+            { emailOrUserId, assertionResponse },
+            { headers: { 'x-project-id': projectId || '' } }
+        );
+        return response.data;
+    },
+
+    getDiscoverPasskeyOptions: async () => {
+        const response = await apiClient.post(
+            '/users/passkey/discover/options',
+            {},
+            { headers: { 'x-project-id': projectId || '' } }
+        );
+        return response.data;
+    },
+
+    verifyDiscoverPasskey: async (assertionResponse: any) => {
+        const response = await apiClient.post<AuthResponse>(
+            '/users/passkey/discover/verify',
+            { assertionResponse },
+            { headers: { 'x-project-id': projectId || '' } }
+        );
+        return response.data;
+    },
+
     refreshToken: async (refreshToken: string) => {
         const response = await apiClient.post('/auth/refresh', { refreshToken });
         return response.data;
@@ -97,17 +144,19 @@ export const authApi = {
         return response.data;
     },
 
-    /** Check if user exists by email or userId - for two-step login. Returns { exists: boolean, name?: string }. */
+    /** Check if user exists by email or userId - for two-step login. Returns { exists: boolean, name?: string, hasPinSet?: boolean, hasPasskey?: boolean }. */
     checkUser: async (emailOrUserId: string) => {
         const encoded = encodeURIComponent(emailOrUserId.trim());
-        const response = await apiClient.get<{ exists: boolean; name?: string; data?: { exists: boolean; name?: string } }>(
+        const response = await apiClient.get<{ exists: boolean; name?: string; hasPinSet?: boolean; hasPasskey?: boolean; data?: { exists: boolean; name?: string; hasPinSet?: boolean; hasPasskey?: boolean } }>(
             `/users/check-user/${encoded}`,
             withProjectId()
         );
-        const data = response.data as { exists?: boolean; name?: string; data?: { exists: boolean; name?: string } };
+        const data = response.data as any;
         return {
             exists: data?.exists ?? data?.data?.exists ?? false,
             name: data?.name ?? data?.data?.name ?? '',
+            hasPinSet: data?.hasPinSet ?? data?.data?.hasPinSet ?? false,
+            hasPasskey: data?.hasPasskey ?? data?.data?.hasPasskey ?? false,
         };
     },
 

@@ -16,7 +16,6 @@ import DashboardRoyaltyTracker from '@/components/dashboard/DashboardRoyaltyTrac
 import DashboardReferEarn from '@/components/dashboard/DashboardReferEarn';
 import DashboardPackages from '@/components/dashboard/DashboardPackages';
 import OffersSection from '@/components/dashboard/OffersSection';
-import DashboardUpcomingBox from '@/components/ui/DashboardUpcomingBox';
 import DashboardPopup from '@/components/dashboard/DashboardPopup';
 import DashboardMediaStrip from '@/components/dashboard/DashboardMediaStrip';
 import LotteryStatusBanner from '@/components/lottery/LotteryStatusBanner';
@@ -330,7 +329,6 @@ export default function DashboardPage() {
 
             {/* Extra sections (offers, roadmap, etc.) */}
             <OffersSection offers={offers} loading={loadingOffers} />
-            <DashboardUpcomingBox />
         </div>
     );
 }

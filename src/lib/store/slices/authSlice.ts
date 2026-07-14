@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User, AuthResponse } from '@/types';
-import { REMEMBER_ME_KEY } from '@/constants';
 import { STORAGE_KEYS } from '@/constants/storageKey';
 import { getLocalStorage, storageGetItem, storageRemoveItem, storageSetItem } from '@/lib/safe-storage';
 
@@ -82,7 +81,7 @@ const authSlice = createSlice({
             storageRemoveItem(STORAGE_KEYS.REFRESH_TOKEN);
             storageRemoveItem(STORAGE_KEYS.TOKEN);
             storageRemoveItem(STORAGE_KEYS.USER_KEY);
-            storageRemoveItem(REMEMBER_ME_KEY);
+            storageRemoveItem(STORAGE_KEYS.REMEMBER_ME_KEY);
         },
         updateUser: (state, action: PayloadAction<User>) => {
             state.user = action.payload;

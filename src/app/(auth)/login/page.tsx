@@ -12,7 +12,7 @@ import AppBrand from '@/components/ui/AppBrand';
 import { useAppDispatch } from '@/lib/store/hooks';
 import { loginStart, loginSuccess, loginFailure } from '@/lib/store/slices/authSlice';
 import { authApi } from '@/lib/api/services';
-import { REMEMBER_ME_KEY } from '@/constants';
+import { STORAGE_KEYS } from '@/constants';
 
 const step1Schema = z.object({
     emailOrUserId: z.string().min(1, 'Email or User ID is required'),
@@ -49,7 +49,7 @@ function LoginForm() {
     const [passkeyStatus, setPasskeyStatus] = useState<'idle' | 'scanning' | 'success'>('idle');
 
     const getRememberedEmailOrUserId = () => {
-        if (typeof window !== 'undefined') return localStorage.getItem(REMEMBER_ME_KEY) || '';
+        if (typeof window !== 'undefined') return localStorage.getItem(STORAGE_KEYS.REMEMBER_ME_KEY) || '';
         return '';
     };
 
@@ -103,8 +103,8 @@ function LoginForm() {
         try {
             const response = await authApi.login(verifiedUser.emailOrUserId, data.password);
             if (typeof window !== 'undefined') {
-                if (data.rememberMe) localStorage.setItem(REMEMBER_ME_KEY, verifiedUser.emailOrUserId);
-                else localStorage.removeItem(REMEMBER_ME_KEY);
+                if (data.rememberMe) localStorage.setItem(STORAGE_KEYS.REMEMBER_ME_KEY, verifiedUser.emailOrUserId);
+                else localStorage.removeItem(STORAGE_KEYS.REMEMBER_ME_KEY);
             }
             dispatch(loginSuccess(response));
             toast.success('Login successful!');
@@ -127,7 +127,7 @@ function LoginForm() {
         try {
             const response = await authApi.loginWithPin(verifiedUser.emailOrUserId, pinCode);
             if (typeof window !== 'undefined') {
-                localStorage.setItem(REMEMBER_ME_KEY, verifiedUser.emailOrUserId);
+                localStorage.setItem(STORAGE_KEYS.REMEMBER_ME_KEY, verifiedUser.emailOrUserId);
             }
             dispatch(loginSuccess(response));
             toast.success('PIN authentication successful!');

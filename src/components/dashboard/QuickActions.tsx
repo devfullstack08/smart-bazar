@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ASSETS } from '@/constants';
+import { APP_CONSTANTS } from '@/constants';
 
 const ACTIONS = [
-  { href: '/packages', img: ASSETS.QUICK_STORE,     label: 'Bazar Store' },
-  { href: '/wallet',   img: ASSETS.QUICK_DEPOSIT,   label: 'Deposit' },
-  { href: '/wallet',   img: ASSETS.QUICK_WITHDRAW,  label: 'Withdraw' },
-  { href: '/team',     img: ASSETS.QUICK_TEAM,      label: 'My Team' },
-  { href: '/support',  img: ASSETS.QUICK_SUPPORT,   label: 'Support' },
+  { href: '/packages', img: APP_CONSTANTS.ASSETS.QUICK_STORE,     label: 'Bazar Store' },
+  { href: '/wallet',   img: APP_CONSTANTS.ASSETS.QUICK_DEPOSIT,   label: 'Deposit' },
+  { href: '/wallet',   img: APP_CONSTANTS.ASSETS.QUICK_WITHDRAW,  label: 'Withdraw' },
+  { href: '/team',     img: APP_CONSTANTS.ASSETS.QUICK_TEAM,      label: 'My Team' },
+  { href: '/support',  img: APP_CONSTANTS.ASSETS.QUICK_SUPPORT,   label: 'Support' },
 ] as const;
 
 export default function QuickActions() {

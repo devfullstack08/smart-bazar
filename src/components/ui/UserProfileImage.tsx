@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ASSETS } from '@/constants';
+import { APP_CONSTANTS } from '@/constants';
 import { getFileUrl } from '@/lib/utils/file';
 
 interface UserProfileImageProps {
@@ -20,14 +20,14 @@ export default function UserProfileImage({
   height = 48,
   className = '',
 }: UserProfileImageProps) {
-  const [imageSrc, setImageSrc] = useState<string>(ASSETS.DEFAULT_PROFILE_PICTURE);
+  const [imageSrc, setImageSrc] = useState<string>(APP_CONSTANTS.ASSETS.DEFAULT_PROFILE_PICTURE);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (src) {
       setImageSrc(getFileUrl(src));
     } else {
-      setImageSrc(ASSETS.DEFAULT_PROFILE_PICTURE);
+      setImageSrc(APP_CONSTANTS.ASSETS.DEFAULT_PROFILE_PICTURE);
     }
   }, [src]);
 
@@ -45,11 +45,11 @@ export default function UserProfileImage({
         width={width}
         height={height}
         unoptimized
-        className={`w-full h-full object-cover ${imageSrc === ASSETS.DEFAULT_PROFILE_PICTURE ? 'dark:invert dark:opacity-85' : ''}`}
+        className={`w-full h-full object-cover ${imageSrc === APP_CONSTANTS.ASSETS.DEFAULT_PROFILE_PICTURE ? 'dark:invert dark:opacity-85' : ''}`}
         style={{ opacity: loading ? 0 : 1 }}
         onLoad={() => setLoading(false)}
         onError={() => {
-          setImageSrc(ASSETS.DEFAULT_PROFILE_PICTURE);
+          setImageSrc(APP_CONSTANTS.ASSETS.DEFAULT_PROFILE_PICTURE);
           setLoading(false);
         }}
       />

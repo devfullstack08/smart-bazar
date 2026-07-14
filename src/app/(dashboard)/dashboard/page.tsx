@@ -8,7 +8,6 @@ import DashboardWelcomeCard from '@/components/dashboard/DashboardWelcomeCard';
 import QuickActions from '@/components/dashboard/QuickActions';
 import DashboardIncomeOverview from '@/components/dashboard/DashboardIncomeOverview';
 import DashboardPoolStatus from '@/components/dashboard/DashboardPoolStatus';
-import DashboardGlobalPools from '@/components/dashboard/DashboardGlobalPools';
 import OverviewStats from '@/components/dashboard/OverviewStats';
 import DashboardCappingTracker from '@/components/dashboard/DashboardCappingTracker';
 import DashboardRoyaltyTracker from '@/components/dashboard/DashboardRoyaltyTracker';
@@ -62,13 +61,13 @@ export default function DashboardPage() {
     const [loadingIncome, setLoadingIncome] = useState(true);
     const [loadingCapping, setLoadingCapping] = useState(true);
     const [loadingBanners, setLoadingBanners] = useState(true);
-    const [loadingGlobalWallets, setLoadingGlobalWallets] = useState(true);
+
     const [loadingOffers, setLoadingOffers] = useState(true);
     const [loadingPoolStatus, setLoadingPoolStatus] = useState(true);
     const [loadingPopup, setLoadingPopup] = useState(true);
     const [loadingDashboardMedia, setLoadingDashboardMedia] = useState(true);
     const [banners, setBanners] = useState<Banner[]>([]);
-    const [globalWallets, setGlobalWallets] = useState<PoolBalance[]>([]);
+
     const [offers, setOffers] = useState<Offer[]>([]);
     const [dashboardPopup, setDashboardPopup] = useState<ProjectPopup | null>(null);
     const [dashboardMedia, setDashboardMedia] = useState<DashboardMedia[]>([]);
@@ -86,16 +85,7 @@ export default function DashboardPage() {
         fetchIncome();
         fetchTeamStats();
         fetchCappingTracking();
-        (async () => {
-            try {
-                const data = await dashboardApi.getGlobalWallets();
-                setGlobalWallets(Array.isArray(data) ? data : []);
-            } catch {
-                setGlobalWallets([]);
-            } finally {
-                setLoadingGlobalWallets(false);
-            }
-        })();
+
         (async () => {
             try {
                 const data = await userApi.getBanners();
@@ -310,8 +300,7 @@ export default function DashboardPage() {
                     
                     <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
                     
-                    <DashboardGlobalPools globalWallets={globalWallets} loading={loadingGlobalWallets} />
-                    
+
                     <DashboardPoolStatus poolStatus={poolStatus} loading={loadingPoolStatus} incomeConfig={incomeConfig} />
                 </div>
 

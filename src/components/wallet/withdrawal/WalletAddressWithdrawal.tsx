@@ -133,16 +133,16 @@ export function WalletAddressWithdrawal({
 
             {/* Primary wallet (read-only display) */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
                     Receiving Wallet Address
                 </label>
-                <div className="px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Your primary wallet</p>
-                    <p className="text-sm font-mono text-gray-800 dark:text-white break-all">{primaryWallet}</p>
+                <div className="px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+                    <p className="text-xs text-[var(--muted-foreground)] mb-1">Your primary wallet</p>
+                    <p className="text-sm font-mono text-[var(--foreground)] break-all">{primaryWallet}</p>
                 </div>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-[var(--muted-foreground)]">
                     To change this address, update it in your{' '}
-                    <Link href="/profile" className="text-indigo-600 dark:text-indigo-400 underline">
+                    <Link href="/profile" className="text-primary hover:underline">
                         profile settings
                     </Link>
                     .
@@ -151,19 +151,19 @@ export function WalletAddressWithdrawal({
 
             {/* Amount */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount</label>
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Amount</label>
                 <input
                     {...register('amount', { valueAsNumber: true })}
                     type="number"
                     step="0.01"
                     min="0.01"
-                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                     placeholder="0.00"
                 />
                 {errors.amount && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount.message}</p>
                 )}
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-[var(--muted-foreground)]">
                     Available: {availableBalance.toLocaleString()}
                     {(minAmount > 0 || maxAmount > 0) && (
                         <> &nbsp;·&nbsp; Min: {minAmount > 0 ? minAmount : '—'} &nbsp;·&nbsp; Max: {maxAmount > 0 ? maxAmount : 'Unlimited'}</>
@@ -178,21 +178,21 @@ export function WalletAddressWithdrawal({
 
             {/* Fee breakdown */}
             {watchedAmount > 0 && (
-                <div className="p-3 bg-gray-50 dark:bg-gray-500/10 border border-gray-200 dark:border-gray-500/30 rounded-xl space-y-1">
+                <div className="p-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl space-y-1">
                     <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Withdrawal Amount</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{watchedAmount.toFixed(2)}</span>
+                        <span className="text-[var(--muted-foreground)]">Withdrawal Amount</span>
+                        <span className="font-medium text-[var(--foreground)]">{watchedAmount.toFixed(2)}</span>
                     </div>
                     {withdrawalFee > 0 && (
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-600 dark:text-gray-400">Fee ({(withdrawalFee / 100).toFixed(2)}%)</span>
+                            <span className="text-[var(--muted-foreground)]">Fee ({(withdrawalFee / 100).toFixed(2)}%)</span>
                             <span className="font-medium text-red-600 dark:text-red-400">- {calculatedFee.toFixed(2)}</span>
                         </div>
                     )}
-                    <hr className="border-gray-200 dark:border-white/10" />
+                    <hr className="border-[var(--border)]" />
                     <div className="flex justify-between text-sm font-bold">
-                        <span className="text-gray-900 dark:text-white">You Will Receive</span>
-                        <span className={netAmount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                        <span className="text-[var(--foreground)]">You Will Receive</span>
+                        <span className={netAmount > 0 ? 'text-emerald-500 font-bold' : 'text-red-600 dark:text-red-400'}>
                             {netAmount > 0 ? netAmount.toFixed(2) : '0.00'}
                         </span>
                     </div>
@@ -201,11 +201,11 @@ export function WalletAddressWithdrawal({
 
             {/* Description */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Note (Optional)</label>
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Note (Optional)</label>
                 <textarea
                     {...register('description')}
                     rows={2}
-                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                     placeholder="Add a note..."
                 />
             </div>
@@ -222,14 +222,14 @@ export function WalletAddressWithdrawal({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="flex-1 px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    className="flex-1 btn btn-secondary px-4 py-2.5 text-sm sm:text-base rounded-xl font-semibold transition-all"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={submitting || !watchedAmount || netAmount <= 0}
-                    className="flex-1 px-4 py-2.5 text-sm sm:text-base rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 btn btn-primary px-4 py-2.5 text-sm sm:text-base rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {submitting ? 'Processing...' : 'Withdraw Now'}
                 </button>

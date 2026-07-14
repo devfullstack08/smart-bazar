@@ -435,20 +435,20 @@ export function WithdrawalModal({
                                             className={`relative p-4 rounded-xl border text-left transition-all overflow-hidden ${
                                                 isSelected 
                                                     ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 shadow-[0_0_15px_rgba(212,175,55,0.2)]' 
-                                                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+                                                    : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/70 hover:border-[var(--border)]/80'
                                             }`}
                                         >
                                             {isSelected && <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/20 to-transparent pointer-events-none" />}
-                                            <div className={`w-3 h-3 rounded-full mb-3 border ${isSelected ? 'border-[var(--color-primary)] bg-[var(--color-primary)] shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'border-white/30'}`} />
-                                            <p className={`text-sm font-bold ${isSelected ? 'text-[var(--color-primary)]' : 'text-foreground'}`}>{m.label}</p>
+                                            <div className={`w-3 h-3 rounded-full mb-3 border ${isSelected ? 'border-[var(--color-primary)] bg-[var(--color-primary)] shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'border-[var(--border)] bg-[var(--surface-elevated)]'}`} />
+                                            <p className={`text-sm font-bold ${isSelected ? 'text-[var(--color-primary)]' : 'text-[var(--foreground)]'}`}>{m.label}</p>
                                         </button>
                                     );
                                 })}
                             </div>
                         ) : selectableMethods.length === 1 ? (
-                            <div className="p-4 rounded-xl glass-panel border border-white/10 bg-white/5 mb-6">
-                                <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Withdrawal Method</p>
-                                <p className="text-sm font-bold text-foreground">{selectableMethods[0].label}</p>
+                            <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] mb-6">
+                                <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Withdrawal Method</p>
+                                <p className="text-sm font-bold text-[var(--foreground)]">{selectableMethods[0].label}</p>
                             </div>
                         ) : !walletAddressEnabled ? (
                             <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl mb-6">

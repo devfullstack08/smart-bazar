@@ -168,7 +168,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <div className="relative">
                             <button
                                 onClick={() => setUserMenuOpen((o) => !o)}
-                                className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 min-h-[44px] min-w-[44px] sm:min-w-0 sm:pl-2 sm:pr-3"
+                                className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] p-1.5 min-h-[44px] min-w-[44px] sm:min-w-0 sm:pl-1.5 sm:pr-3 hover:bg-[var(--surface)]/80 transition-colors focus:outline-none"
                                 aria-expanded={userMenuOpen}
                             >
                                 <UserProfileImage
@@ -176,7 +176,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     alt={user?.name ?? 'User'}
                                     width={32}
                                     height={32}
-                                    className="rounded-full border border-white/10"
+                                    className="rounded-full border border-[var(--border)] bg-[var(--surface-elevated)]"
                                 />
                                 <ChevronDown className={`h-4 w-4 text-[var(--muted-foreground)] hidden sm:block transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                             </button>

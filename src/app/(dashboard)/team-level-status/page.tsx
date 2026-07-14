@@ -11,7 +11,7 @@ import {
     volumeAtLevelForLevelRoi,
     membersAtDepthActiveFromTeamStats,
 } from '@/lib/utils/teamStats';
-import { Users, UserPlus, CheckCircle2, Activity, UserX } from 'lucide-react';
+import { Users, UserPlus, CheckCircle2, Activity, UserX, Lock, Unlock } from 'lucide-react';
 
 export default function TeamLevelStatusPage() {
     const [teamData, setTeamData] = useState<TeamStatsData | null>(null);
@@ -121,124 +121,124 @@ export default function TeamLevelStatusPage() {
     }
 
     return (
-        <div className="space-y-3 sm:space-y-4">
-            <section className="relative overflow-hidden rounded-xl border border-[var(--pw-primary)]/25 bg-gradient-to-br from-[var(--pw-primary)] via-[#00c78a] to-[#00997a] p-3 text-white shadow-lg sm:rounded-2xl sm:p-4">
-                <div className="absolute inset-0 hero-grid pointer-events-none opacity-10" />
-                <div className="relative z-10">
-                    <div className="mb-1 inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[0.16em] text-white/90 sm:text-[10px]">
-                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Team Level Status
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+            {/* Header — dashboard-style */}
+            <div className="relative overflow-hidden rounded-2xl premium-card p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--pw-primary)]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="relative flex items-center gap-4">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center bg-[var(--pw-primary)]/20 text-[var(--pw-primary)] shrink-0">
+                        <UserPlus size={24} strokeWidth={2} />
                     </div>
-                    <div className="flex items-start gap-2.5 sm:gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md sm:h-11 sm:w-11">
-                            <UserPlus size={20} className="text-white" />
-                        </div>
-                        <div className="min-w-0">
-                            <h1 className="truncate text-lg font-bold sm:text-2xl">My Team Level Status</h1>
-                            <p className="mt-0.5 text-xs text-white/90 sm:text-sm">
-                                Sponsor: <span className="font-semibold text-white">{teamData.sponsorId || 'N/A'}</span>
-                            </p>
-                        </div>
+                    <div className="min-w-0">
+                        <h1 className="text-xl sm:text-2xl font-bold text-[var(--foreground)] leading-tight" style={{ fontFamily: 'var(--font-display)' }}>Team Level Status</h1>
+                        <p className="text-sm text-[var(--muted-foreground)] mt-0.5">Sponsor: <span className="font-semibold text-[var(--foreground)]">{teamData.sponsorId || 'N/A'}</span></p>
                     </div>
                 </div>
-            </section>
-
-            <section className="grid grid-cols-1 gap-2">
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm">
-                    <div className="mb-1 flex items-center gap-1.5">
-                        <Activity size={14} className="text-[var(--pw-primary)]" />
-                        <p className="text-xs font-bold text-[var(--foreground)]">Level ROI Position</p>
+            </div>            <section className="grid grid-cols-1 gap-2">
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-4 shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <Activity size={18} className="text-primary animate-pulse" />
+                            <h2 className="text-sm font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>Level ROI Position</h2>
+                        </div>
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
+                            {levelSummary.unlocked} / {levelSummary.total} Unlocked
+                        </span>
                     </div>
-                    <p className="text-[10px] text-[var(--muted-foreground)]">Unlocked Levels</p>
-                    <p className="text-lg font-extrabold text-[var(--foreground)]">
-                        {levelSummary.unlocked}/{levelSummary.total}
-                    </p>
-                    <p className="mt-0.5 text-[10px] font-medium text-[var(--pw-primary)]">
+                    <p className="text-[11px] text-[var(--muted-foreground)]">Unlocked Levels Status</p>
+                    <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">
                         {levelSummary.next
-                            ? `Next: L${levelSummary.next.level} (need ${Math.max(0, levelSummary.next.level - qualifiedDirects)} active directs)`
-                            : 'All configured levels unlocked'}
+                            ? `Next milestone: Level ${levelSummary.next.level} (requires ${Math.max(0, levelSummary.next.level - qualifiedDirects)} more active directs)`
+                            : 'All levels fully unlocked! 🚀'}
                     </p>
                 </div>
             </section>
 
-            <section className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+            <section className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 {[
-                    { label: 'Total team members', value: stats.totalTeamMembers, icon: Users, color: 'text-blue-500' },
-                    { label: 'Direct referrals', value: stats.directReferrals, icon: Users, color: 'text-indigo-500' },
-                    { label: 'Qualified directs (Level ROI)', value: qualifiedDirects, icon: UserPlus, color: 'text-violet-500' },
-                    { label: 'Active members', value: stats.activeMembers, icon: CheckCircle2, color: 'text-emerald-500' },
-                    { label: 'Inactive members', value: stats.inactiveMembers, icon: UserX, color: 'text-amber-600 dark:text-amber-400' },
+                    { label: 'Total team members', value: stats.totalTeamMembers, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10 border-blue-500/20' },
+                    { label: 'Direct referrals', value: stats.directReferrals, icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+                    { label: 'Qualified directs', value: qualifiedDirects, icon: UserPlus, color: 'text-violet-500', bg: 'bg-violet-500/10 border-violet-500/20' },
+                    { label: 'Active members', value: stats.activeMembers, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+                    { label: 'Inactive members', value: stats.inactiveMembers, icon: UserX, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/20' },
                 ].map((item) => (
-                    <div key={item.label} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 shadow-sm">
-                        <div className="mb-1 flex items-center gap-1.5">
-                            <item.icon size={12} className={item.color} />
-                            <p className="truncate text-[10px] leading-tight text-[var(--muted-foreground)]">{item.label}</p>
+                    <div key={item.label} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-4 shadow-sm flex flex-col justify-between hover:border-primary/20 transition-all">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">{item.label}</span>
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${item.bg}`}>
+                                <item.icon size={14} className={item.color} />
+                            </div>
                         </div>
-                        <p className={`text-lg font-bold tabular-nums leading-none ${item.color}`}>{item.value}</p>
+                        <p className="text-2xl font-black tabular-nums text-[var(--foreground)] leading-none mt-1">{item.value}</p>
                     </div>
                 ))}
             </section>
 
-            <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm sm:p-4">
-                <h2 className="mb-2 text-sm font-bold text-[var(--foreground)]">Total Business Volume</h2>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-5 shadow-sm">
+                <h2 className="mb-4 text-sm font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>Total Business Volume</h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {[
                         { label: 'Total Level Team Business Volume', value: totalBusiness, color: 'text-blue-500' },
                         { label: "Today's team business", value: todayTeamBusiness, color: 'text-sky-500' },
                         { label: "Yesterday's team business", value: yesterdayTeamBusiness, color: 'text-indigo-500' },
                     ].map((item) => (
-                        <div key={item.label} className="rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] p-2.5">
-                            <p className="mb-0.5 truncate text-[10px] text-[var(--muted-foreground)]">{item.label}</p>
-                            <p className={`text-xl font-bold tabular-nums ${item.color}`}>{formatCurrency(item.value)}</p>
+                        <div key={item.label} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                            <p className="mb-1 truncate text-[10px] uppercase tracking-wider font-bold text-[var(--muted-foreground)]">{item.label}</p>
+                            <p className="text-xl font-black tabular-nums text-primary">{formatCurrency(item.value)}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
-            <section className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-                <p className="text-xs font-medium text-[var(--muted-foreground)]">
-                    Showing {requestedLevels} level cards • each level preview shows up to {memberDepth} members
+            <section className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center bg-[var(--surface-elevated)] p-4 rounded-2xl border border-[var(--border)]">
+                <p className="text-xs font-semibold text-[var(--muted-foreground)]">
+                    Showing {requestedLevels} levels • showing depth up to {memberDepth}
                 </p>
-                <div className="flex flex-wrap items-center gap-1.5">
-                    <label htmlFor="levelInput" className="whitespace-nowrap text-xs font-semibold text-[var(--muted-foreground)]">
-                        Level:
-                    </label>
-                    <input
-                        id="levelInput"
-                        type="number"
-                        min={1}
-                        max={200}
-                        value={levelInput}
-                        onChange={(e) => {
-                            const raw = e.target.value;
-                            if (raw === '') return setLevelInput(raw);
-                            const parsed = Number(raw);
-                            if (!Number.isFinite(parsed)) return;
-                            setLevelInput(String(Math.min(200, Math.max(1, Math.floor(parsed)))));
-                        }}
-                        className="w-20 rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1 text-xs text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--pw-primary)]/40"
-                    />
-                    <label htmlFor="depthInput" className="ml-2 whitespace-nowrap text-xs font-semibold text-[var(--muted-foreground)]">
-                        Depth:
-                    </label>
-                    <input
-                        id="depthInput"
-                        type="number"
-                        min={1}
-                        max={200}
-                        value={depthInput}
-                        onChange={(e) => {
-                            const raw = e.target.value;
-                            if (raw === '') return setDepthInput(raw);
-                            const parsed = Number(raw);
-                            if (!Number.isFinite(parsed)) return;
-                            setDepthInput(String(Math.min(200, Math.max(1, Math.floor(parsed)))));
-                        }}
-                        className="w-20 rounded-md border border-[var(--border)] bg-[var(--surface-elevated)] px-2 py-1 text-xs text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--pw-primary)]/40"
-                    />
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="levelInput" className="whitespace-nowrap text-xs font-bold text-[var(--muted-foreground)]">
+                            Levels:
+                        </label>
+                        <input
+                            id="levelInput"
+                            type="number"
+                            min={1}
+                            max={200}
+                            value={levelInput}
+                            onChange={(e) => {
+                                const raw = e.target.value;
+                                if (raw === '') return setLevelInput(raw);
+                                const parsed = Number(raw);
+                                if (!Number.isFinite(parsed)) return;
+                                setLevelInput(String(Math.min(200, Math.max(1, Math.floor(parsed)))));
+                            }}
+                            className="w-16 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--foreground)] font-bold text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="depthInput" className="whitespace-nowrap text-xs font-bold text-[var(--muted-foreground)]">
+                            Depth:
+                        </label>
+                        <input
+                            id="depthInput"
+                            type="number"
+                            min={1}
+                            max={200}
+                            value={depthInput}
+                            onChange={(e) => {
+                                const raw = e.target.value;
+                                if (raw === '') return setDepthInput(raw);
+                                const parsed = Number(raw);
+                                if (!Number.isFinite(parsed)) return;
+                                setDepthInput(String(Math.min(200, Math.max(1, Math.floor(parsed)))));
+                            }}
+                            className="w-16 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--foreground)] font-bold text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
+                        />
+                    </div>
                 </div>
             </section>
 
-            <section className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {levelCards.map((card) => {
                     const shownMembers = Math.min(memberDepth, card.teamCount);
                     const ratio = card.teamCount > 0 ? shownMembers / card.teamCount : 0;
@@ -249,40 +249,51 @@ export default function TeamLevelStatusPage() {
                     return (
                         <div
                             key={card.level}
-                            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm transition-colors hover:border-[var(--pw-primary)]/35"
+                            className={`rounded-2xl border p-4 shadow-sm transition-all duration-200 flex flex-col justify-between ${
+                                card.unlocked 
+                                ? 'border-[var(--border)] bg-[var(--surface-elevated)] hover:border-primary/35' 
+                                : 'border-[var(--border)]/40 bg-[var(--surface-elevated)]/40 opacity-60'
+                            }`}
                         >
-                            <h3 className="text-base font-extrabold text-[var(--foreground)]">Level {card.level}</h3>
-                            <div className="mt-1.5 space-y-0.5 text-[11px] text-[var(--muted-foreground)]">
-                                <p>
-                                    Level team members: <span className="font-semibold text-[var(--foreground)]">{shownMembers}</span>
-                                </p>
-                                <p>
-                                    Showing by depth:{' '}
-                                    <span className="font-semibold text-[var(--foreground)]">
-                                        {shownMembers} of {card.teamCount}
-                                    </span>
-                                </p>
-                                <p className="flex gap-2">
-                                    <span>
-                                        Active: <span className="font-semibold text-emerald-500">{shownActive}</span>
-                                    </span>
-                                    <span>
-                                        Inactive:{' '}
-                                        <span className="font-semibold text-amber-600 dark:text-amber-400">{shownInactive}</span>
-                                    </span>
-                                </p>
-                                <p>
-                                    Volume: <span className="font-semibold text-[var(--foreground)]">{formatCurrency(shownVolume)}</span>
-                                    {card.volumeSource === 'estimated' && (
-                                        <span className="ml-1 font-normal text-[var(--muted-foreground)]" title="Share of total team business when per-level amounts are not provided">
-                                            (est.)
+                            <div>
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-base font-extrabold text-[var(--foreground)]">Level {card.level}</h3>
+                                    {card.unlocked ? (
+                                        <span className="flex items-center gap-1 text-[9px] font-black text-emerald-500 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                                            <Unlock size={10} /> Active
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-1 text-[9px] font-black text-amber-500 uppercase bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
+                                            <Lock size={10} /> Locked
                                         </span>
                                     )}
-                                </p>
+                                </div>
+                                <div className="mt-3.5 space-y-1.5 text-xs text-[var(--muted-foreground)]">
+                                    <p className="flex justify-between">
+                                        <span>Level team:</span>
+                                        <span className="font-bold text-[var(--foreground)]">{shownMembers}</span>
+                                    </p>
+                                    <p className="flex justify-between">
+                                        <span>Active:</span>
+                                        <span className="font-bold text-emerald-500">{shownActive}</span>
+                                    </p>
+                                    <p className="flex justify-between">
+                                        <span>Inactive:</span>
+                                        <span className="font-bold text-amber-500">{shownInactive}</span>
+                                    </p>
+                                    <p className="flex justify-between pt-1 border-t border-[var(--border)]/20 mt-1">
+                                        <span>Volume:</span>
+                                        <span className="font-bold text-[var(--foreground)] tabular-nums">{formatCurrency(shownVolume)}</span>
+                                    </p>
+                                </div>
                             </div>
                             <Link
                                 href={`/genealogy?level=${card.level}&depth=${Math.min(memberDepth, card.teamCount || 1)}&view=table`}
-                                className="mt-2 inline-flex w-full justify-center rounded-md border border-[var(--pw-primary)]/25 bg-[var(--pw-primary)]/10 px-2 py-1.5 text-xs font-bold text-[#00a372] transition-colors hover:bg-[var(--pw-primary)]/20 dark:text-[var(--pw-primary)]"
+                                className={`mt-4 inline-flex w-full items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                                    card.unlocked
+                                    ? 'border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-primary hover:text-zinc-950 hover:border-primary shadow-sm'
+                                    : 'border-transparent bg-[var(--surface)]/20 text-[var(--muted-foreground)] pointer-events-none'
+                                }`}
                             >
                                 View Team
                             </Link>

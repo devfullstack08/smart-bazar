@@ -172,52 +172,52 @@ export default function IncomePage() {
 
             {/* Commissions Breakdown - PWA compact */}
             {overviewData.commissions.byType.length > 0 && (
-                <div className="card rounded-lg sm:rounded-2xl p-2.5 sm:p-6 border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a] overflow-hidden">
-                    <h2 className="text-sm sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">Commissions Breakdown</h2>
-                    <div className="overflow-x-auto rounded-lg sm:rounded-xl border border-gray-200/80 dark:border-white/10 min-w-0">
+                <div className="rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+                    <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] mb-4" style={{ fontFamily: 'var(--font-display)' }}>Commissions Breakdown</h2>
+                    <div className="overflow-x-auto rounded-xl border border-[var(--border)] min-w-0">
                         <table className="w-full min-w-[420px] sm:min-w-0">
-                            <thead className="bg-gray-50 dark:bg-white/5">
+                            <thead className="bg-[var(--surface)]">
                                 <tr>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Type</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Total</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Pending</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Approved</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Paid</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Count</th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Type</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Total</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Pending</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Approved</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Paid</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Count</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-white/10">
+                            <tbody className="divide-y divide-[var(--border)]">
                                 {overviewData.commissions.byType.map((item, index) => (
-                                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-white/5">
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3">
-                                            <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                                    <tr key={index} className="hover:bg-[var(--surface)]/40 transition-colors">
+                                        <td className="px-3 py-3">
+                                            <span className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
                                                 {getIncomeTypeLabel(item.type, incomeRegistry)}
                                             </span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(item.totalAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">{formatCurrency(item.totalAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400">{formatCurrency(item.pendingAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatCurrency(item.pendingAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400">{formatCurrency(item.approvedAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-semibold">{formatCurrency(item.approvedAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-green-600 dark:text-green-400">{formatCurrency(item.paidAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-semibold">{formatCurrency(item.paidAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{item.count}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-[var(--muted-foreground)] font-mono">{item.count}</span>
                                         </td>
                                     </tr>
                                 ))}
-                                <tr className="bg-gray-50 dark:bg-white/5 font-semibold">
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-gray-900 dark:text-white text-xs sm:text-sm">Total</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-gray-900 dark:text-white text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.total)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.pending)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.approved)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.paid)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{overviewData.commissions.totals.count}</td>
+                                <tr className="bg-[var(--surface)]/60 font-semibold">
+                                    <td className="px-3 py-3 text-[var(--foreground)] text-xs sm:text-sm">Total</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.total)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.pending)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.approved)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.paid)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm font-mono">{overviewData.commissions.totals.count}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -225,54 +225,53 @@ export default function IncomePage() {
                 </div>
             )}
 
-            {/* Transactions Breakdown - PWA compact */}
             {overviewData.transactions.byType.length > 0 && (
-                <div className="card rounded-lg sm:rounded-2xl p-2.5 sm:p-6 border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a] overflow-hidden">
-                    <h2 className="text-sm sm:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">Transactions Breakdown</h2>
-                    <div className="overflow-x-auto rounded-lg sm:rounded-xl border border-gray-200/80 dark:border-white/10 min-w-0">
+                <div className="rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+                    <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] mb-4" style={{ fontFamily: 'var(--font-display)' }}>Transactions Breakdown</h2>
+                    <div className="overflow-x-auto rounded-xl border border-[var(--border)] min-w-0">
                         <table className="w-full min-w-[420px] sm:min-w-0">
-                            <thead className="bg-gray-50 dark:bg-white/5">
+                            <thead className="bg-[var(--surface)]">
                                 <tr>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Type</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Total</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Pending</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Processed</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Stopped</th>
-                                    <th className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">Count</th>
+                                    <th className="px-3 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Type</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Total</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Pending</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Processed</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Stopped</th>
+                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Count</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-white/10">
+                            <tbody className="divide-y divide-[var(--border)]">
                                 {overviewData.transactions.byType.map((item, index) => (
-                                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-white/5">
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3">
-                                            <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                                    <tr key={index} className="hover:bg-[var(--surface)]/40 transition-colors">
+                                        <td className="px-3 py-3">
+                                            <span className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
                                                 {getIncomeTypeLabel(item.type, incomeRegistry)}
                                             </span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(item.totalAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">{formatCurrency(item.totalAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400">{formatCurrency(item.pendingAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatCurrency(item.pendingAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-green-600 dark:text-green-400">{formatCurrency(item.processedAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-semibold">{formatCurrency(item.processedAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-red-600 dark:text-red-400">{formatCurrency(item.stoppedAmount)}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-semibold">{formatCurrency(item.stoppedAmount)}</span>
                                         </td>
-                                        <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{item.count}</span>
+                                        <td className="px-3 py-3 text-right">
+                                            <span className="text-xs sm:text-sm text-[var(--muted-foreground)] font-mono">{item.count}</span>
                                         </td>
                                     </tr>
                                 ))}
-                                <tr className="bg-gray-50 dark:bg-white/5 font-semibold">
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-gray-900 dark:text-white text-xs sm:text-sm">Total</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-gray-900 dark:text-white text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.total)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.pending)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.processed)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.stopped)}</td>
-                                    <td className="px-1.5 sm:px-4 py-1.5 sm:py-3 text-right text-xs sm:text-sm">{overviewData.transactions.totals.count}</td>
+                                <tr className="bg-[var(--surface)]/60 font-semibold">
+                                    <td className="px-3 py-3 text-[var(--foreground)] text-xs sm:text-sm">Total</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.total)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.pending)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.processed)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.stopped)}</td>
+                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm font-mono">{overviewData.transactions.totals.count}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -281,12 +280,12 @@ export default function IncomePage() {
             )}
 
             {/* Transaction History - PWA compact */}
-            <div className="card rounded-lg sm:rounded-2xl border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a] overflow-hidden">
-                <div className="p-2.5 sm:p-6 border-b border-gray-200 dark:border-white/10">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
-                        <h2 className="text-sm sm:text-xl font-bold text-gray-900 dark:text-white">Transaction History</h2>
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+                <div className="p-4 sm:p-6 border-b border-[var(--border)]">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-3 sm:mb-4">
+                        <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>Transaction History</h2>
                         {pagination && (
-                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
                                 Showing {filters.skip + 1}-{Math.min(filters.skip + filters.limit, pagination.total)} of {pagination.total}
                             </p>
                         )}
@@ -297,41 +296,41 @@ export default function IncomePage() {
                         <select
                             value={filters.type}
                             onChange={(e) => handleFilterChange('type', e.target.value)}
-                            className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-[11px] sm:text-sm focus:ring-2 focus:ring-indigo-500 min-h-[40px] touch-manipulation"
+                            className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-[11px] sm:text-sm focus:ring-2 focus:ring-primary/40 min-h-[40px] touch-manipulation outline-none"
                         >
-                            <option value="">All Types</option>
-                            <optgroup label="Commissions">
-                                <option value="referral">Direct Referral</option>
-                                <option value="binary_placement">Placement Spillover</option>
-                                <option value="binary_matching">Binary Matching</option>
-                                <option value="global_autopool">Global Auto-Pool</option>
+                            <option value="" className="bg-[var(--surface-elevated)]">All Types</option>
+                            <optgroup label="Commissions" className="bg-[var(--surface-elevated)] font-semibold text-[var(--muted-foreground)]">
+                                <option value="referral" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Direct Referral</option>
+                                <option value="binary_placement" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Placement Spillover</option>
+                                <option value="binary_matching" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Binary Matching</option>
+                                <option value="global_autopool" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Global Auto-Pool</option>
                             </optgroup>
                         </select>
 
                         <select
                             value={filters.status}
                             onChange={(e) => handleFilterChange('status', e.target.value)}
-                            className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-[11px] sm:text-sm focus:ring-2 focus:ring-indigo-500 min-h-[40px] touch-manipulation"
+                            className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-[11px] sm:text-sm focus:ring-2 focus:ring-primary/40 min-h-[40px] touch-manipulation outline-none"
                         >
-                            <option value="">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="paid">Paid</option>
-                            <option value="processed">Processed</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="stopped">Stopped</option>
-                            <option value="failed">Failed</option>
+                            <option value="" className="bg-[var(--surface-elevated)]">All Status</option>
+                            <option value="pending" className="bg-[var(--surface-elevated)]">Pending</option>
+                            <option value="approved" className="bg-[var(--surface-elevated)]">Approved</option>
+                            <option value="paid" className="bg-[var(--surface-elevated)]">Paid</option>
+                            <option value="processed" className="bg-[var(--surface-elevated)]">Processed</option>
+                            <option value="rejected" className="bg-[var(--surface-elevated)]">Rejected</option>
+                            <option value="stopped" className="bg-[var(--surface-elevated)]">Stopped</option>
+                            <option value="failed" className="bg-[var(--surface-elevated)]">Failed</option>
                         </select>
 
                         <select
                             value={filters.limit}
                             onChange={(e) => handleFilterChange('limit', e.target.value)}
-                            className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-[11px] sm:text-sm focus:ring-2 focus:ring-indigo-500 min-h-[40px] touch-manipulation"
+                            className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-[11px] sm:text-sm focus:ring-2 focus:ring-primary/40 min-h-[40px] touch-manipulation outline-none"
                         >
-                            <option value="10">10 per page</option>
-                            <option value="20">20 per page</option>
-                            <option value="50">50 per page</option>
-                            <option value="100">100 per page</option>
+                            <option value="10" className="bg-[var(--surface-elevated)]">10 per page</option>
+                            <option value="20" className="bg-[var(--surface-elevated)]">20 per page</option>
+                            <option value="50" className="bg-[var(--surface-elevated)]">50 per page</option>
+                            <option value="100" className="bg-[var(--surface-elevated)]">100 per page</option>
                         </select>
                     </div>
                 </div>
@@ -344,36 +343,36 @@ export default function IncomePage() {
                     <>
                         <div className="overflow-x-auto min-w-0">
                             <table className="w-full min-w-[520px] sm:min-w-0">
-                                <thead className="bg-gray-50 dark:bg-white/5">
+                                <thead className="bg-[var(--surface)]">
                                     <tr>
-                                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Type
                                         </th>
-                                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Income Type
                                         </th>
-                                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-right text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">
+                                        <th className="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Amount
                                         </th>
-                                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Status
                                         </th>
-                                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight hidden md:table-cell">
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider hidden md:table-cell">
                                             Details
                                         </th>
-                                        <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tight">
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Date
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 dark:divide-white/10">
+                                <tbody className="divide-y divide-[var(--border)]">
                                     {transactions.length > 0 ? (
                                         transactions.map((transaction) => (
                                             <TransactionRow key={transaction.id} transaction={transaction} registry={incomeRegistry} />
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-gray-500 dark:text-gray-400 text-sm">
+                                            <td colSpan={6} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-[var(--muted-foreground)] text-sm">
                                                 No transactions found
                                             </td>
                                         </tr>
@@ -384,21 +383,21 @@ export default function IncomePage() {
 
                         {/* Pagination - PWA compact */}
                         {pagination && pagination.total > 0 && (
-                            <div className="px-2.5 sm:px-6 py-3 sm:py-4 border-t border-gray-200 dark:border-white/10 flex justify-between items-center gap-2">
+                            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-[var(--border)] flex justify-between items-center gap-2">
                                 <button
                                     onClick={() => handlePageChange(Math.max(0, filters.skip - filters.limit))}
                                     disabled={filters.skip === 0}
-                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 text-[11px] sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
+                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-[var(--border)] text-[11px] sm:text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
                                 >
                                     Previous
                                 </button>
-                                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center">
+                                <span className="text-xs sm:text-sm text-[var(--muted-foreground)] text-center">
                                     Page {Math.floor(filters.skip / filters.limit) + 1} of {Math.ceil(pagination.total / filters.limit)}
                                 </span>
                                 <button
                                     onClick={() => handlePageChange(filters.skip + filters.limit)}
                                     disabled={!pagination.hasMore}
-                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-200 dark:border-white/10 text-[11px] sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
+                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-[var(--border)] text-[11px] sm:text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
                                 >
                                     Next
                                 </button>
@@ -436,52 +435,52 @@ function TransactionRow({ transaction, registry = [] }: { transaction: IncomeTra
     };
 
     return (
-        <tr className="hover:bg-gray-50 dark:hover:bg-white/5">
-            <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
-                <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 inline-flex text-[10px] sm:text-xs leading-5 font-semibold rounded-full ${getTypeBadge(transaction.type)}`}>
+        <tr className="hover:bg-[var(--surface)]/50 transition-colors border-b border-[var(--border)] last:border-0">
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getTypeBadge(transaction.type)}`}>
                     {transaction.type}
                 </span>
             </td>
-            <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap min-w-0">
-                <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white truncate block">
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap min-w-0">
+                <span className="text-xs sm:text-sm font-medium text-[var(--foreground)] truncate block">
                     {getIncomeRowDisplayLabel(transaction, registry)}
                 </span>
             </td>
-            <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-right">
-                <span className="text-xs sm:text-sm font-bold text-green-600 dark:text-green-400">
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
+                <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                     {formatCurrency(transaction.amount)}
                 </span>
             </td>
-            <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
-                <span className={`px-2 sm:px-3 py-0.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(transaction.status)}`}>
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(transaction.status)}`}>
                     {transaction.status}
                 </span>
             </td>
-            <td className="px-2 sm:px-6 py-2 sm:py-4 hidden md:table-cell">
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 space-y-0.5 sm:space-y-1">
+            <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
+                <div className="text-xs sm:text-sm text-[var(--muted-foreground)] space-y-1">
                     {(transaction.sourceUserId || transaction.fromUserId) && (
-                        <p className="truncate">From: <span className="font-mono text-xs">{transaction.sourceUserId || transaction.fromUserId}</span></p>
+                        <p className="truncate">From: <span className="font-mono text-[var(--foreground)]">{transaction.sourceUserId || transaction.fromUserId}</span></p>
                     )}
                     {transaction.sourcePackageId && (
-                        <p className="truncate">Pkg: <span className="font-mono text-xs">{transaction.sourcePackageId}</span></p>
+                        <p className="truncate">Pkg: <span className="font-mono text-[var(--foreground)]">{transaction.sourcePackageId}</span></p>
                     )}
                     {transaction.calculationDetails && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{transaction.calculationDetails.formula || 'Auto-calculated'}</p>
+                        <p className="text-xs text-[var(--muted-foreground)]/80 truncate">{transaction.calculationDetails.formula || 'Auto-calculated'}</p>
                     )}
                     {transaction.cappingInfo && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        <p className="text-xs text-[var(--muted-foreground)]/80 truncate">
                             Capping: {formatCurrency(transaction.cappingInfo.currentEarnings || 0)} / {formatCurrency(transaction.cappingInfo.cappingLimit || 0)}
                         </p>
                     )}
                 </div>
             </td>
-            <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{formatDateTime(transaction.createdAt)}</span>
+            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                <span className="text-xs sm:text-sm text-[var(--muted-foreground)]">{formatDateTime(transaction.createdAt)}</span>
                 {transaction.paidAt && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1">Paid: {formatDate(transaction.paidAt)}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]/70 mt-1">Paid: {formatDate(transaction.paidAt)}</p>
                 )}
                 {transaction.processedAt && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1">Processed: {formatDate(transaction.processedAt)}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]/70 mt-1">Processed: {formatDate(transaction.processedAt)}</p>
                 )}
             </td>
         </tr>

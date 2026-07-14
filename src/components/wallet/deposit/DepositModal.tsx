@@ -133,15 +133,15 @@ export function DepositModal({
                 {/* Method Selection */}
                 {depositMethods.length > 1 ? (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</label>
+                        <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Payment Method</label>
                         <select
                             {...register('method', { required: 'Please select a payment method' })}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                             defaultValue=""
                         >
-                            <option value="" disabled>Select payment method</option>
+                            <option value="" disabled className="bg-[var(--surface-elevated)]">Select payment method</option>
                             {depositMethods.map((m) => (
-                                <option key={m.value} value={m.value}>{m.label}</option>
+                                <option key={m.value} value={m.value} className="bg-[var(--surface-elevated)]">{m.label}</option>
                             ))}
                         </select>
                     </div>

@@ -110,11 +110,11 @@ export function BankTransferDeposit({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Description (Optional)</label>
                 <textarea
                     {...register('description')}
                     rows={3}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                     placeholder="Additional notes..."
                 />
             </div>
@@ -123,14 +123,14 @@ export function BankTransferDeposit({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    className="flex-1 btn btn-secondary px-4 py-3 rounded-xl font-semibold transition-all"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 btn btn-primary px-4 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {submitting ? 'Submitting...' : 'Submit Request'}
                 </button>

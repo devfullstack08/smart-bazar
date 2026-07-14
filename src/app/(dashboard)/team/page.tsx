@@ -134,7 +134,7 @@ export default function TeamPage() {
                 ) : (
                     <div className="overflow-x-auto min-w-0 -webkit-overflow-scrolling-touch">
                         <table className="w-full min-w-[560px] text-sm sm:text-base">
-                            <thead className="bg-[var(--background)]">
+                            <thead className="bg-[var(--surface)]">
                                 <tr>
                                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase">Name</th>
                                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase hidden sm:table-cell">User ID</th>

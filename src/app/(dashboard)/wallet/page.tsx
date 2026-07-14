@@ -364,7 +364,7 @@ export default function WalletPage() {
                             </button>
                             <button
                                 onClick={() => setShowWithdrawModal(true)}
-                                className="px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm bg-[var(--pw-primary)] text-gray-900 hover:bg-[var(--pw-primary)]/90 transition-all"
+                                className="btn btn-primary px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm"
                             >
                                 <CreditCard size={14} />
                                 Withdraw

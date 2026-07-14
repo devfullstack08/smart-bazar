@@ -147,17 +147,17 @@ export function ConnectWalletButton({ variant = 'default', fullWidth = false, cl
         const panelContent = isConnected && address ? (
             <div
                 ref={panelRef}
-                className="fixed min-w-[224px] w-56 rounded-2xl border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a] shadow-xl shadow-black/20 dark:shadow-black/60 backdrop-blur-sm overflow-hidden z-[9999]"
+                className="fixed min-w-[224px] w-56 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] shadow-xl shadow-black/20 dark:shadow-black/60 backdrop-blur-sm overflow-hidden z-[9999]"
                 style={{ top: position.top, left: position.left }}
             >
-                <div className="p-4 border-b border-gray-100 dark:border-white/5">
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Connected</p>
+                <div className="p-4 border-b border-[var(--border)]">
+                    <p className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider mb-1">Connected</p>
                     <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm text-gray-900 dark:text-white truncate">{truncatedAddress}</span>
+                        <span className="font-mono text-sm text-[var(--foreground)] truncate">{truncatedAddress}</span>
                         <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); copyAddress(); }}
-                            className="shrink-0 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                            className="shrink-0 p-1.5 rounded-lg hover:bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
                             title="Copy address"
                         >
                             {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -171,7 +171,7 @@ export function ConnectWalletButton({ variant = 'default', fullWidth = false, cl
                         setDropdownOpen(false);
                         toast.success('Wallet disconnected');
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
                 >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/20">
                         <LogOut size={14} />
@@ -182,12 +182,12 @@ export function ConnectWalletButton({ variant = 'default', fullWidth = false, cl
         ) : (
             <div
                 ref={panelRef}
-                className="fixed min-w-[260px] rounded-2xl border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a] shadow-xl shadow-black/20 dark:shadow-black/60 backdrop-blur-sm overflow-hidden z-[9999]"
+                className="fixed min-w-[260px] rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] shadow-xl shadow-black/20 dark:shadow-black/60 backdrop-blur-sm overflow-hidden z-[9999]"
                 style={{ top: position.top, left: position.left }}
             >
-                <div className="px-4 py-3 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Connect a wallet</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Choose your preferred wallet to connect</p>
+                <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface)]">
+                    <h3 className="text-sm font-semibold text-[var(--foreground)]">Connect a wallet</h3>
+                    <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Choose your preferred wallet to connect</p>
                 </div>
                 <div className="p-2 max-h-[280px] overflow-y-auto">
                     {connectors.map((connector) => {

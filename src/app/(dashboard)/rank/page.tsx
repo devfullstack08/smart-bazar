@@ -236,7 +236,7 @@ export default function RankPage() {
                         </div>
                     </div>
                 </div>
-                <div className="card rounded-lg sm:rounded-2xl p-4 sm:p-8 md:p-12 text-center border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a]">
+                <div className="rounded-lg sm:rounded-2xl p-4 sm:p-8 md:p-12 text-center border border-[var(--border)] bg-[var(--surface-elevated)]">
                     <div className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl mx-auto mb-2 sm:mb-4 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 shrink-0">
                         <XCircle className="text-white" size={22} />
                     </div>
@@ -392,7 +392,7 @@ export default function RankPage() {
 
             {/* Next Rank Progress - PWA compact */}
             {nextRank && progress && (
-                <div className="card rounded-lg sm:rounded-2xl p-2.5 sm:p-6 border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a]">
+                <div className="rounded-lg sm:rounded-2xl p-2.5 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
                     <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">
                         <div className="icon-container icon-container-sm shrink-0">
                             <Target className="text-white" size={18} />
@@ -534,7 +534,7 @@ export default function RankPage() {
             )}
 
             {/* All Ranks Table - PWA compact, responsive columns */}
-            <div className="card rounded-lg sm:rounded-2xl border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#12121a] overflow-hidden">
+            <div className="rounded-lg sm:rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
                 <div className="bg-gradient-to-r from-indigo-600/10 to-purple-600/10 dark:from-indigo-500/10 dark:to-purple-500/10 px-3 py-2.5 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-white/10">
                     <h2 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">All Ranks (Star-1 to Star-10)</h2>
                     <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">Complete list of all achievable ranks and their requirements</p>

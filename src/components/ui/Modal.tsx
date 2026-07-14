@@ -62,14 +62,14 @@ export function Modal({
 
             {/* Modal Content */}
             <div
-                className={`relative bg-white dark:bg-[#12121a] rounded-2xl shadow-xl border border-gray-200/80 dark:border-white/10 w-full ${sizeClasses[size]} max-h-[90vh] overflow-y-auto z-10`}
+                className={`relative bg-[var(--surface-elevated)] rounded-2xl shadow-xl border border-[var(--border)] w-full ${sizeClasses[size]} max-h-[90vh] overflow-y-auto z-10`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 {(title || showCloseButton) && (
-                    <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/10 sticky top-0 bg-white dark:bg-[#12121a] rounded-t-2xl z-10">
+                    <div className="flex items-center justify-between p-6 border-b border-[var(--border)] sticky top-0 bg-[var(--surface-elevated)] rounded-t-2xl z-10">
                         {title && (
-                            <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{title}</h3>
+                            <h3 className="text-xl md:text-2xl font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>{title}</h3>
                         )}
                         {showCloseButton && (
                             <button

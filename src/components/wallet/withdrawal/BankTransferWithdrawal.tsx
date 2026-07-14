@@ -55,14 +55,14 @@ export function BankTransferWithdrawal({
             )}
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Amount</label>
                 <input
                     {...register('amount', { valueAsNumber: true })}
                     type="number"
                     step="0.01"
                     min={minAmount || 1}
                     max={maxAmount || undefined}
-                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                     placeholder="1000.00"
                 />
                 {errors.amount && (
@@ -77,11 +77,11 @@ export function BankTransferWithdrawal({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bank Account Details</label>
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Bank Account Details</label>
                 <textarea
                     {...register('bankAccount')}
                     rows={4}
-                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                     placeholder="Account Number, IFSC Code, Account Holder Name, Bank Name"
                 />
                 {errors.bankAccount && (
@@ -90,11 +90,11 @@ export function BankTransferWithdrawal({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
+                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Description (Optional)</label>
                 <textarea
                     {...register('description')}
                     rows={3}
-                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
                     placeholder="Additional notes..."
                 />
             </div>
@@ -103,14 +103,14 @@ export function BankTransferWithdrawal({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="flex-1 px-4 py-2.5 text-sm sm:text-base rounded-xl border border-gray-200 dark:border-white/10 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    className="flex-1 btn btn-secondary px-4 py-2.5 text-sm sm:text-base rounded-xl font-semibold transition-all"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-2.5 text-sm sm:text-base rounded-lg font-semibold hover:from-teal-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 btn btn-primary px-4 py-2.5 text-sm sm:text-base rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {submitting ? 'Processing...' : 'Submit Request'}
                 </button>

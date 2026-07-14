@@ -1153,7 +1153,7 @@ export const userApi = {
 
     uploadProfilePicture: async (file: File) => {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('photo', file);
         
         const response = await fetch(`${API_URL}/users/profile/photo`, {
             method: 'POST',

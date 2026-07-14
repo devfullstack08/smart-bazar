@@ -18,6 +18,7 @@ export const APP_CONSTANTS = {
     ASSETS:{
         DEFAULT_PROFILE_PICTURE: '/assets/images/user-default-profile-picture.png',
         PRODUCT_BOX: '/assets/images/smart_bazar_product_box.jpg',
+        MASCOT: '/assets/images/smart_bazar_mascot.jpg',
         QUICK_STORE: '/assets/images/quick-actions/package.png',
         QUICK_DEPOSIT: '/assets/images/quick-actions/deposit.png',
         QUICK_WITHDRAW: '/assets/images/quick-actions/withdraw.png',

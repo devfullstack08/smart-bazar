@@ -283,6 +283,11 @@ export default function DashboardPage() {
             {/* Profile Welcome Info */}
             <DashboardWelcomeCard user={dashboardUser} loading={loadingProfile} />
 
+            {/* Mobile-only Quick Action Buttons */}
+            <div className="block lg:hidden mt-2">
+                <QuickActions />
+            </div>
+
             {/* Section Header: Ledgers */}
             <div className="pt-2">
                 <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Financial Ledgers</h3>
@@ -290,11 +295,6 @@ export default function DashboardPage() {
 
             {/* Ledger Overview Cards Grid */}
             <OverviewStats wallet={wallet} income={income} loading={loadingWallet || loadingIncome} />
-
-            {/* Mobile-only Quick Action Buttons */}
-            <div className="block lg:hidden mt-2">
-                <QuickActions />
-            </div>
 
             {/* Main Responsive Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-w-0">

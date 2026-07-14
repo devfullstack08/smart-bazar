@@ -156,7 +156,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <div className="hidden sm:flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 min-w-[100px]">
                             <Wallet className="h-4 w-4 text-primary" />
                             <span className="text-sm font-semibold text-[var(--foreground)] tabular-nums">
-                                {loadingBalance ? (
+                                {!mounted || loadingBalance ? (
                                     <span className="inline-block h-4 w-6 animate-pulse rounded bg-[var(--border)]" />
                                 ) : (
                                     formatCurrency(availableBalance ?? 0)

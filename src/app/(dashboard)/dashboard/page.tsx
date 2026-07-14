@@ -167,6 +167,7 @@ export default function DashboardPage() {
                 rank: profileRes.rank,
                 sponsorId: profileRes.sponsorId,
                 joinedAt: profileRes.joinedAt || profileRes.joinDate || '',
+                profilePicture: profileRes.profilePicture,
             }));
         } catch (error) {
             console.error('Failed to fetch profile:', error);

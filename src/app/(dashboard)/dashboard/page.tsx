@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { userApi, walletApi, packageApi, incomeApi, teamApi, dashboardApi, projectApi } from '@/lib/api/services';
-import type { DashboardData, CappingTrackingData, Banner, PoolBalance, Offer, ProjectPopup, DashboardMedia } from '@/types';
+import type { DashboardData, CappingTrackingData, Banner, Offer, ProjectPopup, DashboardMedia } from '@/types';
 import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import DashboardWelcomeCard from '@/components/dashboard/DashboardWelcomeCard';
 import QuickActions from '@/components/dashboard/QuickActions';
@@ -271,29 +271,34 @@ export default function DashboardPage() {
     const referralLink = `${siteOrigin}/register?sponsor=${dashboardUser?.userId || ''}`;
 
     return (
-        <div className="space-y-4 sm:space-y-6 lg:space-y-8 pb-8 sm:pb-12 lg:pb-16 overflow-x-hidden min-w-0">
+        <div className="space-y-6 sm:space-y-8 pb-12 overflow-x-hidden min-w-0">
             <DashboardPopup popup={dashboardPopup} loading={loadingPopup} />
 
-            {/* Keep banners at very top */}
-            <BannerCarousel banners={banners} loading={loadingBanners} className="w-full rounded-2xl overflow-hidden" />
+            {/* Banner Announcements Carousel */}
+            <BannerCarousel banners={banners} loading={loadingBanners} className="w-full rounded-2xl overflow-hidden shadow-sm" />
 
-            {/* Dashboard media uploaded from project-admin settings */}
+            {/* Interactive Media Strip */}
             <DashboardMediaStrip items={dashboardMedia} loading={loadingDashboardMedia} />
 
-            {/* 1. Welcome Header (Grows full width) */}
+            {/* Profile Welcome Info */}
             <DashboardWelcomeCard user={dashboardUser} loading={loadingProfile} />
 
-            {/* 2. Overview Stats Row (Grows full width) */}
+            {/* Section Header: Ledgers */}
+            <div className="pt-2">
+                <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Financial Ledgers</h3>
+            </div>
+
+            {/* Ledger Overview Cards Grid */}
             <OverviewStats wallet={wallet} income={income} loading={loadingWallet || loadingIncome} />
 
-            {/* Quick Actions at the top for Mobile viewports */}
+            {/* Mobile-only Quick Action Buttons */}
             <div className="block lg:hidden mt-2">
                 <QuickActions />
             </div>
 
-            {/* Main 12-Column Responsive Dashboard Grid */}
+            {/* Main Responsive Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-w-0">
-                {/* Left Area - Main Analytics & Staking Metrics (Col span 8) */}
+                {/* Left Area - Analytics, Autopool & Limits Staking (Col span 8) */}
                 <div className="lg:col-span-8 space-y-6 min-w-0">
                     <DashboardIncomeOverview income={income} cappingData={cappingData} loading={loadingIncome} />
                     
@@ -301,11 +306,10 @@ export default function DashboardPage() {
                     
                     <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
                     
-
                     <DashboardPoolStatus poolStatus={poolStatus} loading={loadingPoolStatus} incomeConfig={incomeConfig} />
                 </div>
 
-                {/* Right Area - Operational Panels & Sponsor Actions (Col span 4) */}
+                {/* Right Area - Affiliate Sponsors & Action cards (Col span 4) */}
                 <div className="lg:col-span-4 space-y-6 min-w-0">
                     {/* Desktop-only Quick Actions in sidebar */}
                     <div className="hidden lg:block">

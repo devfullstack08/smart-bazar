@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { API_URL } from '@/constants/env';
 import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
 import { updateUser } from '@/lib/store/slices/authSlice';
-import { User as UserIcon, Mail, Phone, Calendar, Shield, Upload, CheckCircle2, XCircle, Clock, Wallet, Key, Copy, Check, Download, Eye, EyeOff, Camera, Loader2 } from 'lucide-react';
+import { User as UserIcon, Mail, Phone, Calendar, Shield, Upload, CheckCircle2, XCircle, Clock, Wallet, Key, Copy, Check, Download, Eye, EyeOff, Camera, Loader2, FileText, ChevronRight } from 'lucide-react';
 import { formatDate } from '@/lib/utils/cn';
 import toast from 'react-hot-toast';
 import { userApi, authApi } from '@/lib/api/services';
@@ -14,6 +14,7 @@ import Web3ConfigService from '@/lib/services/web3Config.service';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
 import UserProfileImage from '@/components/ui/UserProfileImage';
 import type { User } from '@/types';
+import { APP_NAME } from '@/constants/env';
 
 interface KYCDocument {
     documentId?: string; // New field from API
@@ -89,20 +90,14 @@ export default function ProfilePage() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
 
-    // Get full image URL (handle relative URLs from backend)
     const getDocumentUrl = (url: string) => {
         if (!url) return '';
-        // If URL is already absolute (starts with http:// or https://), return as is
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;
         }
-        // If URL is relative, construct full URL
-        // Backend serves files from /uploads/kycs/... which is accessible at the server root (not /api/v1)
         let baseUrl = API_URL.replace(/\/api\/v1\/?$/, '').replace(/\/+$/, '');
-        // Ensure URL starts with / for proper path construction
         const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-        const fullUrl = `${baseUrl}${cleanUrl}`;
-        return fullUrl;
+        return `${baseUrl}${cleanUrl}`;
     };
 
     const handleDocumentClick = (doc: KYCDocument) => {
@@ -110,14 +105,12 @@ export default function ProfilePage() {
         setShowDocumentPreview(true);
     };
 
-    // Fetch profile and KYC status on mount
     useEffect(() => {
         setMounted(true);
         fetchProfile();
         fetchKYCStatus();
     }, []);
 
-    // Update form data when user changes
     useEffect(() => {
         if (user) {
             setFormData((prev) => ({
@@ -130,7 +123,6 @@ export default function ProfilePage() {
         }
     }, [user]);
 
-    // Check if Web3 (deposit or withdrawal) is enabled in project config
     useEffect(() => {
         const configService = new Web3ConfigService();
         configService
@@ -152,7 +144,6 @@ export default function ProfilePage() {
             dispatch(updateUser(profileData));
         } catch (error: any) {
             console.error('Failed to fetch profile:', error);
-            // Don't show error toast, just log it
         }
     };
 
@@ -163,7 +154,6 @@ export default function ProfilePage() {
             setKycStatus(status);
         } catch (error: any) {
             console.error('Failed to fetch KYC status:', error);
-            // Don't show error toast, just log it
         } finally {
             setLoadingKYC(false);
         }
@@ -192,13 +182,11 @@ export default function ProfilePage() {
         const file = e.target.files?.[0];
         if (!file) return;
         
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             toast.error('Please select a valid image file');
             return;
         }
 
-        // Validate file size (e.g., max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             toast.error('Image size must be less than 5MB');
             return;
@@ -224,14 +212,12 @@ export default function ProfilePage() {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            // Validate file type
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
             if (!allowedTypes.includes(selectedFile.type)) {
                 toast.error('Invalid file type. Only JPEG, PNG, WebP images and PDF files are allowed.');
                 return;
             }
 
-            // Validate file size (5MB max)
             if (selectedFile.size > 5 * 1024 * 1024) {
                 toast.error('File size must be less than 5MB');
                 return;
@@ -239,7 +225,6 @@ export default function ProfilePage() {
 
             setKycFormData({ ...kycFormData, file: selectedFile });
 
-            // Create preview for images
             if (selectedFile.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onloadend = () => {
@@ -265,15 +250,12 @@ export default function ProfilePage() {
             setShowKYCUpload(false);
             setKycFormData({ type: 'aadhar', file: null });
             setFilePreview(null);
-            // Reset file input
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
-            // Refresh KYC status
             fetchKYCStatus();
         } catch (error: any) {
-            const message = error.message || 'KYC upload failed';
-            toast.error(message);
+            toast.error(error.message || 'KYC upload failed');
         } finally {
             setUploadingKYC(false);
         }
@@ -291,14 +273,12 @@ export default function ProfilePage() {
     const handleUpdateFileSelect = (e: React.ChangeEvent<HTMLInputElement>, documentId: string) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            // Validate file type
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
             if (!allowedTypes.includes(selectedFile.type)) {
                 toast.error('Invalid file type. Only JPEG, PNG, WebP images and PDF files are allowed.');
                 return;
             }
 
-            // Validate file size (5MB max)
             if (selectedFile.size > 5 * 1024 * 1024) {
                 toast.error('File size must be less than 5MB');
                 return;
@@ -306,7 +286,6 @@ export default function ProfilePage() {
 
             setUpdateFiles({ ...updateFiles, [documentId]: selectedFile });
 
-            // Create preview for images
             if (selectedFile.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onloadend = () => {
@@ -329,8 +308,7 @@ export default function ProfilePage() {
         setUpdatingDocumentId(documentId);
         try {
             await userApi.updateKYCDocument(documentId, file);
-            toast.success('Document updated successfully! Status changed to pending for admin review.');
-            // Clear file and preview for this document
+            toast.success('Document updated successfully!');
             const newFiles = { ...updateFiles };
             const newPreviews = { ...updateFilePreviews };
             delete newFiles[documentId];
@@ -338,11 +316,9 @@ export default function ProfilePage() {
             setUpdateFiles(newFiles);
             setUpdateFilePreviews(newPreviews);
             setUpdatingDocumentId(null);
-            // Refresh KYC status
             fetchKYCStatus();
         } catch (error: any) {
-            const message = error.message || 'Update failed';
-            toast.error(message);
+            toast.error(error.message || 'Update failed');
         } finally {
             setUpdatingDocumentId(null);
         }
@@ -401,7 +377,7 @@ export default function ProfilePage() {
         try {
             const result = await authApi.revealVaultKey(vaultPassword) as { vaultUserId: string; vaultKey: string };
             setRevealedVault({ vaultUserId: result.vaultUserId, vaultKey: result.vaultKey });
-            toast.success('New Vault Key generated. Save it securely.');
+            toast.success('New Vault Key generated.');
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
             toast.error(msg || 'Invalid password. Please try again.');
@@ -433,7 +409,6 @@ export default function ProfilePage() {
         toast.success('Saved as .txt');
     };
 
-    // Get document ID (support both documentId and _id)
     const getDocumentId = (doc: KYCDocument): string => {
         return doc.documentId || doc._id || '';
     };
@@ -450,7 +425,6 @@ export default function ProfilePage() {
         return { strength, label: labels[strength], color: colors[strength] };
     };
 
-    // Group documents by status
     const rejectedDocuments = kycStatus?.kyc.documents.filter(doc => doc.status === 'rejected') || [];
     const pendingDocuments = kycStatus?.kyc.documents.filter(doc => doc.status === 'pending') || [];
     const approvedDocuments = kycStatus?.kyc.documents.filter(doc => doc.status === 'approved') || [];
@@ -458,75 +432,61 @@ export default function ProfilePage() {
     const getDocumentStatusIcon = (status: string) => {
         switch (status) {
             case 'approved':
-                return <CheckCircle2 className="text-green-600 dark:text-green-400 shrink-0" size={16} />;
+                return <CheckCircle2 className="text-green-500 shrink-0" size={16} />;
             case 'rejected':
-                return <XCircle className="text-red-600 dark:text-red-400 shrink-0" size={16} />;
+                return <XCircle className="text-red-500 shrink-0" size={16} />;
             default:
-                return <Clock className="text-yellow-600 dark:text-yellow-400 shrink-0" size={16} />;
+                return <Clock className="text-yellow-500 shrink-0" size={16} />;
         }
     };
 
     const getDocumentStatusColor = (status: string) => {
         switch (status) {
             case 'approved':
-                return 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-400';
+                return 'bg-green-500/10 text-green-600 dark:text-green-400 border border-emerald-500/20';
             case 'rejected':
-                return 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-400';
+                return 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
             default:
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-400';
+                return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20';
         }
     };
 
     const newPwdStrength = getNewPasswordStrength(newPassword);
 
     if (!mounted) {
-        return null; // Prevent hydration mismatch on the server
+        return null;
     }
 
     return (
-        <div className="space-y-2 sm:space-y-5 lg:space-y-8">
-            {/* Header - Hero-style PWA compact */}
-            <div className="relative overflow-hidden rounded-lg sm:rounded-2xl premium-card p-2.5 sm:p-6 md:p-8 border border-[var(--border)] bg-[var(--surface-elevated)] shadow-lg sm:shadow-xl">
-                <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(0,229,160,0.15) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-                <div className="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-[var(--pw-primary)]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                <div className="relative z-10 flex items-center gap-2.5 sm:gap-4">
-                    <UserProfileImage
-                        src={(user as any)?.profilePicture}
-                        alt={user?.name ?? 'User'}
-                        width={56}
-                        height={56}
-                        className="rounded-full border border-primary/20"
-                    />
-                    <div className="min-w-0">
-                        <span className="inline-flex items-center gap-1 sm:gap-2 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] sm:text-sm font-medium mb-1 sm:mb-2">Account</span>
-                        <h1 className="text-base sm:text-2xl md:text-3xl font-bold text-[var(--foreground)] leading-tight truncate" style={{ fontFamily: 'var(--font-display)' }}>My Profile</h1>
-                        <p className="text-[var(--muted-foreground)] text-[11px] sm:text-sm mt-0.5 sm:mt-1">Manage your account information</p>
-                    </div>
+        <div className="space-y-6 sm:space-y-8 pb-12">
+            
+            {/* VIP Pass Card Mockup */}
+            <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 sm:p-8 shadow-xl text-white">
+                <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(212,175,55,0.15) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+                
+                {/* Gold VIP Pass Ring Decor */}
+                <div className="absolute top-6 right-8 w-20 h-20 border-2 border-primary/20 rounded-full flex items-center justify-center font-black text-[9px] uppercase tracking-widest text-primary/40 select-none">
+                    VIP Pass
                 </div>
-            </div>
 
-            {/* Profile Card - PWA compact */}
-            <div className="premium-card rounded-lg sm:rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-lg">
-                {/* Header Section */}
-                <div className="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-6 sm:p-8 border-b border-[var(--border)] text-white relative">
-                    <div className="absolute inset-0 bg-black/10"></div>
-                    <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 100% 100%, rgba(212,175,55,0.08) 0, transparent 400px)' }}></div>
-                    <div className="relative flex items-center gap-3 sm:gap-6 z-10">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between gap-6 md:items-center">
+                    <div className="flex items-center gap-4 sm:gap-6">
                         <div className="relative group shrink-0">
                             <UserProfileImage
                                 src={(user as any)?.profilePicture}
                                 alt={user?.name ?? 'User'}
-                                width={96}
-                                height={96}
-                                className="rounded-full border-2 border-white/20 shadow-lg transition-transform duration-300 group-hover:scale-105"
+                                width={80}
+                                height={80}
+                                className="rounded-2xl border-2 border-primary/40 shadow-lg transition-transform duration-300 group-hover:scale-105"
                             />
-                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm border border-white/20">
+                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/75 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm border border-primary/40">
                                 {uploadingProfilePic ? (
-                                    <Loader2 className="animate-spin text-white mb-1" size={24} />
+                                    <Loader2 className="animate-spin text-primary" size={20} />
                                 ) : (
                                     <>
-                                        <Camera className="text-white mb-1" size={20} />
-                                        <span className="text-white text-[10px] font-bold uppercase tracking-wider">Change</span>
+                                        <Camera className="text-primary mb-1" size={18} />
+                                        <span className="text-primary text-[8px] font-extrabold uppercase tracking-wider">Change</span>
                                     </>
                                 )}
                                 <input 
@@ -539,47 +499,39 @@ export default function ProfilePage() {
                                 />
                             </label>
                         </div>
-                        <div className="min-w-0">
-                            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold truncate">{user?.fullName || user?.name || 'User'}</h2>
-                            <p className="text-white/80 text-[10px] sm:text-sm mt-0.5 sm:mt-1 truncate">{user?.userId}</p>
-                            <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 flex-wrap">
-                                <span
-                                    className={`px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-full ${user?.status === 'active'
-                                        ? 'bg-emerald-500/90 text-white'
-                                        : 'bg-gray-500/90 text-white'
-                                        }`}
-                                >
+                        
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h2 className="text-lg sm:text-2xl font-black tracking-tight">{user?.fullName || user?.name || 'User'}</h2>
+                                <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                    user?.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                                }`}>
                                     {user?.status}
                                 </span>
-                                <span className="px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-full bg-white/20 backdrop-blur-sm">
-                                    {user?.rank || 'Member'}
-                                </span>
                             </div>
+                            <p className="font-mono text-xs text-primary font-bold">Ref ID: {user?.userId}</p>
+                            <p className="text-[10px] text-zinc-400">Class Rank: <span className="text-zinc-200 font-bold capitalize">{user?.rank || 'Member'}</span></p>
                         </div>
                     </div>
-                </div>
 
-                {/* Details Section - PWA compact */}
-                <div className="p-3 sm:p-6 md:p-8">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
-                        <h3 className="text-base sm:text-xl font-bold text-[var(--foreground)]">Personal Information</h3>
+                    <div className="flex gap-3 shrink-0">
                         {!editing ? (
-                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                            <>
                                 <button
                                     onClick={() => setEditing(true)}
-                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-zinc-950 font-bold text-[11px] sm:text-sm shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
+                                    className="px-4 py-2.5 rounded-xl bg-primary text-black font-bold text-xs shadow-lg hover:bg-primary/95 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                                 >
-                                    Edit Profile
+                                    Edit Account
                                 </button>
                                 <button
                                     onClick={handleOpenChangePasswordModal}
-                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 font-semibold text-[11px] sm:text-sm transition-all duration-200"
+                                    className="px-4 py-2.5 rounded-xl border border-zinc-800 hover:bg-zinc-800/40 text-zinc-300 font-semibold text-xs transition-colors"
                                 >
                                     Change Password
                                 </button>
-                            </div>
+                            </>
                         ) : (
-                            <div className="flex gap-2 sm:gap-3">
+                            <>
                                 <button
                                     onClick={() => {
                                         setEditing(false);
@@ -590,82 +542,83 @@ export default function ProfilePage() {
                                             walletAddress: (user as { walletAddress?: string })?.walletAddress || '',
                                         });
                                     }}
-                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 font-semibold text-[11px] sm:text-sm transition-all duration-200"
+                                    className="px-4 py-2.5 rounded-xl border border-zinc-800 hover:bg-zinc-800/40 text-zinc-300 font-semibold text-xs transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-zinc-950 font-bold text-[11px] sm:text-sm shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none"
+                                    className="px-4 py-2.5 rounded-xl bg-primary text-black font-bold text-xs shadow-lg hover:bg-primary/95 transition-all disabled:opacity-50"
                                 >
-                                    {saving ? 'Saving...' : 'Save Changes'}
+                                    {saving ? 'Saving...' : 'Save Settings'}
                                 </button>
-                            </div>
+                            </>
                         )}
                     </div>
+                </div>
+            </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                        {/* Full Name */}
+            {/* Main Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Account Details Panel */}
+                <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+                    <h3 className="text-sm font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Profile Particulars</h3>
+                    
+                    <div className="space-y-4 text-xs">
                         <div>
-                            <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-medium text-[var(--muted-foreground)] mb-1 sm:mb-2">
-                                <UserIcon size={14} />
-                                Full Name
+                            <label className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
+                                <UserIcon size={12} className="text-primary" /> Full Name
                             </label>
                             {editing ? (
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm focus:ring-2 focus:ring-[var(--pw-primary)] focus:border-transparent"
+                                    className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-semibold focus:ring-2 focus:ring-primary/45 outline-none transition-all"
                                 />
                             ) : (
-                                <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{user?.fullName || user?.name || 'N/A'}</p>
+                                <p className="text-sm font-bold text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] px-3.5 py-2.5 rounded-xl">{user?.fullName || user?.name || 'N/A'}</p>
                             )}
                         </div>
 
-                        {/* Email */}
                         <div>
-                            <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-medium text-[var(--muted-foreground)] mb-1 sm:mb-2">
-                                <Mail size={14} />
-                                Email Address
+                            <label className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
+                                <Mail size={12} className="text-primary" /> Email Address
                             </label>
                             {editing ? (
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm focus:ring-2 focus:ring-[var(--pw-primary)] focus:border-transparent"
+                                    className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-semibold focus:ring-2 focus:ring-primary/45 outline-none transition-all"
                                 />
                             ) : (
-                                <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{user?.email}</p>
+                                <p className="text-sm font-bold text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] px-3.5 py-2.5 rounded-xl truncate">{user?.email}</p>
                             )}
                         </div>
 
-                        {/* Phone */}
                         <div>
-                            <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-medium text-[var(--muted-foreground)] mb-1 sm:mb-2">
-                                <Phone size={14} />
-                                Phone Number
+                            <label className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
+                                <Phone size={12} className="text-primary" /> Contact Number
                             </label>
                             {editing ? (
                                 <input
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm focus:ring-2 focus:ring-[var(--pw-primary)] focus:border-transparent"
+                                    className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-semibold focus:ring-2 focus:ring-primary/45 outline-none transition-all"
                                 />
                             ) : (
-                                <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">{user?.phone}</p>
+                                <p className="text-sm font-bold text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] px-3.5 py-2.5 rounded-xl">{user?.phone || 'N/A'}</p>
                             )}
                         </div>
 
-                        {/* Wallet Address - shown only when Web3 deposit or withdrawal is enabled */}
                         {web3Enabled && (
-                            <div className="md:col-span-2">
-                                <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-medium text-[var(--muted-foreground)] mb-1 sm:mb-2">
-                                    <Wallet size={14} />
-                                    Primary Wallet Address
+                            <div>
+                                <label className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
+                                    <Wallet size={12} className="text-primary" /> Web3 Settlement Address
                                 </label>
                                 {editing ? (
                                     <input
@@ -679,196 +632,173 @@ export default function ProfilePage() {
                                         readOnly={primaryWalletLocked}
                                         disabled={primaryWalletLocked}
                                         placeholder="0x..."
-                                        className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm font-mono focus:ring-2 focus:ring-[var(--pw-primary)] focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-90"
+                                        className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-mono focus:ring-2 focus:ring-primary/45 outline-none transition-all disabled:opacity-80"
                                     />
                                 ) : (
-                                    <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base font-mono break-all">
-                                        {(user as { walletAddress?: string })?.walletAddress || 'Not set'}
+                                    <p className="text-xs font-mono font-bold text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] px-3.5 py-2.5 rounded-xl break-all">
+                                        {(user as { walletAddress?: string })?.walletAddress || 'Not linked'}
                                     </p>
                                 )}
-                                <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                                    Your primary Web3 wallet for deposits and withdrawals.
+                                <p className="text-[10px] text-[var(--muted-foreground)] mt-1.5 leading-relaxed">
+                                    Primary address for payout operations. 
                                     {primaryWalletLocked && (
-                                        <>
-                                            {' '}
-                                            To change it,{' '}
-                                            <Link href="/support" className="font-semibold text-[var(--pw-primary)] hover:underline">
-                                                open a support ticket
-                                            </Link>
-                                            .
-                                        </>
+                                        <> To change it, <Link href="/support" className="text-primary hover:underline font-bold">file an admin ticket</Link>.</>
                                     )}
                                 </p>
                             </div>
                         )}
+                    </div>
+                </div>
 
-                        {/* Join Date */}
-                        <div>
-                            <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-medium text-[var(--muted-foreground)] mb-1 sm:mb-2">
-                                <Calendar size={14} />
-                                Join Date
-                            </label>
-                            <p className="text-gray-900 dark:text-white font-semibold text-sm sm:text-base">
-                                {user?.joinDate || user?.joinedAt ? formatDate(user.joinDate || user.joinedAt || '') : 'N/A'}
-                            </p>
-                        </div>
+                {/* MLM System Panel */}
+                <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4 flex flex-col justify-between">
+                    <div className="space-y-4">
+                        <h3 className="text-sm font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Network Credentials</h3>
+                        
+                        <div className="space-y-4 text-xs">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Sponsor ID</p>
+                                    <p className="text-sm font-bold text-[var(--foreground)] mt-1.5">{user?.sponsorId ?? 'Direct Placement'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Matrix Position</p>
+                                    <div className="mt-1.5">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                                            {(typeof user?.placement === 'object' ? user?.placement?.position : user?.placement) || 'N/A'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        {/* KYC Status */}
-                        <div>
-                            <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm font-medium text-[var(--muted-foreground)] mb-1 sm:mb-2">
-                                <Shield size={14} />
-                                KYC Status
-                            </label>
-                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                                <span
-                                    className={`px-2 py-0.5 sm:px-3 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${kycStatus?.kyc.verified
-                                        ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-400'
-                                        : kycStatus?.kyc.documents.some(d => d.status === 'pending')
-                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-400'
-                                            : 'bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-300'
-                                        }`}
-                                >
-                                    {kycStatus?.kyc.verified ? 'Verified' : kycStatus?.kyc.documents.length ? 'Pending' : 'Not Started'}
-                                </span>
-                                <button
-                                    onClick={() => setShowKYCUpload(true)}
-                                    className="px-2 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold text-[var(--pw-primary)] hover:text-[var(--pw-primary)]/80 flex items-center gap-1"
-                                >
-                                    <Upload size={12} />
-                                    Upload
-                                </button>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Registration Date</p>
+                                    <p className="text-sm font-bold text-[var(--foreground)] mt-1.5">
+                                        {user?.joinDate || user?.joinedAt ? formatDate(user.joinDate || user.joinedAt || '') : 'N/A'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Verification Status</p>
+                                    <div className="mt-1.5">
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                            kycStatus?.kyc.verified ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20'
+                                        }`}>
+                                            {kycStatus?.kyc.verified ? 'Verified' : 'Pending Verification'}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="border-t border-[var(--border)] pt-4 mt-4 flex justify-between items-center gap-4">
+                        <button
+                            onClick={() => setShowVaultModal(true)}
+                            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[var(--border)] hover:bg-[var(--surface)] text-[var(--foreground)] font-bold text-xs transition-colors shrink-0"
+                        >
+                            <Key size={14} className="text-primary" /> Reveal / Regenerate Vault Key
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* 2FA Setup Section */}
+            {/* 2FA Setup Dashboard Card */}
             <div>
                 <TwoFactorSetup />
             </div>
 
-            {/* KYC Documents Section */}
+            {/* KYC Document Counters */}
             {kycStatus && kycStatus.kyc.documents.length > 0 && (
-                <div className="space-y-4 sm:space-y-6">
-                    {/* Overall KYC Status */}
-                    <div className="premium-card rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-2">KYC Status</h3>
-                                <p className="text-sm text-[var(--muted-foreground)]">
-                                    {kycStatus.kyc.verified ? (
-                                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">✅ Verified</span>
-                                    ) : (
-                                        <span className="text-amber-600 dark:text-amber-400 font-semibold">⏳ Pending Verification</span>
-                                    )}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setShowKYCUpload(true)}
-                                className="btn btn-primary px-4 py-2 rounded-xl font-semibold flex items-center gap-2 text-sm"
-                            >
-                                <Upload size={14} />
-                                Upload Document
-                            </button>
+                <div className="space-y-4">
+                    <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                        <div>
+                            <h3 className="text-sm font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">KYC Registry Documents</h3>
+                            <p className="text-xs text-[var(--muted-foreground)] mt-1.5">Manage and review your verified document logs</p>
                         </div>
-                        <div className="flex gap-2 sm:gap-4 mt-3 sm:mt-4">
-                            <div className="text-center rounded-lg sm:rounded-xl p-2 sm:p-3 border border-amber-200/60 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/10 flex-1 min-w-0">
-                                <p className="text-lg sm:text-2xl font-bold text-amber-600 dark:text-amber-400">{pendingDocuments.length}</p>
-                                <p className="text-xs text-[var(--muted-foreground)]">Pending</p>
-                            </div>
-                            <div className="text-center rounded-lg sm:rounded-xl p-2 sm:p-3 border border-emerald-200/60 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/10 flex-1 min-w-0">
-                                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">{approvedDocuments.length}</p>
-                                <p className="text-xs text-[var(--muted-foreground)]">Approved</p>
-                            </div>
-                            <div className="text-center rounded-lg sm:rounded-xl p-2 sm:p-3 border border-red-200/60 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/10 flex-1 min-w-0">
-                                <p className="text-lg sm:text-2xl font-bold text-red-600 dark:text-red-400">{rejectedDocuments.length}</p>
-                                <p className="text-xs text-[var(--muted-foreground)]">Rejected</p>
-                            </div>
-                        </div>
+                        <button
+                            onClick={() => setShowKYCUpload(true)}
+                            className="px-4 py-2.5 rounded-xl bg-primary text-black font-bold text-xs shadow-lg hover:bg-primary/95 transition-all flex items-center gap-1.5"
+                        >
+                            <Upload size={13} /> Upload Document
+                        </button>
                     </div>
 
-                    {/* Rejected Documents */}
+                    {/* Pending Documents */}
+                    {pendingDocuments.length > 0 && (
+                        <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-3">
+                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-yellow-600 dark:text-yellow-400">⏳ Pending Verification Logs</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {pendingDocuments.map((doc, index) => (
+                                    <div 
+                                        key={getDocumentId(doc) || index} 
+                                        onClick={() => handleDocumentClick(doc)}
+                                        className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:border-primary/20 cursor-pointer transition-colors flex justify-between items-center gap-3"
+                                    >
+                                        <div className="min-w-0">
+                                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-[var(--muted-foreground)] block">Document Type</span>
+                                            <p className="text-xs font-bold text-[var(--foreground)] truncate capitalize">{doc.type.replace('_', ' ')}</p>
+                                        </div>
+                                        <ChevronRight size={14} className="text-[var(--muted-foreground)] shrink-0" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Approved Documents */}
+                    {approvedDocuments.length > 0 && (
+                        <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-3">
+                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">✅ Approved Registry</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {approvedDocuments.map((doc, index) => (
+                                    <div 
+                                        key={getDocumentId(doc) || index} 
+                                        onClick={() => handleDocumentClick(doc)}
+                                        className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:border-primary/20 cursor-pointer transition-colors flex justify-between items-center gap-3"
+                                    >
+                                        <div className="min-w-0">
+                                            <span className="text-[9px] font-extrabold uppercase tracking-wider text-[var(--muted-foreground)] block">Verified Identity</span>
+                                            <p className="text-xs font-bold text-[var(--foreground)] truncate capitalize">{doc.type.replace('_', ' ')}</p>
+                                        </div>
+                                        <ChevronRight size={14} className="text-[var(--muted-foreground)] shrink-0" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Rejected Documents and Updates */}
                     {rejectedDocuments.length > 0 && (
-                        <div className="premium-card rounded-2xl p-4 sm:p-6 md:p-8 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                            <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-4 sm:mb-6">
-                                ⚠️ Rejected Documents ({rejectedDocuments.length})
-                            </h3>
-                            <div className="space-y-4 sm:space-y-6">
+                        <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-red-600 dark:text-red-400">⚠️ Action Required Documents</h4>
+                            <div className="space-y-4">
                                 {rejectedDocuments.map((doc, index) => {
                                     const docId = getDocumentId(doc);
                                     const isUpdating = updatingDocumentId === docId;
                                     return (
-                                        <div
-                                            key={docId || index}
-                                            className="border border-red-200 dark:border-red-500/30 rounded-lg sm:rounded-xl p-3 sm:p-6 bg-red-50/50 dark:bg-red-500/10"
-                                        >
-                                            <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
-                                                <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                                                    {getDocumentStatusIcon(doc.status)}
-                                                    <div className="min-w-0">
-                                                        <p className="font-semibold text-gray-900 dark:text-white capitalize text-sm sm:text-lg truncate">
-                                                            {doc.type.replace('_', ' ')}
+                                        <div key={docId || index} className="p-5 rounded-xl border border-red-500/20 bg-red-500/5 dark:bg-red-500/10 space-y-4">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div>
+                                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-red-500">Rejected Type: {doc.type.replace('_', ' ').toUpperCase()}</p>
+                                                    {doc.rejectionReason && (
+                                                        <p className="text-xs font-bold text-[var(--foreground)] mt-1.5 leading-relaxed bg-[var(--surface)] border border-[var(--border)] p-3 rounded-lg">
+                                                            {doc.rejectionReason}
                                                         </p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                                            {doc.uploadedAt ? formatDate(doc.uploadedAt) : 'Recently uploaded'}
-                                                        </p>
-                                                        {doc.rejectionCount && doc.rejectionCount > 0 && (
-                                                            <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
-                                                                Rejected {doc.rejectionCount} time{doc.rejectionCount > 1 ? 's' : ''}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <span className={`px-2 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold rounded-full shrink-0 ${getDocumentStatusColor(doc.status)}`}>
-                                                    {doc.status}
-                                                </span>
-                                            </div>
-
-                                            {/* Rejection Reason */}
-                                            {doc.rejectionReason && (
-                                                <div className="bg-red-100 dark:bg-red-500/10 border border-red-300 dark:border-red-500/30 rounded-lg p-2.5 sm:p-4 mb-3 sm:mb-4">
-                                                    <div className="flex items-start gap-2">
-                                                        <span className="text-red-600 dark:text-red-400 text-base sm:text-lg shrink-0">⚠️</span>
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="font-semibold text-red-800 dark:text-red-300 text-[10px] sm:text-sm mb-0.5 sm:mb-1">Rejection Reason:</p>
-                                                            <p className="text-[10px] sm:text-sm text-red-700 dark:text-red-400">{doc.rejectionReason}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Rejection History */}
-                                            {doc.rejectionHistory && doc.rejectionHistory.length > 0 && (
-                                                <div className="mb-3 sm:mb-4">
-                                                    <button
-                                                        onClick={() => setShowRejectionHistory(showRejectionHistory === docId ? null : docId)}
-                                                        className="text-[10px] sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 sm:gap-2"
-                                                    >
-                                                        {showRejectionHistory === docId ? '▼' : '▶'}
-                                                        Show Rejection History ({doc.rejectionHistory.length})
-                                                    </button>
-                                                    {showRejectionHistory === docId && (
-                                                        <div className="mt-1.5 sm:mt-2 space-y-1.5 sm:space-y-2 pl-4 sm:pl-6 border-l-2 border-gray-300 dark:border-white/20">
-                                                            {doc.rejectionHistory.map((history, idx) => (
-                                                                <div key={idx} className="py-1.5 sm:py-2">
-                                                                    <p className="text-[10px] sm:text-sm text-gray-700 dark:text-gray-300">
-                                                                        <strong>Reason:</strong> {history.reason}
-                                                                    </p>
-                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                                                        {formatDate(history.rejectedAt)}
-                                                                    </p>
-                                                                </div>
-                                                            ))}
-                                                        </div>
                                                     )}
                                                 </div>
-                                            )}
+                                                <button
+                                                    onClick={() => handleDocumentClick(doc)}
+                                                    className="px-3 py-1.5 rounded-lg border border-[var(--border)] text-[10px] font-bold hover:bg-[var(--surface)] transition-colors shrink-0"
+                                                >
+                                                    View File
+                                                </button>
+                                            </div>
 
-                                            {/* Update Document Section */}
-                                            <div className="border-t border-gray-200 dark:border-white/10 pt-3 sm:pt-4 mt-3 sm:mt-4">
-                                                <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base mb-2 sm:mb-3">Update Document</h4>
-                                                <div className="space-y-2 sm:space-y-3">
+                                            {/* File upload for update */}
+                                            <div className="border-t border-[var(--border)] pt-4 space-y-3">
+                                                <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Submit Update Attachment</p>
+                                                <div className="flex flex-col sm:flex-row gap-3">
                                                     <input
                                                         type="file"
                                                         accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
@@ -877,115 +807,19 @@ export default function ProfilePage() {
                                                             e.target.value = '';
                                                         }}
                                                         disabled={isUpdating}
-                                                        className="w-full px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-[10px] sm:text-sm focus:ring-2 focus:ring-[var(--pw-primary)] file:mr-2 sm:file:mr-4 file:py-1.5 file:px-2 sm:file:py-2 sm:file:px-4 file:rounded-lg file:border-0 file:text-[10px] sm:file:text-sm file:font-semibold file:bg-[var(--pw-primary)]/20 file:text-[var(--pw-primary)] hover:file:bg-[var(--pw-primary)]/30 disabled:opacity-50"
+                                                        className="flex-1 text-xs text-[var(--foreground)] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-black hover:file:opacity-90 cursor-pointer"
                                                     />
-                                                    {updateFilePreviews[docId] && (
-                                                        <div className="mt-1.5 sm:mt-2">
-                                                            <p className="text-[10px] sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">Preview:</p>
-                                                            <img
-                                                                src={updateFilePreviews[docId]}
-                                                                alt="Preview"
-                                                                className="max-w-full h-auto max-h-36 sm:max-h-48 rounded-lg border border-gray-200 dark:border-white/10"
-                                                            />
-                                                        </div>
-                                                    )}
-                                                    {updateFiles[docId] && !updateFilePreviews[docId] && (
-                                                        <div className="mt-1.5 sm:mt-2 p-2 sm:p-3 bg-gray-50 dark:bg-white/5 rounded-lg sm:rounded-xl border border-gray-200/80 dark:border-white/10">
-                                                            <p className="text-[10px] sm:text-sm text-gray-700 dark:text-gray-300">
-                                                                <strong>Selected:</strong> {updateFiles[docId].name} ({(updateFiles[docId].size / 1024).toFixed(2)} KB)
-                                                            </p>
-                                                        </div>
-                                                    )}
                                                     {updateFiles[docId] && (
                                                         <button
                                                             onClick={() => handleUpdateDocument(docId)}
                                                             disabled={isUpdating}
-                                                            className="btn btn-primary w-full py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-semibold text-[10px] sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs shadow-md disabled:opacity-50 shrink-0"
                                                         >
-                                                            {isUpdating ? 'Updating...' : 'Update Document'}
+                                                            {isUpdating ? 'Uploading...' : 'Confirm Upload'}
                                                         </button>
                                                     )}
                                                 </div>
                                             </div>
-
-                                            {/* Document Preview Button */}
-                                            <div className="mt-3 sm:mt-4">
-                                                <button
-                                                    onClick={() => handleDocumentClick(doc)}
-                                                    className="text-[10px] sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-                                                >
-                                                    View Document →
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Pending Documents */}
-                    {pendingDocuments.length > 0 && (
-                        <div className="premium-card rounded-2xl p-4 sm:p-6 md:p-8 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                            <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-4 sm:mb-6">
-                                ⏳ Pending Review ({pendingDocuments.length})
-                            </h3>
-                            <div className="space-y-2 sm:space-y-4">
-                                {pendingDocuments.map((doc, index) => {
-                                    const docId = getDocumentId(doc);
-                                    return (
-                                        <div
-                                            key={docId || index}
-                                            onClick={() => handleDocumentClick(doc)}
-                                            className="flex items-center justify-between p-2.5 sm:p-4 border border-gray-200 dark:border-white/10 rounded-lg sm:rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition-colors gap-2"
-                                        >
-                                            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                                                {getDocumentStatusIcon(doc.status)}
-                                                <div className="min-w-0">
-                                                    <p className="font-semibold text-gray-900 dark:text-white capitalize text-sm sm:text-base truncate">{doc.type.replace('_', ' ')}</p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        {doc.uploadedAt ? formatDate(doc.uploadedAt) : 'Recently uploaded'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <span className={`px-2 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold rounded-full shrink-0 ${getDocumentStatusColor(doc.status)}`}>
-                                                {doc.status}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Approved Documents */}
-                    {approvedDocuments.length > 0 && (
-                        <div className="premium-card rounded-2xl p-4 sm:p-6 md:p-8 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                            <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-4 sm:mb-6">
-                                ✅ Approved Documents ({approvedDocuments.length})
-                            </h3>
-                            <div className="space-y-2 sm:space-y-4">
-                                {approvedDocuments.map((doc, index) => {
-                                    const docId = getDocumentId(doc);
-                                    return (
-                                        <div
-                                            key={docId || index}
-                                            onClick={() => handleDocumentClick(doc)}
-                                            className="flex items-center justify-between p-2.5 sm:p-4 border border-gray-200 dark:border-white/10 rounded-lg sm:rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition-colors gap-2"
-                                        >
-                                            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                                                {getDocumentStatusIcon(doc.status)}
-                                                <div className="min-w-0">
-                                                    <p className="font-semibold text-gray-900 dark:text-white capitalize text-sm sm:text-base truncate">{doc.type.replace('_', ' ')}</p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        {doc.uploadedAt ? formatDate(doc.uploadedAt) : 'Recently uploaded'}
-                                                        {doc.reviewedAt && ` • Reviewed: ${formatDate(doc.reviewedAt)}`}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <span className={`px-2 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold rounded-full shrink-0 ${getDocumentStatusColor(doc.status)}`}>
-                                                {doc.status}
-                                            </span>
                                         </div>
                                     );
                                 })}
@@ -995,63 +829,15 @@ export default function ProfilePage() {
                 </div>
             )}
 
-            {/* Security - Vault Key */}
-            <div className="premium-card rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-2">Security</h3>
-                <p className="text-sm text-[var(--muted-foreground)] mb-4">
-                    Your Vault Key is required for password recovery. Regenerating creates a new key — the old one will no longer work.
-                </p>
-                <button
-                    onClick={() => setShowVaultModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--pw-primary)]/10 border border-[var(--pw-primary)]/30 text-[var(--pw-primary)] font-semibold text-sm hover:bg-[var(--pw-primary)]/20 transition-colors"
-                >
-                    <Key size={14} /> Reveal / Regenerate Vault Key
-                </button>
-            </div>
-
-            {/* MLM Information */}
-            <div className="premium-card rounded-2xl p-4 sm:p-6 md:p-8 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-4 sm:mb-6">MLM Information</h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <div>
-                        <p className="text-sm text-[var(--muted-foreground)] mb-1">Sponsor ID</p>
-                        <p className="text-[var(--foreground)] font-semibold text-sm sm:text-base">{user?.sponsorId ?? 'Direct'}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm text-[var(--muted-foreground)] mb-1">Placement</p>
-                        <span
-                            className={`px-2 py-0.5 sm:px-3 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${(typeof user?.placement === 'object' ? user?.placement?.position : user?.placement) === 'left'
-                                ? 'bg-[var(--pw-primary)]/20 text-[var(--pw-primary)]'
-                                : 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-400'
-                                }`}
-                        >
-                            {typeof user?.placement === 'object' ? user?.placement?.position : user?.placement || 'N/A'}
-                        </span>
-                    </div>
-                    <div>
-                        <p className="text-sm text-[var(--muted-foreground)] mb-1">Current Rank</p>
-                        <p className="text-[var(--foreground)] font-semibold text-sm sm:text-base">{user?.rank || 'Member'}</p>
-                    </div>
-                </div>
-            </div>
-
             {/* KYC Upload Modal */}
-            <Modal
-                isOpen={showKYCUpload}
-                onClose={handleCloseModal}
-                title="Upload KYC Document"
-                size="md"
-            >
-                <div className="space-y-3 sm:space-y-4">
+            <Modal isOpen={showKYCUpload} onClose={handleCloseModal} title="Upload KYC Document" size="md">
+                <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-                            Document Type
-                        </label>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-2">Document Category</label>
                         <select
                             value={kycFormData.type}
                             onChange={(e) => setKycFormData({ ...kycFormData, type: e.target.value })}
-                            className="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm focus:ring-2 focus:ring-[var(--pw-primary)] focus:border-transparent"
+                            className="w-full px-3.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm outline-none font-semibold focus:ring-2 focus:ring-primary/45"
                         >
                             <option value="aadhar">Aadhar Card</option>
                             <option value="pan">PAN Card</option>
@@ -1059,57 +845,36 @@ export default function ProfilePage() {
                             <option value="driving_license">Driving License</option>
                             <option value="voter_id">Voter ID</option>
                             <option value="bank_statement">Bank Statement</option>
-                            <option value="other">Other</option>
+                            <option value="other">Other Attachment</option>
                         </select>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">
-                            Document File
-                        </label>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-2">Upload File</label>
                         <input
                             ref={fileInputRef}
                             type="file"
                             accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                             onChange={handleFileSelect}
-                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] text-sm focus:ring-2 focus:ring-[var(--pw-primary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[var(--pw-primary)]/20 file:text-[var(--pw-primary)] hover:file:bg-[var(--pw-primary)]/30"
+                            className="w-full text-xs text-[var(--foreground)] file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-black hover:file:opacity-95"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">
-                            Allowed: JPEG, PNG, WebP, PDF (Max 5MB)
-                        </p>
-                        {filePreview && (
-                            <div className="mt-2 sm:mt-3">
-                                <p className="text-[10px] sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">Preview:</p>
-                                <img
-                                    src={filePreview}
-                                    alt="Document preview"
-                                    className="max-w-full h-auto max-h-48 sm:max-h-64 rounded-lg border border-gray-200 dark:border-white/10"
-                                />
-                            </div>
-                        )}
-                        {kycFormData.file && !filePreview && (
-                            <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-gray-50 dark:bg-white/5 rounded-lg sm:rounded-xl border border-gray-200/80 dark:border-white/10">
-                                <p className="text-[10px] sm:text-sm text-gray-700 dark:text-gray-300">
-                                    <strong>Selected:</strong> {kycFormData.file.name} ({(kycFormData.file.size / 1024).toFixed(2)} KB)
-                                </p>
-                            </div>
-                        )}
+                        <p className="text-[10px] text-[var(--muted-foreground)] mt-1">Allowed: JPEG, PNG, WebP, PDF (Max 5MB)</p>
                     </div>
                 </div>
 
-                <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
+                <div className="flex gap-3 mt-6">
                     <button
                         onClick={handleCloseModal}
-                        className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] font-semibold text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)] transition-colors"
+                        className="flex-1 py-3 rounded-xl border border-[var(--border)] font-bold text-xs text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleKYCUpload}
                         disabled={uploadingKYC || !kycFormData.type || !kycFormData.file}
-                        className="btn btn-primary flex-1 py-3 rounded-xl font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 py-3 rounded-xl bg-primary text-black font-bold text-xs disabled:opacity-50"
                     >
-                        {uploadingKYC ? 'Uploading...' : 'Upload Document'}
+                        {uploadingKYC ? 'Uploading...' : 'Submit Document'}
                     </button>
                 </div>
             </Modal>
@@ -1121,88 +886,30 @@ export default function ProfilePage() {
                     setShowDocumentPreview(false);
                     setSelectedDocument(null);
                 }}
-                title={selectedDocument ? `KYC Document - ${selectedDocument.type.replace('_', ' ').toUpperCase()}` : 'Document Preview'}
+                title={selectedDocument ? `Document: ${selectedDocument.type.replace('_', ' ').toUpperCase()}` : 'Attachment Preview'}
                 size="lg"
             >
                 {selectedDocument && (
-                    <div className="space-y-3 sm:space-y-4">
-                        {/* Document Info - compact */}
-                        <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-gray-50 dark:bg-white/5 rounded-lg sm:rounded-xl border border-gray-200/80 dark:border-white/10">
-                            <div className="min-w-0">
-                                <p className="text-[10px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Type: <span className="capitalize">{selectedDocument.type.replace('_', ' ')}</span>
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                    Status: <span className="capitalize">{selectedDocument.status}</span>
-                                </p>
-                                {selectedDocument.uploadedAt && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                        Uploaded: {formatDate(selectedDocument.uploadedAt)}
-                                    </p>
-                                )}
-                                {selectedDocument.reviewedAt && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                        Reviewed: {formatDate(selectedDocument.reviewedAt)}
-                                    </p>
-                                )}
-                                {selectedDocument.rejectionCount && selectedDocument.rejectionCount > 0 && (
-                                    <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
-                                        Rejected {selectedDocument.rejectionCount} time{selectedDocument.rejectionCount > 1 ? 's' : ''}
-                                    </p>
-                                )}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-4 p-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl">
+                            <div>
+                                <p className="text-xs font-bold text-[var(--foreground)] capitalize">Category: {selectedDocument.type.replace('_', ' ')}</p>
+                                <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5">Status: {selectedDocument.status}</p>
                             </div>
-                            <span
-                                className={`px-2 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold rounded-full shrink-0 ${getDocumentStatusColor(selectedDocument.status)}`}
-                            >
+                            <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${getDocumentStatusColor(selectedDocument.status)}`}>
                                 {selectedDocument.status}
                             </span>
                         </div>
 
-                        {/* Rejection Reason (if rejected) */}
-                        {selectedDocument.status === 'rejected' && selectedDocument.rejectionReason && (
-                            <div className="bg-red-100 dark:bg-red-500/10 border border-red-300 dark:border-red-500/30 rounded-lg p-2.5 sm:p-4">
-                                <div className="flex items-start gap-2">
-                                    <span className="text-red-600 dark:text-red-400 text-base sm:text-lg shrink-0">⚠️</span>
-                                    <div className="min-w-0">
-                                        <p className="font-semibold text-red-800 dark:text-red-300 text-[10px] sm:text-sm mb-0.5 sm:mb-1">Rejection Reason:</p>
-                                        <p className="text-[10px] sm:text-sm text-red-700 dark:text-red-400">{selectedDocument.rejectionReason}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Document Preview */}
-                        <div className="flex items-center justify-center bg-gray-50 dark:bg-white/5 rounded-lg sm:rounded-xl border border-gray-200/80 dark:border-white/10 p-3 sm:p-4 min-h-[280px] sm:min-h-[400px]">
+                        <div className="flex items-center justify-center bg-[var(--surface)] rounded-xl border border-[var(--border)] p-4 min-h-[300px]">
                             {selectedDocument.url ? (
-                                <>
-                                    <img
-                                        src={getDocumentUrl(selectedDocument.url)}
-                                        alt={selectedDocument.type}
-                                        className="max-w-full max-h-[600px] rounded-lg shadow-lg object-contain"
-                                        onError={(e) => {
-                                            const target = e.target as HTMLImageElement;
-                                            const fullUrl = getDocumentUrl(selectedDocument.url);
-                                            target.style.display = 'none';
-                                            const existingError = target.parentElement?.querySelector('.image-error');
-                                            if (existingError) existingError.remove();
-                                            const errorDiv = document.createElement('div');
-                                            errorDiv.className = 'image-error text-center text-gray-500 p-8';
-                                            errorDiv.innerHTML = '<p class="text-lg font-semibold mb-2 text-red-600">Failed to load image</p><p class="text-sm mb-2">Original URL: ' + selectedDocument.url + '</p><p class="text-sm mb-4">Full URL: ' + fullUrl + '</p><a href="' + fullUrl + '" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-700 underline">Open in new tab</a>';
-                                            target.parentElement?.appendChild(errorDiv);
-                                        }}
-                                        onLoad={() => {
-                                            // Remove any existing error message on successful load
-                                            const existingError = document.querySelector('.image-error');
-                                            if (existingError) {
-                                                existingError.remove();
-                                            }
-                                        }}
-                                    />
-                                </>
+                                <img
+                                    src={getDocumentUrl(selectedDocument.url)}
+                                    alt={selectedDocument.type}
+                                    className="max-w-full max-h-[500px] rounded-lg object-contain shadow-md"
+                                />
                             ) : (
-                                <div className="text-center text-gray-500 dark:text-gray-400 p-6 sm:p-8">
-                                    <p className="text-sm sm:text-lg font-semibold">No document URL available</p>
-                                </div>
+                                <p className="text-xs text-[var(--muted-foreground)]">No preview file found</p>
                             )}
                         </div>
                     </div>
@@ -1212,151 +919,129 @@ export default function ProfilePage() {
             {/* Change Password Modal */}
             <Modal isOpen={showChangePasswordModal} onClose={handleCloseChangePasswordModal} title="Change Password" size="md">
                 <div className="space-y-4">
-                    <p className="text-xs text-[var(--muted-foreground)]">
-                        Update your account password. Your current password is required for security.
-                    </p>
                     <div>
-                        <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">Current Password</label>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5">Current Password</label>
                         <div className="relative">
                             <input
                                 type={showCurrentPassword ? 'text' : 'password'}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="premium-input w-full pr-11 text-base"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] outline-none focus:ring-2 focus:ring-primary/45"
                                 placeholder="••••••••"
                                 autoComplete="current-password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]"
                             >
-                                {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">New Password</label>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5">New Password</label>
                         <div className="relative">
                             <input
                                 type={showNewPassword ? 'text' : 'password'}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                className="premium-input w-full pr-11 text-base"
+                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] outline-none focus:ring-2 focus:ring-primary/45"
                                 placeholder="••••••••"
                                 autoComplete="new-password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]"
                             >
-                                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
                         </div>
-                        {newPassword && (
-                            <div className="mt-2">
-                                <div className="flex gap-1 mb-1">
-                                    {[1, 2, 3, 4, 5].map((i) => (
-                                        <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= newPwdStrength.strength ? newPwdStrength.color : 'bg-gray-200 dark:bg-white/10'}`} />
-                                    ))}
-                                </div>
-                                <p className="text-xs text-[var(--muted-foreground)]">{newPwdStrength.label}</p>
-                            </div>
-                        )}
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">Confirm New Password</label>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5">Confirm Password</label>
                         <input
                             type="password"
                             value={confirmNewPassword}
                             onChange={(e) => setConfirmNewPassword(e.target.value)}
-                            className="premium-input w-full text-base"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] outline-none focus:ring-2 focus:ring-primary/45"
                             placeholder="••••••••"
                             autoComplete="new-password"
                         />
                     </div>
-                    <div className="flex gap-2 mt-4">
-                        <button
-                            type="button"
-                            onClick={handleCloseChangePasswordModal}
-                            className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] font-semibold text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleChangePassword}
-                            disabled={passwordChangeLoading}
-                            className="btn btn-primary flex-1 py-3 rounded-xl font-semibold text-sm disabled:opacity-50"
-                        >
-                            {passwordChangeLoading ? 'Updating...' : 'Update Password'}
-                        </button>
-                    </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                    <button
+                        type="button"
+                        onClick={handleCloseChangePasswordModal}
+                        className="flex-1 py-3 rounded-xl border border-[var(--border)] font-bold text-xs text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleChangePassword}
+                        disabled={passwordChangeLoading}
+                        className="flex-1 py-3 rounded-xl bg-primary text-black font-bold text-xs disabled:opacity-50"
+                    >
+                        {passwordChangeLoading ? 'Updating...' : 'Update Password'}
+                    </button>
                 </div>
             </Modal>
 
-            {/* Vault Key Reveal/Regenerate Modal */}
+            {/* Vault Key Modal */}
             <Modal isOpen={showVaultModal} onClose={handleCloseVaultModal} title="Vault Key" size="md">
                 <div className="space-y-4">
                     {!revealedVault ? (
                         <>
-                            <p className="text-xs text-[var(--muted-foreground)]">
-                                Enter your current password to reveal or regenerate your Vault Key. Regenerating creates a new key — save it securely.
+                            <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+                                Please input your password to view your Vault Key. Generating a new key invalidates the previous key.
                             </p>
                             <div>
-                                <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">Current Password</label>
-                                <div className="relative">
-                                    <input
-                                        type={showVaultPassword ? 'text' : 'password'}
-                                        value={vaultPassword}
-                                        onChange={(e) => setVaultPassword(e.target.value)}
-                                        className="premium-input w-full pr-11 text-base"
-                                        placeholder="••••••••"
-                                        autoComplete="current-password"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowVaultPassword(!showVaultPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-                                    >
-                                        {showVaultPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                </div>
+                                <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5">Account Password</label>
+                                <input
+                                    type="password"
+                                    value={vaultPassword}
+                                    onChange={(e) => setVaultPassword(e.target.value)}
+                                    className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] outline-none focus:ring-2 focus:ring-primary/45"
+                                    placeholder="••••••••"
+                                />
                             </div>
                         </>
                     ) : (
                         <>
-                            <div className="rounded-xl p-3 border bg-[var(--pw-primary)]/5 border-[var(--pw-primary)]/30" style={{ fontFamily: 'ui-monospace, monospace' }}>
-                                <p className="text-[10px] text-[var(--muted-foreground)] mb-1">User ID</p>
-                                <p className="text-sm text-[var(--foreground)] mb-3">{revealedVault.vaultUserId}</p>
-                                <p className="text-[10px] text-[var(--muted-foreground)] mb-1">Vault Key</p>
-                                <p className="text-sm text-[var(--foreground)]">{revealedVault.vaultKey}</p>
+                            <div className="rounded-xl p-4 bg-[var(--surface)] border border-[var(--border)] font-mono text-xs space-y-3">
+                                <div>
+                                    <p className="text-[10px] text-[var(--muted-foreground)] font-bold uppercase tracking-widest">User ID</p>
+                                    <p className="text-xs font-bold text-[var(--foreground)] mt-1">{revealedVault.vaultUserId}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-[var(--muted-foreground)] font-bold uppercase tracking-widest">Vault Reference Key</p>
+                                    <p className="text-xs font-bold text-[var(--foreground)] mt-1 select-all break-all">{revealedVault.vaultKey}</p>
+                                </div>
                             </div>
-                            <p className="text-[10px]" style={{ color: '#F59E0B' }}>
-                                Save this. We cannot recover it for you. The old key no longer works.
-                            </p>
                             <div className="flex gap-2">
-                                <button onClick={handleCopyVault} className="btn btn-primary flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm">
-                                    {vaultCopied ? <Check size={14} /> : <Copy size={14} />}
-                                    {vaultCopied ? 'Copied' : 'Copy'}
+                                <button onClick={handleCopyVault} className="flex-1 py-2.5 rounded-xl bg-primary text-black font-bold text-xs flex items-center justify-center gap-1.5">
+                                    {vaultCopied ? <Check size={14} /> : <Copy size={14} />} Copy Key
                                 </button>
-                                <button onClick={handleDownloadVault} className="px-4 py-2 rounded-xl border border-[var(--border)] font-semibold text-sm flex-1 flex items-center justify-center gap-1.5 hover:bg-[var(--surface)]">
-                                    <Download size={14} /> Save .txt
+                                <button onClick={handleDownloadVault} className="flex-1 py-2.5 rounded-xl border border-[var(--border)] hover:bg-[var(--surface)] font-bold text-xs flex items-center justify-center gap-1.5">
+                                    <Download size={14} /> Save file
                                 </button>
                             </div>
                         </>
                     )}
-                    <div className="flex gap-2 mt-5">
+                    <div className="flex gap-3 mt-5">
                         {!revealedVault ? (
                             <>
-                                <button onClick={handleCloseVaultModal} className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] font-semibold text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)]">Cancel</button>
-                                <button onClick={handleRevealVaultKey} disabled={vaultLoading || !vaultPassword.trim()} className="btn btn-primary flex-1 py-3 rounded-xl font-semibold text-sm disabled:opacity-50">
-                                    {vaultLoading ? 'Verifying...' : 'Reveal / Regenerate Key'}
+                                <button onClick={handleCloseVaultModal} className="flex-1 py-3 rounded-xl border border-[var(--border)] font-bold text-xs text-[var(--muted-foreground)] hover:bg-[var(--surface)]">Cancel</button>
+                                <button onClick={handleRevealVaultKey} disabled={vaultLoading || !vaultPassword.trim()} className="flex-1 py-3 rounded-xl bg-primary text-black font-bold text-xs disabled:opacity-50">
+                                    {vaultLoading ? 'Verifying...' : 'Reveal Key'}
                                 </button>
                             </>
                         ) : (
-                            <button onClick={handleCloseVaultModal} className="btn btn-primary flex-1 py-3 rounded-xl font-semibold">Done</button>
+                            <button onClick={handleCloseVaultModal} className="flex-1 py-3 rounded-xl bg-primary text-black font-bold text-xs">Done</button>
                         )}
                     </div>
                 </div>

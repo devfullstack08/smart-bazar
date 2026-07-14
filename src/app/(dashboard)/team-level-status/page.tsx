@@ -11,7 +11,7 @@ import {
     volumeAtLevelForLevelRoi,
     membersAtDepthActiveFromTeamStats,
 } from '@/lib/utils/teamStats';
-import { Users, UserPlus, CheckCircle2, Activity, UserX, Lock, Unlock } from 'lucide-react';
+import { Users, UserPlus, CheckCircle2, Activity, UserX, Lock, Unlock, TrendingUp, DollarSign, ArrowRight } from 'lucide-react';
 
 export default function TeamLevelStatusPage() {
     const [teamData, setTeamData] = useState<TeamStatsData | null>(null);
@@ -112,91 +112,103 @@ export default function TeamLevelStatusPage() {
     }, [levelCards]);
 
     if (loading) return <LoadingSpinner />;
+    
     if (!teamData) {
         return (
-            <div className="flex min-h-[45vh] items-center justify-center text-[var(--muted-foreground)]">
+            <div className="flex min-h-[45vh] items-center justify-center text-[var(--muted-foreground)] text-sm">
                 No team level status available
             </div>
         );
     }
 
     return (
-        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            {/* Header — dashboard-style */}
-            <div className="relative overflow-hidden rounded-2xl premium-card p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--pw-primary)]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="relative flex items-center gap-4">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center bg-[var(--pw-primary)]/20 text-[var(--pw-primary)] shrink-0">
-                        <UserPlus size={24} strokeWidth={2} />
-                    </div>
-                    <div className="min-w-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-[var(--foreground)] leading-tight" style={{ fontFamily: 'var(--font-display)' }}>Team Level Status</h1>
-                        <p className="text-sm text-[var(--muted-foreground)] mt-0.5">Sponsor: <span className="font-semibold text-[var(--foreground)]">{teamData.sponsorId || 'N/A'}</span></p>
-                    </div>
-                </div>
-            </div>            <section className="grid grid-cols-1 gap-2">
-                <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-4 shadow-sm">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                            <Activity size={18} className="text-primary animate-pulse" />
-                            <h2 className="text-sm font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>Level ROI Position</h2>
+        <div className="space-y-6 sm:space-y-8 pb-12">
+            
+            {/* Header Banner */}
+            <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-6 sm:p-8">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
+                <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-primary shrink-0">
+                            <UserPlus size={24} strokeWidth={2} />
                         </div>
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
-                            {levelSummary.unlocked} / {levelSummary.total} Unlocked
-                        </span>
+                        <div>
+                            <h1 className="text-xl sm:text-2xl font-black text-zinc-800 dark:text-white tracking-tight leading-tight">Team Level Matrix Status</h1>
+                            <p className="text-xs text-[var(--muted-foreground)] mt-1">Audit active levels status, member ratios, and generation sales</p>
+                            {teamData.sponsorId && (
+                                <p className="text-xs text-[var(--muted-foreground)] mt-1.5 font-semibold">
+                                    Direct Sponsor: <span className="font-mono text-[var(--foreground)]">{teamData.sponsorId}</span>
+                                </p>
+                            )}
+                        </div>
                     </div>
-                    <p className="text-[11px] text-[var(--muted-foreground)]">Unlocked Levels Status</p>
-                    <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">
-                        {levelSummary.next
-                            ? `Next milestone: Level ${levelSummary.next.level} (requires ${Math.max(0, levelSummary.next.level - qualifiedDirects)} more active directs)`
-                            : 'All levels fully unlocked! 🚀'}
-                    </p>
                 </div>
-            </section>
+            </div>
 
-            <section className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {/* Level Milestone Position Card */}
+            <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                        <Activity size={16} className="text-primary animate-pulse" />
+                        <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Affiliate Level Milestone</h3>
+                    </div>
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">
+                        {levelSummary.unlocked} / {levelSummary.total} Levels Unlocked
+                    </span>
+                </div>
+                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+                    {levelSummary.next
+                        ? `Next Level Unlocked target: Level ${levelSummary.next.level} (Requires ${Math.max(0, levelSummary.next.level - qualifiedDirects)} more active direct referrals).`
+                        : 'All team levels fully unlocked and clear. 🚀'}
+                </p>
+            </div>
+
+            {/* General Team Stats Counters */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {[
-                    { label: 'Total team members', value: stats.totalTeamMembers, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10 border-blue-500/20' },
+                    { label: 'Total team network', value: stats.totalTeamMembers, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10 border-blue-500/20' },
                     { label: 'Direct referrals', value: stats.directReferrals, icon: Users, color: 'text-indigo-500', bg: 'bg-indigo-500/10 border-indigo-500/20' },
                     { label: 'Qualified directs', value: qualifiedDirects, icon: UserPlus, color: 'text-violet-500', bg: 'bg-violet-500/10 border-violet-500/20' },
                     { label: 'Active members', value: stats.activeMembers, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' },
                     { label: 'Inactive members', value: stats.inactiveMembers, icon: UserX, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/20' },
                 ].map((item) => (
-                    <div key={item.label} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-4 shadow-sm flex flex-col justify-between hover:border-primary/20 transition-all">
+                    <div key={item.label} className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] flex flex-col justify-between hover:border-primary/20 transition-all">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">{item.label}</span>
-                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${item.bg}`}>
-                                <item.icon size={14} className={item.color} />
+                            <span className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">{item.label}</span>
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${item.bg}`}>
+                                <item.icon size={13} className={item.color} />
                             </div>
                         </div>
-                        <p className="text-2xl font-black tabular-nums text-[var(--foreground)] leading-none mt-1">{item.value}</p>
+                        <p className="text-xl font-black text-[var(--foreground)] tabular-nums leading-none mt-1">{item.value}</p>
                     </div>
                 ))}
-            </section>
+            </div>
 
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-5 shadow-sm">
-                <h2 className="mb-4 text-sm font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>Total Business Volume</h2>
+            {/* Business Volume Card */}
+            <div className="p-5 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+                <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Affiliate Business Volume (PV)</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {[
-                        { label: 'Total Level Team Business Volume', value: totalBusiness, color: 'text-blue-500' },
-                        { label: "Today's team business", value: todayTeamBusiness, color: 'text-sky-500' },
-                        { label: "Yesterday's team business", value: yesterdayTeamBusiness, color: 'text-indigo-500' },
+                        { label: 'Total team business volume', value: totalBusiness, color: 'text-blue-500' },
+                        { label: "Today's generation volume", value: todayTeamBusiness, color: 'text-sky-500' },
+                        { label: "Yesterday's generation volume", value: yesterdayTeamBusiness, color: 'text-indigo-500' },
                     ].map((item) => (
-                        <div key={item.label} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                            <p className="mb-1 truncate text-[10px] uppercase tracking-wider font-bold text-[var(--muted-foreground)]">{item.label}</p>
-                            <p className="text-xl font-black tabular-nums text-primary">{formatCurrency(item.value)}</p>
+                        <div key={item.label} className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+                            <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1 truncate">{item.label}</p>
+                            <p className="text-lg font-black text-primary font-mono tabular-nums">{formatCurrency(item.value)}</p>
                         </div>
                     ))}
                 </div>
-            </section>
+            </div>
 
-            <section className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center bg-[var(--surface-elevated)] p-4 rounded-2xl border border-[var(--border)]">
-                <p className="text-xs font-semibold text-[var(--muted-foreground)]">
-                    Showing {requestedLevels} levels • showing depth up to {memberDepth}
+            {/* Depth Filter Control Bar */}
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center bg-[var(--surface-elevated)] p-4 rounded-2xl border border-[var(--border)]">
+                <p className="text-xs font-bold text-[var(--muted-foreground)]">
+                    Showing config: {requestedLevels} levels • showing depth up to {memberDepth}
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2">
-                        <label htmlFor="levelInput" className="whitespace-nowrap text-xs font-bold text-[var(--muted-foreground)]">
+                        <label htmlFor="levelInput" className="text-xs font-bold text-[var(--muted-foreground)]">
                             Levels:
                         </label>
                         <input
@@ -216,7 +228,7 @@ export default function TeamLevelStatusPage() {
                         />
                     </div>
                     <div className="flex items-center gap-2">
-                        <label htmlFor="depthInput" className="whitespace-nowrap text-xs font-bold text-[var(--muted-foreground)]">
+                        <label htmlFor="depthInput" className="text-xs font-bold text-[var(--muted-foreground)]">
                             Depth:
                         </label>
                         <input
@@ -236,71 +248,84 @@ export default function TeamLevelStatusPage() {
                         />
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {/* Level status cards grid */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {levelCards.map((card) => {
                     const shownMembers = Math.min(memberDepth, card.teamCount);
                     const ratio = card.teamCount > 0 ? shownMembers / card.teamCount : 0;
                     const shownActive = Math.min(shownMembers, Math.round(card.activeCount * ratio));
                     const shownInactive = Math.max(0, shownMembers - shownActive);
                     const shownVolume = card.estimatedBusiness * ratio;
+                    
+                    // Active members percent inside level downline
+                    const activePercent = card.teamCount > 0 ? (card.activeCount / card.teamCount) * 100 : 0;
 
                     return (
                         <div
                             key={card.level}
-                            className={`rounded-2xl border p-4 shadow-sm transition-all duration-200 flex flex-col justify-between ${
+                            className={`rounded-2xl border p-5 shadow-sm transition-all duration-200 flex flex-col justify-between ${
                                 card.unlocked 
-                                ? 'border-[var(--border)] bg-[var(--surface-elevated)] hover:border-primary/35' 
-                                : 'border-[var(--border)]/40 bg-[var(--surface-elevated)]/40 opacity-60'
+                                    ? 'border-[var(--border)] bg-[var(--surface-elevated)] hover:border-primary/25 hover:shadow-md' 
+                                    : 'border-[var(--border)]/40 bg-[var(--surface-elevated)]/40 opacity-60'
                             }`}
                         >
                             <div>
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-base font-extrabold text-[var(--foreground)]">Level {card.level}</h3>
+                                <div className="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
+                                    <h3 className="text-sm font-black text-[var(--foreground)]">Level {card.level}</h3>
                                     {card.unlocked ? (
-                                        <span className="flex items-center gap-1 text-[9px] font-black text-emerald-500 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                                        <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
                                             <Unlock size={10} /> Active
                                         </span>
                                     ) : (
-                                        <span className="flex items-center gap-1 text-[9px] font-black text-amber-500 uppercase bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
+                                        <span className="flex items-center gap-1 text-[9px] font-bold text-amber-500 uppercase bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
                                             <Lock size={10} /> Locked
                                         </span>
                                     )}
                                 </div>
-                                <div className="mt-3.5 space-y-1.5 text-xs text-[var(--muted-foreground)]">
-                                    <p className="flex justify-between">
-                                        <span>Level team:</span>
-                                        <span className="font-bold text-[var(--foreground)]">{shownMembers}</span>
-                                    </p>
-                                    <p className="flex justify-between">
-                                        <span>Active:</span>
-                                        <span className="font-bold text-emerald-500">{shownActive}</span>
-                                    </p>
-                                    <p className="flex justify-between">
-                                        <span>Inactive:</span>
-                                        <span className="font-bold text-amber-500">{shownInactive}</span>
-                                    </p>
-                                    <p className="flex justify-between pt-1 border-t border-[var(--border)]/20 mt-1">
-                                        <span>Volume:</span>
-                                        <span className="font-bold text-[var(--foreground)] tabular-nums">{formatCurrency(shownVolume)}</span>
-                                    </p>
+                                
+                                <div className="mt-3.5 space-y-2 text-xs text-[var(--muted-foreground)]">
+                                    <div className="flex justify-between">
+                                        <span>Total Team:</span>
+                                        <span className="font-bold text-[var(--foreground)]">{card.teamCount}</span>
+                                    </div>
+                                    
+                                    {/* Active member visual indicator bar */}
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-[10px] font-bold">
+                                            <span>Active Ratio</span>
+                                            <span className="text-emerald-500">{activePercent.toFixed(0)}%</span>
+                                        </div>
+                                        <div className="h-1.5 w-full rounded-full bg-black/10 dark:bg-black/30 overflow-hidden border border-white/5">
+                                            <div
+                                                className="h-full bg-emerald-500 transition-all duration-500"
+                                                style={{ width: `${activePercent}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between pt-2 border-t border-[var(--border)]/20 mt-2">
+                                        <span>PV Business:</span>
+                                        <span className="font-bold text-primary font-mono tabular-nums">{formatCurrency(card.estimatedBusiness)}</span>
+                                    </div>
                                 </div>
                             </div>
+                            
                             <Link
                                 href={`/genealogy?level=${card.level}&depth=${Math.min(memberDepth, card.teamCount || 1)}&view=table`}
                                 className={`mt-4 inline-flex w-full items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all border ${
                                     card.unlocked
-                                    ? 'border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-primary hover:text-zinc-950 hover:border-primary shadow-sm'
-                                    : 'border-transparent bg-[var(--surface)]/20 text-[var(--muted-foreground)] pointer-events-none'
+                                        ? 'border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:bg-primary hover:text-black hover:border-primary shadow-sm'
+                                        : 'border-transparent bg-[var(--surface)]/20 text-[var(--muted-foreground)] pointer-events-none'
                                 }`}
                             >
-                                View Team
+                                View Level Downline <ArrowRight size={11} />
                             </Link>
                         </div>
                     );
                 })}
-            </section>
+            </div>
         </div>
     );
 }

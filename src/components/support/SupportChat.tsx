@@ -1,13 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Send, CheckCircle2, ImagePlus, X } from 'lucide-react';
+import { Send, CheckCircle2, ImagePlus, X, Headphones, UserCheck, MessageSquare, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { dedupeMessagesById } from '@/lib/utils/supportThread';
 import toast from 'react-hot-toast';
 import type { SupportMessageDto, SupportTicketDto } from '@/types/support';
 import { MessageBubble } from './MessageBubble';
 import { TicketStatusBadge } from './TicketStatusBadge';
+import { APP_NAME } from '@/constants/env';
 
 export type SupportCsatPayload = { csatRating?: number; csatComment?: string };
 
@@ -189,21 +190,23 @@ export function SupportChat({
             )}
         >
             {csatOpen && (
-                <div className="absolute inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="csat-title">
-                    <button type="button" className="absolute inset-0 bg-black/70" aria-label="Close" onClick={() => setCsatOpen(false)} />
-                    <div className="relative z-10 m-4 w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-xl">
-                        <h2 id="csat-title" className="text-sm font-semibold text-[var(--foreground)]">
-                            Mark as completed
-                        </h2>
-                        <p className="mt-1 text-xs text-[var(--muted-foreground)]">How was your experience? (optional)</p>
-                        <div className="mt-3 flex justify-center gap-1">
+                <div className="absolute inset-0 z-50 flex items-end justify-center sm:items-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="csat-title">
+                    <button type="button" className="absolute inset-0 w-full h-full bg-transparent focus:outline-none" aria-label="Close" onClick={() => setCsatOpen(false)} />
+                    <div className="relative z-10 w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-6 shadow-2xl space-y-4">
+                        <div>
+                            <h2 id="csat-title" className="text-sm font-black text-[var(--foreground)] tracking-tight">
+                                Mark as Completed
+                            </h2>
+                            <p className="mt-1 text-xs text-[var(--muted-foreground)]">How would you rate our support support chat?</p>
+                        </div>
+                        <div className="flex justify-center gap-1.5 py-2">
                             {[1, 2, 3, 4, 5].map((n) => (
                                 <button
                                     key={n}
                                     type="button"
                                     onClick={() => setCsatRating(n)}
-                                    className={`rounded px-1.5 py-1 text-2xl leading-none transition ${
-                                        csatRating != null && n <= csatRating ? 'text-amber-400' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+                                    className={`rounded-lg p-2 text-2xl leading-none transition-transform active:scale-95 focus:outline-none ${
+                                        csatRating != null && n <= csatRating ? 'text-amber-400' : 'text-[var(--muted-foreground)] hover:text-amber-400'
                                     }`}
                                     aria-label={`${n} star${n > 1 ? 's' : ''}`}
                                 >
@@ -214,22 +217,22 @@ export function SupportChat({
                         <textarea
                             value={csatComment}
                             onChange={(e) => setCsatComment(e.target.value)}
-                            placeholder="Any comments? (optional)"
+                            placeholder="Any optional feedback comments?"
                             rows={2}
-                            className="mt-3 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]"
+                            className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-xs text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-primary/45"
                         />
-                        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                        <div className="flex gap-3">
                             <button
                                 type="button"
                                 onClick={() => submitMarkComplete(true)}
-                                className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)]"
+                                className="flex-1 py-2.5 rounded-xl border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
                             >
-                                Skip feedback
+                                Skip Feedback
                             </button>
                             <button
                                 type="button"
                                 onClick={() => submitMarkComplete(false)}
-                                className="rounded-lg bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary px-4 py-2 text-sm font-bold text-zinc-950 shadow-md shadow-primary/10 transition hover:-translate-y-0.5 active:translate-y-0"
+                                className="flex-1 py-2.5 rounded-xl bg-primary text-black font-bold text-xs shadow-md"
                             >
                                 Complete
                             </button>
@@ -237,20 +240,31 @@ export function SupportChat({
                     </div>
                 </div>
             )}
-            <div className="shrink-0 border-b border-[var(--border)] px-4 py-3 sm:px-5">
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs text-primary">{ticket.ticketNumber}</span>
-                    <TicketStatusBadge status={ticket.status} />
+            
+            {/* Chat header bar */}
+            <div className="shrink-0 border-b border-[var(--border)] px-4 py-4 sm:px-6 bg-[var(--surface)]/30 flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl border border-primary/20 bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <MessageSquare size={16} />
+                    </div>
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded">
+                                #{ticket.ticketNumber}
+                            </span>
+                            <TicketStatusBadge status={ticket.status} />
+                        </div>
+                        <h1 className="mt-1 text-xs sm:text-sm font-bold text-[var(--foreground)] truncate max-w-[200px] sm:max-w-xs">{ticket.subject}</h1>
+                    </div>
                 </div>
-                <h1 className="mt-1 text-lg font-semibold text-[var(--foreground)]">{ticket.subject}</h1>
                 {canComplete && (
                     <button
                         type="button"
                         onClick={() => setCsatOpen(true)}
-                        className="mt-3 inline-flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/25"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-primary/20 bg-primary/10 px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-primary transition hover:bg-primary/20"
                     >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        Mark as completed
+                        <CheckCircle2 size={12} />
+                        Mark Completed
                     </button>
                 )}
             </div>
@@ -258,43 +272,44 @@ export function SupportChat({
             <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className="support-chat-scroll min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-y-contain px-4 py-4 sm:px-5"
+                className="support-chat-scroll min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-y-contain px-4 py-6 sm:px-6 bg-white dark:bg-transparent"
             >
                 {loadingOlder && (
-                    <p className="text-center text-xs text-[var(--muted-foreground)]" aria-live="polite">
-                        Loading older messages…
+                    <p className="text-center text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider" aria-live="polite">
+                        Loading archived entries…
                     </p>
                 )}
                 {displayMessages.map((m) => (
                     <MessageBubble key={m.id} message={m} isMine={m.senderRole === 'user'} />
                 ))}
                 {peerTyping && (
-                    <p className="text-xs italic text-primary" aria-live="polite">
-                        Support is typing…
-                    </p>
+                    <div className="flex items-center gap-2 text-[10px] font-semibold text-primary italic" aria-live="polite">
+                        <Loader2 size={10} className="animate-spin" />
+                        <span>Support representative is typing…</span>
+                    </div>
                 )}
             </div>
 
-            <form onSubmit={handleSend} className="shrink-0 border-t border-[var(--border)] p-3 sm:p-4">
+            <form onSubmit={handleSend} className="shrink-0 border-t border-[var(--border)] p-3 sm:p-4 bg-[var(--surface)]/10">
                 {ticket.status === 'closed' ? (
-                    <p className="text-center text-sm text-[var(--muted-foreground)]">This ticket is closed.</p>
+                    <p className="text-center text-xs text-[var(--muted-foreground)] font-semibold py-2">This support session has been closed.</p>
                 ) : ticket.status === 'completed' ? (
-                    <p className="text-center text-sm text-[var(--muted-foreground)]">
-                        You marked this as completed. Our team may still reply if needed.
+                    <p className="text-center text-xs text-[var(--muted-foreground)] font-semibold py-2">
+                        Ticket marked as completed. Our team will resolve any final queries.
                     </p>
                 ) : (
                     <div className="space-y-2">
                         {pendingImage && imagePreviewUrl && (
                             <div className="relative inline-block max-w-full">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={imagePreviewUrl} alt="" className="max-h-32 rounded-lg border border-[var(--border)] object-contain" />
+                                <img src={imagePreviewUrl} alt="" className="max-h-24 rounded-lg border border-[var(--border)] object-contain" />
                                 <button
                                     type="button"
                                     onClick={clearPendingImage}
-                                    className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--foreground)] shadow ring-1 ring-[var(--border)]"
+                                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--foreground)] border border-[var(--border)] shadow-sm focus:outline-none"
                                     aria-label="Remove image"
                                 >
-                                    <X className="h-4 w-4" />
+                                    <X className="h-3.5 w-3.5" />
                                 </button>
                             </div>
                         )}
@@ -320,10 +335,10 @@ export function SupportChat({
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={sending || !onSendImage}
-                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition hover:bg-[var(--surface-elevated)] disabled:opacity-30"
+                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition hover:bg-[var(--surface-elevated)] disabled:opacity-30 focus:outline-none"
                                 aria-label="Attach image"
                             >
-                                <ImagePlus className="h-5 w-5" />
+                                <ImagePlus className="h-5 w-5 text-[var(--muted-foreground)]" />
                             </button>
                             <input
                                 ref={inputRef}
@@ -340,13 +355,13 @@ export function SupportChat({
                                     if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
                                     emitTyping?.(false);
                                 }}
-                                placeholder={pendingImage ? 'Add a caption (optional)…' : 'Type your message...'}
-                                className="min-h-[44px] flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-base text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-primary/40 sm:text-sm"
+                                placeholder={pendingImage ? 'Add attachment caption…' : 'Type your client query here...'}
+                                className="min-h-[44px] flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-xs text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-primary/45"
                             />
                             <button
                                 type="submit"
                                 disabled={sending || (!pendingImage && !text.trim()) || (!!pendingImage && !onSendImage)}
-                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-zinc-950 transition shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none"
+                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-black transition shadow-md disabled:opacity-40 focus:outline-none"
                             >
                                 <Send className="h-4 w-4" />
                             </button>

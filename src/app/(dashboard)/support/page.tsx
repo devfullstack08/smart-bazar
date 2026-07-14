@@ -48,53 +48,65 @@ export default function SupportPage() {
     const totalUnread = tickets.reduce((a, t) => a + (t.unreadForUser || 0), 0);
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                        <Headphones className="h-3.5 w-3.5" />
-                        Help center
+        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 pb-12">
+            
+            {/* Header Banner */}
+            <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-6 sm:p-8 mb-8">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                    <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-primary shrink-0">
+                            <Headphones size={24} strokeWidth={2} />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h1 className="text-xl sm:text-2xl font-black text-zinc-800 dark:text-white tracking-tight leading-tight">Help Center & Account Desk</h1>
+                                {totalUnread > 0 && (
+                                    <span className="rounded-full bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 text-[10px] font-bold">
+                                        {totalUnread} New
+                                    </span>
+                                )}
+                            </div>
+                            <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                                Submit support tickets for account requests, Web3 link audits, or profile modifications
+                            </p>
+                        </div>
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)] sm:text-3xl">Support</h1>
-                    <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                        Create a ticket to request changes (for example primary wallet updates) or get help from our team.
-                        {totalUnread > 0 && (
-                            <span className="ml-2 text-primary font-semibold">
-                                {totalUnread} unread message{totalUnread === 1 ? '' : 's'}
-                            </span>
-                        )}
-                    </p>
-                </div>
-                <button
-                    type="button"
-                    onClick={() => setModal(true)}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary px-5 py-3 text-sm font-bold text-zinc-950 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                    <Plus className="h-4 w-4" />
-                    New ticket
-                </button>
-            </div>
-
-            {loading ? (
-                <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-24 animate-pulse rounded-2xl bg-[var(--surface)]" />
-                    ))}
-                </div>
-            ) : tickets.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center">
-                    <Headphones className="mx-auto h-12 w-12 text-[var(--muted-foreground)]" />
-                    <p className="mt-4 text-[var(--muted-foreground)]">No tickets yet</p>
+                    
                     <button
                         type="button"
                         onClick={() => setModal(true)}
-                        className="mt-4 text-sm font-medium text-primary hover:underline"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-black px-5 py-3 text-xs font-bold shadow-lg hover:bg-primary/95 transition-all shrink-0 self-start sm:self-center"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Create Ticket
+                    </button>
+                </div>
+            </div>
+
+            {loading ? (
+                <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-24 animate-pulse rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)]" />
+                    ))}
+                </div>
+            ) : tickets.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-elevated)] px-6 py-16 text-center space-y-4 shadow-sm">
+                    <Headphones className="mx-auto h-12 w-12 text-[var(--muted-foreground)]" />
+                    <div className="max-w-xs mx-auto space-y-1">
+                        <p className="text-sm font-bold text-[var(--foreground)]">No active tickets</p>
+                        <p className="text-xs text-[var(--muted-foreground)]">All queries are locked and processed. Create a ticket if you need client help.</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setModal(true)}
+                        className="text-xs font-extrabold uppercase tracking-widest text-primary hover:underline"
                     >
                         Open your first ticket
                     </button>
                 </div>
             ) : (
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                     {tickets.map((t) => (
                         <li key={t.id}>
                             <TicketListCard ticket={t} />

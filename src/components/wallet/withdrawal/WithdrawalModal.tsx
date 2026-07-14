@@ -407,109 +407,117 @@ export function WithdrawalModal({
 
                 {/* ── Standard methods (bank / UPI / web3 / withdrawal_request) ── */}
                 {selectedMethod !== 'wallet_address' && (
-                    <>
-                        {/* Back to wallet address link */}
-                        {walletAddressEnabled && (
-                            <button
-                                type="button"
-                                onClick={() => { reset(); setSelectedMethod('wallet_address'); }}
-                                className="text-xs text-teal-600 dark:text-teal-400 underline"
-                            >
-                                ← Back to Wallet Address Withdrawal
-                            </button>
-                        )}
-
-                        {/* Method selector */}
-                        {selectableMethods.length > 1 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                                {selectableMethods.map((m) => {
-                                    const isSelected = selectedMethod === m.value;
-                                    return (
+                    <div className="space-y-4">
+                        {!selectedMethod ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">Step 1</span>
+                                        <h4 className="text-sm font-bold text-[var(--foreground)] mt-2">Select Payout Channel</h4>
+                                    </div>
+                                    {walletAddressEnabled && (
                                         <button
-                                            key={m.value}
                                             type="button"
-                                            onClick={() => {
-                                                setValue('method', m.value);
-                                                setSelectedMethod(m.value);
-                                            }}
-                                            className={`relative p-4 rounded-xl border text-left transition-all overflow-hidden ${
-                                                isSelected 
-                                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 shadow-[0_0_15px_rgba(212,175,55,0.2)]' 
-                                                    : 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/70 hover:border-[var(--border)]/80'
-                                            }`}
+                                            onClick={() => { reset(); setSelectedMethod('wallet_address'); }}
+                                            className="text-xs text-primary underline"
                                         >
-                                            {isSelected && <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/20 to-transparent pointer-events-none" />}
-                                            <div className={`w-3 h-3 rounded-full mb-3 border ${isSelected ? 'border-[var(--color-primary)] bg-[var(--color-primary)] shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'border-[var(--border)] bg-[var(--surface-elevated)]'}`} />
-                                            <p className={`text-sm font-bold ${isSelected ? 'text-[var(--color-primary)]' : 'text-[var(--foreground)]'}`}>{m.label}</p>
+                                            Use Wallet Address
                                         </button>
-                                    );
-                                })}
+                                    )}
+                                </div>
+                                {selectableMethods.length > 0 ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {selectableMethods.map((m) => (
+                                            <button
+                                                key={m.value}
+                                                type="button"
+                                                onClick={() => {
+                                                    setValue('method', m.value);
+                                                    setSelectedMethod(m.value);
+                                                }}
+                                                className="relative p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/70 hover:border-[var(--border)]/80 text-left transition-all group overflow-hidden active:scale-[0.99]"
+                                            >
+                                                <div className="w-3 h-3 rounded-full mb-3 border border-[var(--border)] bg-[var(--surface-elevated)] group-hover:border-primary transition-colors" />
+                                                <p className="text-sm font-black text-[var(--foreground)]">{m.label}</p>
+                                                <p className="text-[10px] text-[var(--muted-foreground)] mt-1 font-medium">Click to configure details</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                                        <p className="text-sm text-yellow-200">No withdrawal methods are currently enabled.</p>
+                                    </div>
+                                )}
                             </div>
-                        ) : selectableMethods.length === 1 ? (
-                            <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] mb-6">
-                                <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Withdrawal Method</p>
-                                <p className="text-sm font-bold text-[var(--foreground)]">{selectableMethods[0].label}</p>
-                            </div>
-                        ) : !walletAddressEnabled ? (
-                            <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl mb-6">
-                                <p className="text-sm text-yellow-200">
-                                    No withdrawal methods are currently enabled.
-                                </p>
-                            </div>
-                        ) : null}
+                        ) : (
+                            <div className="space-y-4">
+                                {/* Step Header with back button */}
+                                <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
+                                    <div>
+                                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">Step 2</span>
+                                        <p className="text-xs font-bold text-[var(--muted-foreground)] mt-1.5">
+                                            Method: <span className="text-[var(--foreground)]">{selectableMethods.find(m => m.value === selectedMethod)?.label || selectedMethod}</span>
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedMethod(null);
+                                            setValue('method', '' as WithdrawalMethod);
+                                        }}
+                                        className="text-xs font-bold text-primary hover:underline"
+                                    >
+                                        Change Method
+                                    </button>
+                                </div>
 
-                        {/* Show prompt if multiple methods and none selected yet */}
-                        {selectableMethods.length > 1 && !selectedMethod && (
-                            <div className="text-center py-6 text-text-muted text-sm glass-panel rounded-xl border border-white/5">
-                                Please select a withdrawal method above.
+                                {/* Method forms */}
+                                {selectedMethod === 'web3_contract' ? (
+                                    isWeb3ConfigComplete(withdrawalWeb3Config) ? (
+                                        <Web3Withdrawal
+                                            paymentMethods={paymentMethods}
+                                            availableBalance={availableBalance}
+                                            onSuccess={handleWeb3Success}
+                                            onCancel={handleClose}
+                                        />
+                                    ) : (
+                                        <p className="text-sm text-amber-700 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
+                                            Config is missing, please try later.
+                                        </p>
+                                    )
+                                ) : selectedMethod === 'bank_transfer' ? (
+                                    <BankTransferWithdrawal
+                                        paymentMethods={paymentMethods}
+                                        onSubmit={async (data) => await handleSubmit({ ...data, bankAccount: data.bankAccount })}
+                                        onCancel={handleClose}
+                                        submitting={submitting}
+                                        availableBalance={availableBalance}
+                                        withdrawalAllowance={allowanceAmount}
+                                    />
+                                ) : selectedMethod === 'upi' ? (
+                                    <UPIWithdrawal
+                                        paymentMethods={paymentMethods}
+                                        onSubmit={async (data) => await handleSubmit({ ...data, upiId: data.upiId })}
+                                        onCancel={handleClose}
+                                        submitting={submitting}
+                                        availableBalance={availableBalance}
+                                        withdrawalAllowance={allowanceAmount}
+                                    />
+                                ) : selectedMethod === 'withdrawal_request' ? (
+                                    <WithdrawalRequestForm
+                                        paymentMethods={paymentMethods}
+                                        onSubmit={async (data) =>
+                                            await handleSubmit({ amount: data.amount, description: data.description })
+                                        }
+                                        onCancel={handleClose}
+                                        submitting={submitting}
+                                        availableBalance={availableBalance}
+                                        withdrawalAllowance={allowanceAmount}
+                                    />
+                                ) : null}
                             </div>
                         )}
-
-                        {/* Method forms */}
-                        {selectedMethod === 'web3_contract' ? (
-                            isWeb3ConfigComplete(withdrawalWeb3Config) ? (
-                                <Web3Withdrawal
-                                    paymentMethods={paymentMethods}
-                                    availableBalance={availableBalance}
-                                    onSuccess={handleWeb3Success}
-                                    onCancel={handleClose}
-                                />
-                            ) : (
-                                <p className="text-sm text-amber-700 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
-                                    Config is missing, please try later.
-                                </p>
-                            )
-                        ) : selectedMethod === 'bank_transfer' ? (
-                            <BankTransferWithdrawal
-                                paymentMethods={paymentMethods}
-                                onSubmit={async (data) => await handleSubmit({ ...data, bankAccount: data.bankAccount })}
-                                onCancel={handleClose}
-                                submitting={submitting}
-                                availableBalance={availableBalance}
-                                withdrawalAllowance={allowanceAmount}
-                            />
-                        ) : selectedMethod === 'upi' ? (
-                            <UPIWithdrawal
-                                paymentMethods={paymentMethods}
-                                onSubmit={async (data) => await handleSubmit({ ...data, upiId: data.upiId })}
-                                onCancel={handleClose}
-                                submitting={submitting}
-                                availableBalance={availableBalance}
-                                withdrawalAllowance={allowanceAmount}
-                            />
-                        ) : selectedMethod === 'withdrawal_request' ? (
-                            <WithdrawalRequestForm
-                                paymentMethods={paymentMethods}
-                                onSubmit={async (data) =>
-                                    await handleSubmit({ amount: data.amount, description: data.description })
-                                }
-                                onCancel={handleClose}
-                                submitting={submitting}
-                                availableBalance={availableBalance}
-                                withdrawalAllowance={allowanceAmount}
-                            />
-                        ) : null}
-                    </>
+                    </div>
                 )}
             </div>
         </Modal>

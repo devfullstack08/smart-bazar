@@ -21,6 +21,7 @@ import {
     BarChart3,
     Headphones,
     Layers,
+    ShoppingCart,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import UserProfileImage from '@/components/ui/UserProfileImage';
@@ -153,16 +154,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {/* Right: theme, balance, user */}
                     <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                         <ThemeToggle />
-                        <div className="hidden sm:flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 min-w-[100px]">
-                            <Wallet className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-semibold text-[var(--foreground)] tabular-nums">
+                        <Link
+                            href="/wallet"
+                            className="hidden sm:flex items-center gap-2.5 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all px-3 py-2 cursor-pointer shadow-sm group"
+                        >
+                            <div className="relative">
+                                <ShoppingCart className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+                                <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[7px] font-black text-black">
+                                    ✓
+                                </span>
+                            </div>
+                            <div className="h-4 w-[1px] bg-primary/25" />
+                            <span className="text-xs font-black text-[var(--foreground)] tabular-nums tracking-tight">
                                 {!mounted || loadingBalance ? (
-                                    <span className="inline-block h-4 w-6 animate-pulse rounded bg-[var(--border)]" />
+                                    <span className="inline-block h-4 w-12 animate-pulse rounded bg-[var(--border)]" />
                                 ) : (
                                     formatCurrency(availableBalance ?? 0)
                                 )}
                             </span>
-                        </div>
+                        </Link>
 
                         {/* User dropdown */}
                         <div className="relative">
@@ -188,38 +198,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     />
                                     <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] py-2 shadow-xl">
                                         <div className="border-b border-[var(--border)] px-4 py-3">
-                                            <p className="truncate text-sm font-medium text-[var(--foreground)]">
-                                                {mounted ? (user?.fullName || user?.name || 'User') : 'User'}
-                                            </p>
-                                            <p className="truncate text-xs text-[var(--muted-foreground)]">
-                                                {mounted ? user?.email : ''}
-                                            </p>
+                                            <p className="text-sm font-semibold text-[var(--foreground)] truncate">{user?.name ?? 'User'}</p>
+                                            <p className="text-xs text-[var(--muted-foreground)] truncate">{user?.email ?? ''}</p>
                                         </div>
-                                        <Link
-                                            href="/profile"
-                                            className="flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--surface)]"
-                                            onClick={() => setUserMenuOpen(false)}
-                                        >
-                                            <User className="h-4 w-4" /> Profile
-                                        </Link>
-                                        <button
-                                            onClick={() => {
-                                                setUserMenuOpen(false);
-                                                handleLogout();
-                                            }}
-                                            className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-[var(--surface)]"
-                                        >
-                                            <LogOut className="h-4 w-4" /> Log out
-                                        </button>
+                                        <div className="py-1">
+                                            <Link
+                                                href="/profile"
+                                                onClick={() => setUserMenuOpen(false)}
+                                                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--surface)]"
+                                            >
+                                                <User className="h-4 w-4 text-[var(--muted-foreground)]" /> Profile Settings
+                                            </Link>
+                                            <button
+                                                onClick={() => {
+                                                    setUserMenuOpen(false);
+                                                    handleLogout();
+                                                }}
+                                                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-[var(--surface)]"
+                                            >
+                                                <LogOut className="h-4 w-4" /> Log out
+                                            </button>
+                                        </div>
                                     </div>
                                 </>
                             )}
                         </div>
-
                         {/* Mobile menu trigger */}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-[var(--foreground)] hover:bg-[var(--surface)]"
+                            className="lg:hidden min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)] transition-colors"
                             aria-label="Open menu"
                         >
                             <Menu className="h-5 w-5" />
@@ -228,19 +235,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
             </header>
 
-            {/* Mobile menu overlay */}
+            {/* Mobile sidebar navigation */}
             {mobileMenuOpen && (
                 <div className="fixed inset-0 z-50 lg:hidden">
                     <div
-                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-                    <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-[var(--surface-elevated)] border-l border-[var(--border)] shadow-2xl flex flex-col">
-                        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-                            <span className="font-semibold text-[var(--foreground)]">{APP_NAME}</span>
+                    <div className="fixed bottom-0 top-0 left-0 flex w-full max-w-xs flex-col bg-[var(--surface-elevated)] shadow-2xl animate-slide-in">
+                        <div className="flex h-16 items-center justify-between px-6 border-b border-[var(--border)]">
+                            <span className="text-lg font-black text-primary tracking-tight">{APP_NAME}</span>
                             <button
+                                type="button"
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl hover:bg-[var(--surface)]"
+                                className="rounded-full p-1 border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -264,12 +272,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             })}
                         </nav>
                         <div className="p-4 border-t border-[var(--border)]">
-                            <div className="flex items-center gap-3 rounded-xl bg-[var(--surface)] px-4 py-3 mb-3">
-                                <Wallet className="h-5 w-5 text-primary" />
-                                <span className="text-sm font-semibold">
+                            <Link
+                                href="/wallet"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center gap-3 rounded-xl bg-primary/5 border border-primary/20 px-4 py-3 mb-3 hover:bg-primary/10 transition-all"
+                            >
+                                <ShoppingCart className="h-5 w-5 text-primary" />
+                                <span className="text-sm font-black text-[var(--foreground)] tracking-tight">
                                     {loadingBalance ? '...' : formatCurrency(availableBalance ?? 0)}
                                 </span>
-                            </div>
+                            </Link>
                             <button
                                 onClick={() => {
                                     setMobileMenuOpen(false);
@@ -284,7 +296,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
             )}
 
-            {/* Main — full width, clean; overflow-x-hidden to prevent horizontal scroll */}
             <main className={`mx-auto max-w-[1600px] w-full px-4 py-4 sm:px-6 sm:py-6 lg:px-8 pb-safe min-h-[60vh] overflow-x-hidden ${pathname !== '/dashboard' ? 'page-content' : ''}`}>
                 {pathname !== '/dashboard' && (
                     <Link

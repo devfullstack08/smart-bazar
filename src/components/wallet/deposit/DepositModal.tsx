@@ -130,70 +130,99 @@ export function DepositModal({
             size="md"
         >
             <div className="space-y-4">
-                {/* Method Selection */}
-                {depositMethods.length > 1 ? (
-                    <div>
-                        <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Payment Method</label>
-                        <select
-                            {...register('method', { required: 'Please select a payment method' })}
-                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
-                            defaultValue=""
-                        >
-                            <option value="" disabled className="bg-[var(--surface-elevated)]">Select payment method</option>
-                            {depositMethods.map((m) => (
-                                <option key={m.value} value={m.value} className="bg-[var(--surface-elevated)]">{m.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                ) : depositMethods.length === 1 ? (
-                    <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Payment Method:</p>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{depositMethods[0].label}</p>
+                {/* Method Selection Step */}
+                {!selectedMethod ? (
+                    <div className="space-y-4">
+                        <div>
+                            <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">Step 1</span>
+                            <h4 className="text-sm font-bold text-[var(--foreground)] mt-2 mb-3">Select Deposit Channel</h4>
+                        </div>
+                        {depositMethods.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {depositMethods.map((m) => (
+                                    <button
+                                        key={m.value}
+                                        type="button"
+                                        onClick={() => {
+                                            setValue('method', m.value);
+                                            setSelectedMethod(m.value);
+                                        }}
+                                        className="relative p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/70 hover:border-[var(--border)]/80 text-left transition-all group overflow-hidden active:scale-[0.99]"
+                                    >
+                                        <div className="w-3 h-3 rounded-full mb-3 border border-[var(--border)] bg-[var(--surface-elevated)] group-hover:border-primary transition-colors" />
+                                        <p className="text-sm font-black text-[var(--foreground)]">{m.label}</p>
+                                        <p className="text-[10px] text-[var(--muted-foreground)] mt-1 font-medium">Click to authorize setup</p>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                                <p className="text-sm text-yellow-200">No deposit methods are currently enabled.</p>
+                            </div>
+                        )}
                     </div>
                 ) : (
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg">
-                        <p className="text-sm text-yellow-800 dark:text-yellow-200">No deposit methods are currently enabled.</p>
+                    <div className="space-y-4">
+                        {/* Step Header with back button */}
+                        <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
+                            <div>
+                                <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">Step 2</span>
+                                <p className="text-xs font-bold text-[var(--muted-foreground)] mt-1.5">
+                                    Method: <span className="text-[var(--foreground)]">{depositMethods.find(m => m.value === selectedMethod)?.label}</span>
+                                </p>
+                            </div>
+                            {depositMethods.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSelectedMethod(null);
+                                        setValue('method', '' as DepositMethod);
+                                    }}
+                                    className="text-xs font-bold text-primary hover:underline"
+                                >
+                                    Change Method
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Render appropriate component based on selected method */}
+                        {selectedMethod === 'web3_contract' ? (
+                            isWeb3ConfigComplete(depositWeb3Config) ? (
+                                <Web3Deposit
+                                    paymentMethods={paymentMethods}
+                                    availableBalance={walletData?.wallet.availableBalance ?? 0}
+                                    onSuccess={handleWeb3Success}
+                                    onCancel={handleClose}
+                                />
+                            ) : (
+                                <p className="text-sm text-amber-700 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
+                                    Config is missing, please try later.
+                                </p>
+                            )
+                        ) : selectedMethod === 'bank_transfer' ? (
+                            <BankTransferDeposit
+                                paymentMethods={paymentMethods}
+                                onSubmit={handleSubmit}
+                                onCancel={handleClose}
+                                submitting={submitting}
+                            />
+                        ) : selectedMethod === 'upi' ? (
+                            <UPIDeposit
+                                paymentMethods={paymentMethods}
+                                onSubmit={handleSubmit}
+                                onCancel={handleClose}
+                                submitting={submitting}
+                            />
+                        ) : selectedMethod === 'deposit_address' ? (
+                            <DepositAddressDeposit
+                                paymentMethods={paymentMethods}
+                                availableBalance={walletData?.wallet.availableBalance ?? 0}
+                                onSuccess={handleWeb3Success}
+                                onCancel={handleClose}
+                            />
+                        ) : null}
                     </div>
                 )}
-
-                {/* Render appropriate component based on selected method */}
-                {depositMethods.length > 1 && !selectedMethod ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Select a payment method to continue.</p>
-                ) : selectedMethod === 'web3_contract' ? (
-                    isWeb3ConfigComplete(depositWeb3Config) ? (
-                        <Web3Deposit
-                            paymentMethods={paymentMethods}
-                            availableBalance={walletData?.wallet.availableBalance ?? 0}
-                            onSuccess={handleWeb3Success}
-                            onCancel={handleClose}
-                        />
-                    ) : (
-                        <p className="text-sm text-amber-700 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3">
-                            Config is missing, please try later.
-                        </p>
-                    )
-                ) : selectedMethod === 'bank_transfer' ? (
-                    <BankTransferDeposit
-                        paymentMethods={paymentMethods}
-                        onSubmit={handleSubmit}
-                        onCancel={handleClose}
-                        submitting={submitting}
-                    />
-                ) : selectedMethod === 'upi' ? (
-                    <UPIDeposit
-                        paymentMethods={paymentMethods}
-                        onSubmit={handleSubmit}
-                        onCancel={handleClose}
-                        submitting={submitting}
-                    />
-                ) : selectedMethod === 'deposit_address' ? (
-                    <DepositAddressDeposit
-                        paymentMethods={paymentMethods}
-                        availableBalance={walletData?.wallet.availableBalance ?? 0}
-                        onSuccess={handleWeb3Success}
-                        onCancel={handleClose}
-                    />
-                ) : null}
             </div>
         </Modal>
     );

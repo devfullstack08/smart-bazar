@@ -6,12 +6,12 @@ import { incomeApi, walletApi } from '@/lib/api/services';
 import { getIncomeRowDisplayLabel, getIncomeTypeLabel } from '@/lib/utils/incomeLabel';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { formatCurrency, formatDateTime, formatDate } from '@/lib/utils/cn';
-import { DollarSign, TrendingUp, Users, Target, Zap, Clock, CheckCircle, XCircle, Wallet, ArrowUp, ArrowDown } from 'lucide-react';
-import { StatsCard } from '@/components/ui/StatsCard';
+import { DollarSign, TrendingUp, Users, Target, Zap, Clock, CheckCircle, XCircle, Wallet, ArrowUp, ArrowDown, Receipt, X, Copy, Check, Info, Calendar, FileText } from 'lucide-react';
+import { APP_NAME } from '@/constants/env';
+import toast from 'react-hot-toast';
 
 export default function IncomePage() {
     const [overview, setOverview] = useState<IncomeOverview | null>(null);
-    // Wallet data comes from the dedicated wallet API — not from income overview
     const [walletState, setWalletState] = useState<WalletState | null>(null);
     const [transactions, setTransactions] = useState<IncomeTransaction[]>([]);
     const [incomeRegistry, setIncomeRegistry] = useState<IncomeRegistryEntry[]>([]);
@@ -25,6 +25,8 @@ export default function IncomePage() {
     } | null>(null);
     const [loading, setLoading] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(false);
+    const [selectedTx, setSelectedTx] = useState<IncomeTransaction | null>(null);
+    const [copied, setCopied] = useState(false);
     const [filters, setFilters] = useState({
         type: '',
         status: '',
@@ -33,7 +35,6 @@ export default function IncomePage() {
     });
 
     useEffect(() => {
-        // Fetch income and wallet data from their respective domain APIs in parallel
         Promise.all([
             incomeApi.getIncomeOverview(),
             walletApi.getWalletState(),
@@ -73,8 +74,26 @@ export default function IncomePage() {
         setFilters({ ...filters, skip: newSkip });
     };
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        toast.success('Transaction ID copied');
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     if (loading) {
-        return <LoadingSpinner />;
+        return (
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                <div className="h-28 sm:h-32 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] animate-pulse" />
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="h-24 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)] animate-pulse" />
+                    ))}
+                </div>
+                <div className="h-44 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] animate-pulse" />
+                <div className="h-64 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] animate-pulse" />
+            </div>
+        );
     }
 
     if (!overview) {
@@ -86,207 +105,165 @@ export default function IncomePage() {
     }
 
     const { overview: overviewData, todayIncome, yesterdayIncome } = overview;
-    // Wallet data from its own domain API
     const wallet = walletState?.wallet;
+    const totalCommissions = overviewData.commissions.totals.total || 1;
 
     return (
-        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            {/* Header — dashboard-style */}
-            <div className="relative overflow-hidden rounded-2xl premium-card p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--pw-primary)]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="space-y-6 sm:space-y-8 pb-12">
+            {/* Header Banner */}
+            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none" />
                 <div className="relative flex items-center gap-4">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center bg-[var(--pw-primary)]/20 text-[var(--pw-primary)] shrink-0">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-primary shrink-0">
                         <DollarSign size={24} strokeWidth={2} />
                     </div>
                     <div className="min-w-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-[var(--foreground)] leading-tight" style={{ fontFamily: 'var(--font-display)' }}>Income Overview</h1>
-                        <p className="text-sm text-[var(--muted-foreground)] mt-0.5">Track all your earnings and income sources</p>
+                        <h1 className="text-xl sm:text-2xl font-black text-[var(--foreground)] leading-tight tracking-tight">Merchant Sales Analytics</h1>
+                        <p className="text-sm text-[var(--muted-foreground)] mt-0.5">Track, audit, and analyze all income commission flows</p>
                     </div>
                 </div>
             </div>
 
-            {/* Wallet Summary — data from GET /users/wallet (wallet domain API) */}
+            {/* Wallet Summary */}
             {wallet && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6">
-                <StatsCard
-                    title="Wallet Balance"
-                    value={formatCurrency(wallet.balance)}
-                    icon={<Wallet size={24} />}
-                />
-                <StatsCard
-                    title="Total Earned"
-                    value={formatCurrency(wallet.totalEarned ?? 0)}
-                    icon={<DollarSign size={24} />}
-                />
-                <StatsCard
-                    title="Total Withdrawn"
-                    value={formatCurrency(wallet.totalWithdrawn ?? 0)}
-                    icon={<ArrowDown size={24} />}
-                />
-                <StatsCard
-                    title="Available Balance"
-                    value={formatCurrency(wallet.availableBalance)}
-                    icon={<TrendingUp size={24} />}
-                />
-            </div>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden transition-all hover:shadow-lg">
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Merchant Ledger</p>
+                        <h4 className="text-lg sm:text-2xl font-black text-[var(--foreground)] mt-2 tabular-nums">{formatCurrency(wallet.balance)}</h4>
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] mt-2">
+                            <Wallet size={12} className="text-primary" />
+                            <span>Total Balance</span>
+                        </div>
+                    </div>
+                    <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden transition-all hover:shadow-lg">
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Total Gross Sales</p>
+                        <h4 className="text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2 tabular-nums">{formatCurrency(wallet.totalEarned ?? 0)}</h4>
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] mt-2">
+                            <TrendingUp size={12} className="text-emerald-500" />
+                            <span>Lifetime Earnings</span>
+                        </div>
+                    </div>
+                    <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden transition-all hover:shadow-lg">
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Settled Payouts</p>
+                        <h4 className="text-lg sm:text-2xl font-black text-primary mt-2 tabular-nums">{formatCurrency(wallet.totalWithdrawn ?? 0)}</h4>
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] mt-2">
+                            <ArrowDown size={12} className="text-primary" />
+                            <span>Total Withdrawn</span>
+                        </div>
+                    </div>
+                    <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden transition-all hover:shadow-lg">
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Clearable Fund</p>
+                        <h4 className="text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2 tabular-nums">{formatCurrency(wallet.availableBalance)}</h4>
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] mt-2">
+                            <TrendingUp size={12} className="text-emerald-500" />
+                            <span>Instantly Available</span>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* Overall Statistics */}
-            <div className="rounded-2xl premium-card p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
-                <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] mb-4" style={{ fontFamily: 'var(--font-display)' }}>Overall Statistics</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-4">
-                    <div className="rounded-xl p-4 border border-[var(--pw-primary)]/20 bg-[var(--pw-primary)]/5">
-                        <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Total Earned</p>
-                        <p className="text-base sm:text-xl font-bold text-[var(--pw-primary)] leading-tight">{formatCurrency(overviewData.overall.totalEarned)}</p>
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-5 sm:p-6 space-y-4">
+                <h2 className="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight">Overall Performance Indicators</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                    <div className="rounded-xl p-3.5 border border-primary/20 bg-primary/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Gross Revenue</p>
+                        <p className="text-sm sm:text-base font-black text-primary leading-tight mt-1.5 tabular-nums">{formatCurrency(overviewData.overall.totalEarned)}</p>
                     </div>
-                    <div className="rounded-xl p-4 border border-emerald-500/20 bg-emerald-500/5">
-                        <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Today</p>
-                        <p className="text-base sm:text-xl font-bold text-emerald-400 leading-tight">{formatCurrency(todayIncome ?? 0)}</p>
+                    <div className="rounded-xl p-3.5 border border-emerald-500/20 bg-emerald-500/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Today</p>
+                        <p className="text-sm sm:text-base font-black text-emerald-400 leading-tight mt-1.5 tabular-nums">{formatCurrency(todayIncome ?? 0)}</p>
                     </div>
-                    <div className="rounded-xl p-4 border border-cyan-500/20 bg-cyan-500/5">
-                        <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mb-1">Yesterday</p>
-                        <p className="text-base sm:text-xl font-bold text-cyan-400 leading-tight">{formatCurrency(yesterdayIncome ?? 0)}</p>
+                    <div className="rounded-xl p-3.5 border border-cyan-500/20 bg-cyan-500/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Yesterday</p>
+                        <p className="text-sm sm:text-base font-black text-cyan-400 leading-tight mt-1.5 tabular-nums">{formatCurrency(yesterdayIncome ?? 0)}</p>
                     </div>
-                    <div className="rounded-lg sm:rounded-xl p-2 sm:p-4 border border-amber-200/60 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/10">
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 flex items-center gap-1"><Clock size={12} className="shrink-0" /> Pending</p>
-                        <p className="text-xs sm:text-xl font-bold text-amber-600 dark:text-amber-400 leading-tight">{formatCurrency(overviewData.overall.totalPending)}</p>
+                    <div className="rounded-xl p-3.5 border border-amber-500/20 bg-amber-500/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Unsettled</p>
+                        <p className="text-sm sm:text-base font-black text-amber-500 leading-tight mt-1.5 tabular-nums">{formatCurrency(overviewData.overall.totalPending)}</p>
                     </div>
-                    <div className="rounded-lg sm:rounded-xl p-2 sm:p-4 border border-emerald-200/60 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/10">
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1 flex items-center gap-1"><CheckCircle size={12} className="shrink-0" /> Approved</p>
-                        <p className="text-xs sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 leading-tight">{formatCurrency(overviewData.overall.totalApproved)}</p>
+                    <div className="rounded-xl p-3.5 border border-emerald-500/20 bg-emerald-500/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Cleared</p>
+                        <p className="text-sm sm:text-base font-black text-emerald-500 leading-tight mt-1.5 tabular-nums">{formatCurrency(overviewData.overall.totalApproved)}</p>
                     </div>
-                    <div className="rounded-lg sm:rounded-xl p-2 sm:p-4 border border-purple-200/60 dark:border-purple-500/20 bg-purple-50/50 dark:bg-purple-500/10">
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1">Paid Out</p>
-                        <p className="text-xs sm:text-xl font-bold text-purple-600 dark:text-purple-400 leading-tight">{formatCurrency(overviewData.overall.totalPaid)}</p>
+                    <div className="rounded-xl p-3.5 border border-purple-500/20 bg-purple-500/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Paid Out</p>
+                        <p className="text-sm sm:text-base font-black text-purple-400 leading-tight mt-1.5 tabular-nums">{formatCurrency(overviewData.overall.totalPaid)}</p>
                     </div>
-                    <div className="rounded-lg sm:rounded-xl p-2 sm:p-4 border border-emerald-200/60 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/10">
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1">Available</p>
-                        <p className="text-xs sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 leading-tight">{formatCurrency(overviewData.overall.totalAvailable)}</p>
+                    <div className="rounded-xl p-3.5 border border-emerald-500/20 bg-emerald-500/5">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Net Liquid</p>
+                        <p className="text-sm sm:text-base font-black text-emerald-500 leading-tight mt-1.5 tabular-nums">{formatCurrency(overviewData.overall.totalAvailable)}</p>
                     </div>
-                    <div className="rounded-lg sm:rounded-xl p-2 sm:p-4 border border-gray-200/80 dark:border-white/10 bg-gray-50/50 dark:bg-white/5">
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-0.5 sm:mb-1">Total Txns</p>
-                        <p className="text-xs sm:text-xl font-bold text-gray-900 dark:text-white leading-tight">{overviewData.overall.totalTransactions}</p>
+                    <div className="rounded-xl p-3.5 border border-[var(--border)] bg-[var(--surface)]">
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Audited Txns</p>
+                        <p className="text-sm sm:text-base font-black text-[var(--foreground)] leading-tight mt-1.5 tabular-nums">{overviewData.overall.totalTransactions}</p>
                     </div>
                 </div>
             </div>
 
-            {/* Commissions Breakdown - PWA compact */}
+            {/* Commissions Breakdown - Progress bars visualizer */}
             {overviewData.commissions.byType.length > 0 && (
-                <div className="rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
-                    <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] mb-4" style={{ fontFamily: 'var(--font-display)' }}>Commissions Breakdown</h2>
-                    <div className="overflow-x-auto rounded-xl border border-[var(--border)] min-w-0">
-                        <table className="w-full min-w-[420px] sm:min-w-0">
-                            <thead className="bg-[var(--surface)]">
-                                <tr>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Type</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Total</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Pending</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Approved</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Paid</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Count</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[var(--border)]">
-                                {overviewData.commissions.byType.map((item, index) => (
-                                    <tr key={index} className="hover:bg-[var(--surface)]/40 transition-colors">
-                                        <td className="px-3 py-3">
-                                            <span className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
-                                                {getIncomeTypeLabel(item.type, incomeRegistry)}
-                                            </span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">{formatCurrency(item.totalAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatCurrency(item.pendingAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-semibold">{formatCurrency(item.approvedAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-semibold">{formatCurrency(item.paidAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-[var(--muted-foreground)] font-mono">{item.count}</span>
-                                        </td>
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-5 sm:p-6 space-y-6">
+                    <h2 className="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight">Channel Revenue Contributions</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            {overviewData.commissions.byType.map((item, index) => {
+                                const percent = (item.totalAmount / totalCommissions) * 100;
+                                return (
+                                    <div key={index} className="space-y-2">
+                                        <div className="flex justify-between text-xs font-bold text-[var(--foreground)]">
+                                            <span>{getIncomeTypeLabel(item.type, incomeRegistry)}</span>
+                                            <span className="tabular-nums">{percent.toFixed(1)}% ({formatCurrency(item.totalAmount)})</span>
+                                        </div>
+                                        <div className="h-2 w-full rounded-full bg-black/10 dark:bg-black/30 overflow-hidden border border-white/5">
+                                            <div 
+                                                className="h-full bg-primary transition-all duration-500"
+                                                style={{ width: `${percent}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="overflow-x-auto rounded-xl border border-[var(--border)] min-w-0 bg-[var(--surface)]/50">
+                            <table className="w-full min-w-[320px] text-xs">
+                                <thead>
+                                    <tr className="border-b border-[var(--border)] text-[var(--muted-foreground)] font-semibold">
+                                        <th className="px-3 py-3.5 text-left">Channel Name</th>
+                                        <th className="px-3 py-3.5 text-right">Cleared</th>
+                                        <th className="px-3 py-3.5 text-right">Count</th>
                                     </tr>
-                                ))}
-                                <tr className="bg-[var(--surface)]/60 font-semibold">
-                                    <td className="px-3 py-3 text-[var(--foreground)] text-xs sm:text-sm">Total</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.total)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.pending)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.approved)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.commissions.totals.paid)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm font-mono">{overviewData.commissions.totals.count}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-[var(--border)]">
+                                    {overviewData.commissions.byType.map((item, index) => (
+                                        <tr key={index} className="hover:bg-[var(--surface)]/60 transition-colors">
+                                            <td className="px-3 py-3 font-semibold text-[var(--foreground)]">
+                                                {getIncomeTypeLabel(item.type, incomeRegistry)}
+                                            </td>
+                                            <td className="px-3 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                                                {formatCurrency(item.approvedAmount)}
+                                            </td>
+                                            <td className="px-3 py-3 text-right font-mono text-[var(--muted-foreground)] tabular-nums">
+                                                {item.count}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {overviewData.transactions.byType.length > 0 && (
-                <div className="rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
-                    <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] mb-4" style={{ fontFamily: 'var(--font-display)' }}>Transactions Breakdown</h2>
-                    <div className="overflow-x-auto rounded-xl border border-[var(--border)] min-w-0">
-                        <table className="w-full min-w-[420px] sm:min-w-0">
-                            <thead className="bg-[var(--surface)]">
-                                <tr>
-                                    <th className="px-3 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Type</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Total</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Pending</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Processed</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Stopped</th>
-                                    <th className="px-3 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Count</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[var(--border)]">
-                                {overviewData.transactions.byType.map((item, index) => (
-                                    <tr key={index} className="hover:bg-[var(--surface)]/40 transition-colors">
-                                        <td className="px-3 py-3">
-                                            <span className="text-xs sm:text-sm font-medium text-[var(--foreground)]">
-                                                {getIncomeTypeLabel(item.type, incomeRegistry)}
-                                            </span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">{formatCurrency(item.totalAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-yellow-600 dark:text-yellow-400 font-semibold">{formatCurrency(item.pendingAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-semibold">{formatCurrency(item.processedAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-semibold">{formatCurrency(item.stoppedAmount)}</span>
-                                        </td>
-                                        <td className="px-3 py-3 text-right">
-                                            <span className="text-xs sm:text-sm text-[var(--muted-foreground)] font-mono">{item.count}</span>
-                                        </td>
-                                    </tr>
-                                ))}
-                                <tr className="bg-[var(--surface)]/60 font-semibold">
-                                    <td className="px-3 py-3 text-[var(--foreground)] text-xs sm:text-sm">Total</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.total)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.pending)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.processed)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm">{formatCurrency(overviewData.transactions.totals.stopped)}</td>
-                                    <td className="px-3 py-3 text-right text-[var(--foreground)] text-xs sm:text-sm font-mono">{overviewData.transactions.totals.count}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
-            {/* Transaction History - PWA compact */}
+            {/* Transaction History Grid */}
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-[var(--border)]">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-3 sm:mb-4">
-                        <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>Transaction History</h2>
+                        <h2 className="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight">Audit Stream Logs</h2>
                         {pagination && (
-                            <p className="text-xs sm:text-sm text-[var(--muted-foreground)]">
-                                Showing {filters.skip + 1}-{Math.min(filters.skip + filters.limit, pagination.total)} of {pagination.total}
+                            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] font-semibold">
+                                Showing {filters.skip + 1}-{Math.min(filters.skip + filters.limit, pagination.total)} of {pagination.total} entries
                             </p>
                         )}
                     </div>
@@ -343,7 +320,7 @@ export default function IncomePage() {
                     <>
                         <div className="overflow-x-auto min-w-0">
                             <table className="w-full min-w-[520px] sm:min-w-0">
-                                <thead className="bg-[var(--surface)]">
+                                <thead className="bg-[var(--surface)] border-b border-[var(--border)]">
                                     <tr>
                                         <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Type
@@ -357,22 +334,58 @@ export default function IncomePage() {
                                         <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Status
                                         </th>
-                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider hidden md:table-cell">
-                                            Details
-                                        </th>
                                         <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
                                             Date
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[var(--border)]">
+                                <tbody className="divide-y divide-[var(--border)] bg-white dark:bg-transparent">
                                     {transactions.length > 0 ? (
                                         transactions.map((transaction) => (
-                                            <TransactionRow key={transaction.id} transaction={transaction} registry={incomeRegistry} />
+                                            <tr 
+                                                key={transaction.id} 
+                                                onClick={() => setSelectedTx(transaction)}
+                                                className="hover:bg-[var(--surface)] cursor-pointer transition-colors border-b border-[var(--border)] last:border-0 group"
+                                            >
+                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2.5 py-0.5 inline-flex text-[9px] font-bold rounded-full uppercase tracking-wider ${
+                                                        transaction.type === 'commission' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                                                    }`}>
+                                                        {transaction.type}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-7 h-7 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] flex items-center justify-center shrink-0">
+                                                            <Receipt size={14} className="text-primary" />
+                                                        </div>
+                                                        <span className="text-xs sm:text-sm font-semibold text-[var(--foreground)] group-hover:text-primary transition-colors">
+                                                            {getIncomeRowDisplayLabel(transaction, incomeRegistry)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right font-black text-sm text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
+                                                    +{formatCurrency(transaction.amount)}
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2.5 py-0.5 inline-flex text-[9px] font-bold rounded-full uppercase tracking-wider ${
+                                                        transaction.status.toLowerCase() === 'paid' || transaction.status.toLowerCase() === 'processed'
+                                                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                                                            : transaction.status.toLowerCase() === 'approved'
+                                                                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                                                                : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20'
+                                                    }`}>
+                                                        {transaction.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs text-[var(--muted-foreground)] tabular-nums">
+                                                    {formatDateTime(transaction.createdAt)}
+                                                </td>
+                                            </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-[var(--muted-foreground)] text-sm">
+                                            <td colSpan={5} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-[var(--muted-foreground)] text-sm">
                                                 No transactions found
                                             </td>
                                         </tr>
@@ -381,23 +394,23 @@ export default function IncomePage() {
                             </table>
                         </div>
 
-                        {/* Pagination - PWA compact */}
+                        {/* Pagination */}
                         {pagination && pagination.total > 0 && (
                             <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-[var(--border)] flex justify-between items-center gap-2">
                                 <button
                                     onClick={() => handlePageChange(Math.max(0, filters.skip - filters.limit))}
                                     disabled={filters.skip === 0}
-                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-[var(--border)] text-[11px] sm:text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
+                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-[var(--border)] text-[11px] sm:text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
                                 >
                                     Previous
                                 </button>
-                                <span className="text-xs sm:text-sm text-[var(--muted-foreground)] text-center">
+                                <span className="text-xs sm:text-sm text-[var(--muted-foreground)] text-center font-semibold">
                                     Page {Math.floor(filters.skip / filters.limit) + 1} of {Math.ceil(pagination.total / filters.limit)}
                                 </span>
                                 <button
                                     onClick={() => handlePageChange(filters.skip + filters.limit)}
                                     disabled={!pagination.hasMore}
-                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-[var(--border)] text-[11px] sm:text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
+                                    className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-[var(--border)] text-[11px] sm:text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[40px]"
                                 >
                                     Next
                                 </button>
@@ -406,83 +419,126 @@ export default function IncomePage() {
                     </>
                 )}
             </div>
-        </div>
-    );
-}
 
-// Transaction Row Component - PWA compact
-function TransactionRow({ transaction, registry = [] }: { transaction: IncomeTransaction; registry?: IncomeRegistryEntry[] }) {
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'paid':
-            case 'processed':
-                return 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-400';
-            case 'approved':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400';
-            case 'pending':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-400';
-            case 'rejected':
-            case 'failed':
-            case 'stopped':
-                return 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-400';
-            default:
-                return 'bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-gray-300';
-        }
-    };
+            {/* Audit Details Voucher Modal */}
+            {selectedTx && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div 
+                        className="bg-[var(--surface-elevated)] border border-[var(--border)] p-6 sm:p-8 rounded-2xl shadow-2xl flex flex-col max-w-md w-full relative overflow-hidden"
+                        role="dialog"
+                        aria-modal="true"
+                    >
+                        {/* Decorative background glows */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
 
-    const getTypeBadge = (type: string) => {
-        return type === 'commission' ? 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-400' : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-400';
-    };
+                        {/* Invoice Header */}
+                        <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+                            <div className="flex items-center gap-2 text-primary">
+                                <Receipt size={18} />
+                                <h3 className="text-base font-black text-[var(--foreground)] tracking-tight">Audit Statement</h3>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedTx(null)}
+                                className="w-8 h-8 rounded-full flex items-center justify-center border border-[var(--border)] hover:bg-[var(--surface)] text-[var(--muted-foreground)] transition-colors focus:outline-none"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
 
-    return (
-        <tr className="hover:bg-[var(--surface)]/50 transition-colors border-b border-[var(--border)] last:border-0">
-            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getTypeBadge(transaction.type)}`}>
-                    {transaction.type}
-                </span>
-            </td>
-            <td className="px-4 sm:px-6 py-4 whitespace-nowrap min-w-0">
-                <span className="text-xs sm:text-sm font-medium text-[var(--foreground)] truncate block">
-                    {getIncomeRowDisplayLabel(transaction, registry)}
-                </span>
-            </td>
-            <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
-                <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                    {formatCurrency(transaction.amount)}
-                </span>
-            </td>
-            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(transaction.status)}`}>
-                    {transaction.status}
-                </span>
-            </td>
-            <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                <div className="text-xs sm:text-sm text-[var(--muted-foreground)] space-y-1">
-                    {(transaction.sourceUserId || transaction.fromUserId) && (
-                        <p className="truncate">From: <span className="font-mono text-[var(--foreground)]">{transaction.sourceUserId || transaction.fromUserId}</span></p>
-                    )}
-                    {transaction.sourcePackageId && (
-                        <p className="truncate">Pkg: <span className="font-mono text-[var(--foreground)]">{transaction.sourcePackageId}</span></p>
-                    )}
-                    {transaction.calculationDetails && (
-                        <p className="text-xs text-[var(--muted-foreground)]/80 truncate">{transaction.calculationDetails.formula || 'Auto-calculated'}</p>
-                    )}
-                    {transaction.cappingInfo && (
-                        <p className="text-xs text-[var(--muted-foreground)]/80 truncate">
-                            Capping: {formatCurrency(transaction.cappingInfo.currentEarnings || 0)} / {formatCurrency(transaction.cappingInfo.cappingLimit || 0)}
-                        </p>
-                    )}
+                        {/* Invoice Voucher Body */}
+                        <div className="py-6 space-y-6 relative">
+                            {/* Brand Tag */}
+                            <div className="text-center space-y-1">
+                                <p className="text-[10px] font-extrabold uppercase tracking-widest text-primary">{APP_NAME} Auditor</p>
+                                <p className="text-xs text-[var(--muted-foreground)] font-medium">Logged: {formatDateTime(selectedTx.createdAt)}</p>
+                            </div>
+
+                            {/* Dashed Divider */}
+                            <div className="border-t border-dashed border-[var(--border)] w-full py-0.5" />
+
+                            {/* Particular details */}
+                            <div className="space-y-4 text-xs">
+                                <div>
+                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1">Commission description</p>
+                                    <p className="text-xs font-bold text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] p-3 rounded-lg leading-relaxed">
+                                        {getIncomeRowDisplayLabel(selectedTx, incomeRegistry)}
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Stream Type</p>
+                                        <p className="text-xs font-bold text-[var(--foreground)] mt-1 capitalize">{selectedTx.type}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Settlement Status</p>
+                                        <div className="mt-1">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                                {selectedTx.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Calculation details formula */}
+                                {selectedTx.calculationDetails && (
+                                    <div>
+                                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Calculation Formula</p>
+                                        <p className="text-xs font-mono text-primary bg-[var(--surface)] border border-[var(--border)] p-2 rounded-lg mt-1 select-all">
+                                            {selectedTx.calculationDetails.formula || 'Auto-calculated commission'}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Transaction Hash Reference ID with copy */}
+                                <div>
+                                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Tx Reference ID</p>
+                                    <div className="flex items-center justify-between gap-2 bg-[var(--surface)] border border-[var(--border)] px-3 py-2 rounded-lg mt-1 font-mono text-[10px] text-[var(--foreground)]">
+                                        <span className="truncate">{selectedTx.id}</span>
+                                        <button 
+                                            onClick={() => copyToClipboard(selectedTx.id)}
+                                            className="text-primary hover:text-primary/80 transition-colors focus:outline-none"
+                                            title="Copy ID"
+                                        >
+                                            {copied ? <Check size={12} /> : <Copy size={12} />}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Dashed Divider */}
+                            <div className="border-t border-dashed border-[var(--border)] w-full py-0.5" />
+
+                            {/* Grand Totals */}
+                            <div className="space-y-2 text-xs">
+                                <div className="flex justify-between font-black text-[var(--foreground)] text-sm pt-2 border-t border-[var(--border)]">
+                                    <span>Allocated Commission:</span>
+                                    <span className="text-emerald-500 tabular-nums">+{formatCurrency(selectedTx.amount)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                onClick={() => setSelectedTx(null)}
+                                className="flex-1 py-3 rounded-xl border border-[var(--border)] hover:bg-[var(--surface)] font-bold text-xs text-[var(--foreground)] transition-colors focus:outline-none"
+                            >
+                                Close Voucher
+                            </button>
+                            <button
+                                onClick={() => {
+                                    window.print();
+                                }}
+                                className="flex-1 py-3 rounded-xl font-bold text-xs bg-primary text-black hover:bg-primary/95 transition-all flex items-center justify-center gap-1.5 focus:outline-none"
+                            >
+                                <FileText size={13} />
+                                Print Receipt
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </td>
-            <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                <span className="text-xs sm:text-sm text-[var(--muted-foreground)]">{formatDateTime(transaction.createdAt)}</span>
-                {transaction.paidAt && (
-                    <p className="text-xs text-[var(--muted-foreground)]/70 mt-1">Paid: {formatDate(transaction.paidAt)}</p>
-                )}
-                {transaction.processedAt && (
-                    <p className="text-xs text-[var(--muted-foreground)]/70 mt-1">Processed: {formatDate(transaction.processedAt)}</p>
-                )}
-            </td>
-        </tr>
+            )}
+        </div>
     );
 }

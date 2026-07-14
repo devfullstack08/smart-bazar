@@ -1,6 +1,7 @@
 'use client';
 
 import { APP_NAME } from '@/constants/env';
+import { APP_CONSTANTS } from '@/constants/app';
 
 export interface AppBrandProps {
   /** Optional logo URL (for future use). When set, shown before/above the name. */
@@ -20,11 +21,10 @@ const sizeClasses = {
 };
 
 /**
- * Single source for app name (and future logo). Use everywhere we display "Smart Bazar"
- * so branding can be updated in one place.
+ * Single source for app name (and logo). Use everywhere we display logo/brand
  */
 export default function AppBrand({
-  logoUrl,
+  logoUrl = APP_CONSTANTS.APP_LOGO_URL,
   size = 'md',
   className = '',
   asLink = false,
@@ -32,19 +32,16 @@ export default function AppBrand({
   const textClass = `font-bold tracking-tight text-[var(--foreground)] ${sizeClasses[size]}`;
   const style = { fontFamily: 'var(--font-display)' } as React.CSSProperties;
 
-  const content = (
-    <>
-      {logoUrl && (
-        <img
-          src={logoUrl}
-          alt=""
-          className="h-8 w-auto object-contain mr-2"
-          width={32}
-          height={32}
-        />
-      )}
-      <span style={style}>{APP_NAME}</span>
-    </>
+  const content = logoUrl ? (
+    <img
+      src={logoUrl}
+      alt={APP_NAME}
+      className="h-10 sm:h-12 w-auto object-contain"
+      width={48}
+      height={48}
+    />
+  ) : (
+    <span style={style}>{APP_NAME}</span>
   );
 
   if (asLink) {

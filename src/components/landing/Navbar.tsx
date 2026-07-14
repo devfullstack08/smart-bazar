@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X, Zap, ArrowRight } from 'lucide-react';
 import { APP_NAME } from '@/constants/env';
+import { APP_CONSTANTS } from '@/constants/app';
 import { ThemeToggle } from '../ui/ThemeToggle';
 
 const navLinks = [
@@ -53,21 +54,14 @@ export default function Navbar() {
                         {/* Logo */}
                         <Link
                             href="/"
-                            className="flex items-center gap-2.5 group focus-ring rounded-lg"
+                            className="flex shrink-0 items-center gap-2 min-w-0"
                             aria-label={APP_NAME}
                         >
-                            <div
-                                className="w-9 h-9 rounded-xl flex items-center justify-center transition-shadow duration-300 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                                style={{ background: 'linear-gradient(135deg, var(--pw-primary), var(--pw-primary-dark))' }}
-                            >
-                                <Zap className="w-4.5 h-4.5 text-[#050508]" />
-                            </div>
-                            <span
-                                className="text-lg font-black tracking-tight gradient-text"
-                                style={{ fontFamily: 'var(--font-display)' }}
-                            >
-                                {APP_NAME}
-                            </span>
+                            <img
+                                src={APP_CONSTANTS.APP_LOGO_URL}
+                                alt={APP_NAME}
+                                className="h-11 sm:h-14 w-auto object-contain transition-transform hover:scale-105"
+                            />
                         </Link>
 
                         {/* Desktop links */}

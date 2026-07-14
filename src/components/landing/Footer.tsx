@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Zap, Mail, MapPin, Phone, Twitter, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 import { APP_NAME } from '@/constants/env';
+import { APP_CONSTANTS } from '@/constants/app';
 
 const footerSections: { title: string; links: { name: string; href: string }[] }[] = [
   {
@@ -61,13 +62,12 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-8 lg:gap-10">
           {/* Brand & Description - wider on large screens */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-6 group">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[var(--pw-primary)] to-[var(--pw-primary-dark)] flex items-center justify-center shadow-lg shadow-black/20 transition-transform group-hover:scale-105">
-                <Zap className="w-6 h-6 text-black" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-[var(--pw-primary)] to-[var(--pw-secondary)] bg-clip-text text-transparent">
-                {APP_NAME}
-              </span>
+            <Link href="/" className="flex shrink-0 items-center gap-2 mb-6 group w-fit">
+              <img
+                src={APP_CONSTANTS.APP_LOGO_URL}
+                alt={APP_NAME}
+                className="h-16 sm:h-20 w-auto object-contain transition-transform group-hover:scale-105"
+              />
             </Link>
 
             <p className="text-base leading-relaxed mb-8 max-w-md">

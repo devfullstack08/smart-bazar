@@ -7,6 +7,8 @@ import { useAppDispatch } from '@/lib/store/hooks';
 import { loginSuccess, logout } from '@/lib/store/slices/authSlice';
 import { userApi } from '@/lib/api/services';
 import toast from 'react-hot-toast';
+import { APP_NAME } from '@/constants/env';
+import { APP_CONSTANTS } from '@/constants/app';
 
 function ImpersonateContent() {
     const router = useRouter();
@@ -51,8 +53,9 @@ function ImpersonateContent() {
                         duration: 4000,
                         icon: '🕵️',
                         style: {
-                            background: '#4f46e5',
-                            color: '#fff',
+                            background: 'var(--surface-elevated)',
+                            color: 'var(--foreground)',
+                            border: '1px solid var(--border)',
                         },
                     });
 
@@ -80,13 +83,19 @@ function ImpersonateContent() {
     }, [searchParams, dispatch, router]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl flex flex-col items-center max-w-sm w-full mx-4 border border-gray-100 dark:border-gray-700">
-                <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-6">
-                    <Loader2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin" />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--background)]">
+            <div className="bg-[var(--surface-elevated)] p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 border border-[var(--border)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+                <img
+                    src={APP_CONSTANTS.APP_LOGO_URL}
+                    alt={APP_NAME}
+                    className="h-14 sm:h-16 w-auto object-contain mb-6"
+                />
+                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <Loader2 className="w-7 h-7 text-primary animate-spin" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Accessing User Account</h2>
-                <p className="text-gray-500 dark:text-gray-400 text-center text-sm">
+                <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Accessing User Account</h2>
+                <p className="text-[var(--muted-foreground)] text-center text-sm">
                     Verifying authorization and redirecting to user dashboard...
                 </p>
             </div>
@@ -97,8 +106,8 @@ function ImpersonateContent() {
 export default function ImpersonatePage() {
     return (
         <Suspense fallback={
-            <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-                <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+            <div className="flex items-center justify-center min-h-screen bg-[var(--background)]">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
         }>
             <ImpersonateContent />

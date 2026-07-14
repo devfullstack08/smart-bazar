@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { APP_NAME } from '@/constants/env';
+import { APP_CONSTANTS } from '@/constants/app';
 import {
     LayoutDashboard,
     Package,
@@ -115,12 +116,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         href="/dashboard"
                         className="flex shrink-0 items-center gap-2 min-w-0"
                     >
-                        <span
-                            className="text-lg font-bold tracking-tight text-[var(--foreground)]"
-                            style={{ fontFamily: 'var(--font-display)' }}
-                        >
-                            {APP_NAME}
-                        </span>
+                        <img
+                            src={APP_CONSTANTS.APP_LOGO_URL}
+                            alt={APP_NAME}
+                            className="h-11 sm:h-14 w-auto object-contain"
+                        />
                     </Link>
 
                     {/* Desktop nav — horizontal scroll when many links (flex-1 min-w-0 + inner overflow-x) */}

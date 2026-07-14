@@ -1,38 +1,42 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, ArrowDownToLine, ArrowUpToLine, Users, MessageCircle } from 'lucide-react';
+import Image from 'next/image';
+import { ASSETS } from '@/constants';
 
 const ACTIONS = [
-  { href: '/packages', icon: ShoppingCart,     label: 'Bazar Store', bg: 'rgba(249, 115, 22, 0.15)', color: '#f97316' },
-  { href: '/wallet',   icon: ArrowDownToLine,  label: 'Deposit',     bg: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' },
-  { href: '/wallet',   icon: ArrowUpToLine,    label: 'Withdraw',    bg: 'rgba(236, 72, 153, 0.15)', color: '#ec4899' },
-  { href: '/team',     icon: Users,            label: 'My Team',     bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' },
-  { href: '/support',  icon: MessageCircle,    label: 'Support',     bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' },
+  { href: '/packages', img: ASSETS.QUICK_STORE,     label: 'Bazar Store' },
+  { href: '/wallet',   img: ASSETS.QUICK_DEPOSIT,   label: 'Deposit' },
+  { href: '/wallet',   img: ASSETS.QUICK_WITHDRAW,  label: 'Withdraw' },
+  { href: '/team',     img: ASSETS.QUICK_TEAM,      label: 'My Team' },
+  { href: '/support',  img: ASSETS.QUICK_SUPPORT,   label: 'Support' },
 ] as const;
 
 export default function QuickActions() {
   return (
-    <div className="rounded-2xl premium-card p-4 sm:p-5 border border-[var(--border)] bg-[var(--surface-elevated)] w-full min-w-0">
-      {/* Full-width 5-column grid on all breakpoints — avoids horizontal scroll gap on narrow screens */}
-      <div className="grid w-full grid-cols-5 gap-1.5 sm:gap-2 min-w-0">
-        {ACTIONS.map(({ href, icon: Icon, label, bg, color }) => (
+    <div className="w-full min-w-0 py-1 lg:py-5 lg:px-4 lg:rounded-2xl lg:border lg:border-[var(--border)] lg:bg-[var(--surface-elevated)] lg:shadow-md lg:backdrop-blur-sm transition-all duration-300">
+      {/* 5-Column Grid: Completely borderless and transparent background, industry-grade styling */}
+      <div className="grid w-full grid-cols-5 gap-1.5 sm:gap-2.5 min-w-0">
+        {ACTIONS.map(({ href, img, label }) => (
           <Link
             key={label}
             href={href}
-            className="group flex min-w-0 flex-col items-center gap-1.5 sm:gap-2 py-2 rounded-xl
-                       hover:bg-white/5 active:scale-95 touch-manipulation min-touch
-                       transition-all duration-150 ease-out"
+            className="group flex min-w-0 flex-col items-center gap-1.5 sm:gap-2 py-2 rounded-2xl
+                       hover:bg-white/[0.03] active:scale-95 touch-manipulation min-touch
+                       transition-all duration-200 ease-out"
           >
-            <div
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center
-                         shadow-sm group-hover:scale-105 group-hover:shadow-md
-                         transition-all duration-200 shrink-0"
-              style={{ backgroundColor: bg }}
-            >
-              <Icon size={18} className="sm:w-[22px] sm:h-[22px]" style={{ color }} strokeWidth={2} />
+            {/* Minimalist Borderless Icon wrapper */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center shrink-0 relative">
+              <Image
+                src={img}
+                alt={label}
+                width={48}
+                height={48}
+                unoptimized
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-300"
+              />
             </div>
-            <span className="text-[10px] sm:text-[13px] font-medium text-center leading-tight text-[var(--foreground)] opacity-90 px-0.5">
+            <span className="text-[10px] sm:text-[11px] font-bold text-center leading-tight text-[var(--foreground)] opacity-85 group-hover:opacity-100 transition-opacity px-0.5">
               {label}
             </span>
           </Link>

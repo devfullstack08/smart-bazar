@@ -130,6 +130,7 @@ export interface User {
   status: 'active' | 'inactive';
   kycStatus?: 'pending' | 'verified' | 'rejected';
   walletAddress?: string; // Primary Web3 wallet address (for deposit/withdrawal when Web3 is enabled)
+  profilePicture?: string; // URL for the user's uploaded profile picture
 }
 
 // Registration Form

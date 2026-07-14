@@ -6,11 +6,10 @@ import type { DashboardData, CappingTrackingData, Banner, PoolBalance, Offer, Pr
 import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import DashboardWelcomeCard from '@/components/dashboard/DashboardWelcomeCard';
 import QuickActions from '@/components/dashboard/QuickActions';
-import BazarStorePreview from '@/components/dashboard/BazarStorePreview';
 import DashboardIncomeOverview from '@/components/dashboard/DashboardIncomeOverview';
 import DashboardPoolStatus from '@/components/dashboard/DashboardPoolStatus';
 import DashboardGlobalPools from '@/components/dashboard/DashboardGlobalPools';
-import DashboardWalletCard from '@/components/dashboard/DashboardWalletCard';
+import OverviewStats from '@/components/dashboard/OverviewStats';
 import DashboardCappingTracker from '@/components/dashboard/DashboardCappingTracker';
 import DashboardRoyaltyTracker from '@/components/dashboard/DashboardRoyaltyTracker';
 import DashboardReferEarn from '@/components/dashboard/DashboardReferEarn';
@@ -77,6 +76,7 @@ export default function DashboardPage() {
     const [poolStatus, setPoolStatus] = useState<Parameters<typeof DashboardPoolStatus>[0]['poolStatus'] | null>(null);
     const [incomeConfig, setIncomeConfig] = useState<Record<string, any> | null>(null);
     const [loadingTeamStats, setLoadingTeamStats] = useState(true);
+    const [directReferrals, setDirectReferrals] = useState<any[]>([]);
     const [siteOrigin, setSiteOrigin] = useState('');
 
     useEffect(() => {
@@ -257,6 +257,9 @@ export default function DashboardPage() {
                 downlineCount: teamRes?.stats?.directReferrals ?? 0,
                 sponsorId: teamRes?.sponsorId,
             });
+            if (teamRes?.directReferrals) {
+                setDirectReferrals(teamRes.directReferrals);
+            }
         } catch (error) {
             console.error('Failed to fetch team stats:', error);
         } finally {
@@ -289,46 +292,53 @@ export default function DashboardPage() {
 
             <LotteryStatusBanner />
 
-            {/* 1. Welcome */}
+            {/* 1. Welcome Header (Grows full width) */}
             <DashboardWelcomeCard user={dashboardUser} loading={loadingProfile} />
 
-            {/* 2. Quick action */}
-            <QuickActions />
+            {/* 2. Overview Stats Row (Grows full width) */}
+            <OverviewStats wallet={wallet} income={income} loading={loadingWallet || loadingIncome} />
 
-            {/* Featured Curations Storefront Grid */}
-            <BazarStorePreview />
+            {/* Quick Actions at the top for Mobile viewports */}
+            <div className="block lg:hidden mt-2">
+                <QuickActions />
+            </div>
 
-            {/* 3. Active packages */}
-            <DashboardPackages activePackages={packages.activePackages} loading={loadingPackages} />
+            {/* Main 12-Column Responsive Dashboard Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-w-0">
+                {/* Left Area - Main Analytics & Staking Metrics (Col span 8) */}
+                <div className="lg:col-span-8 space-y-6 min-w-0">
+                    <DashboardIncomeOverview income={income} cappingData={cappingData} loading={loadingIncome} />
+                    
+                    <DashboardCappingTracker cappingData={cappingData} loading={loadingCapping} />
+                    
+                    <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
+                    
+                    <DashboardGlobalPools globalWallets={globalWallets} loading={loadingGlobalWallets} />
+                    
+                    <DashboardPoolStatus poolStatus={poolStatus} loading={loadingPoolStatus} incomeConfig={incomeConfig} />
+                </div>
 
-            {/* 3. Available balance */}
-            <DashboardWalletCard wallet={wallet} loading={loadingWallet} />
-            {/* 7. Capping tracker */}
-            <DashboardCappingTracker cappingData={cappingData} loading={loadingCapping} />
-
-            {/* 7b. Royalty depth tracker (Smart Bazar — distinct from capping; uses pool-status + royalty meta) */}
-            <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
-
-            {/* 8. Income overview */}
-            <DashboardIncomeOverview income={income} cappingData={cappingData} loading={loadingIncome} />
-
-            {/* 4. Global pool balance */}
-            <DashboardGlobalPools globalWallets={globalWallets} loading={loadingGlobalWallets} />
-
-            {/* 5. Global pool programs only (excludes base ROI / level ROI — see Income overview) */}
-            <DashboardPoolStatus poolStatus={poolStatus} loading={loadingPoolStatus} incomeConfig={incomeConfig} />
-
-            {/* 6. Refer to earn */}
-            <DashboardReferEarn
-                referralLink={referralLink}
-                dashboardUser={dashboardUser}
-                downlineCount={network.downlineCount ?? 0}
-                incomeByType={income.byType}
-                teamLoading={loadingTeamStats}
-            />
-
-            {/* Extra sections (offers, roadmap, etc.) */}
-            <OffersSection offers={offers} loading={loadingOffers} />
+                {/* Right Area - Operational Panels & Sponsor Actions (Col span 4) */}
+                <div className="lg:col-span-4 space-y-6 min-w-0">
+                    {/* Desktop-only Quick Actions in sidebar */}
+                    <div className="hidden lg:block">
+                        <QuickActions />
+                    </div>
+                    
+                    <DashboardReferEarn
+                        referralLink={referralLink}
+                        dashboardUser={dashboardUser}
+                        downlineCount={network.downlineCount ?? 0}
+                        directReferrals={directReferrals}
+                        incomeByType={income.byType}
+                        teamLoading={loadingTeamStats}
+                    />
+                    
+                    <DashboardPackages activePackages={packages.activePackages} loading={loadingPackages} />
+                    
+                    <OffersSection offers={offers} loading={loadingOffers} />
+                </div>
+            </div>
         </div>
     );
 }

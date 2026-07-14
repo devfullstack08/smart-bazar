@@ -1147,6 +1147,28 @@ export const userApi = {
         } as User;
     },
 
+    uploadProfilePicture: async (file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch(`${API_URL}/users/profile/picture`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                'x-project-id': projectId || '',
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Profile picture upload failed' }));
+            throw new Error(error.error || error.message || 'Profile picture upload failed');
+        }
+
+        const resData = await response.json();
+        return resData?.data?.profilePicture || resData?.profilePicture || resData?.data?.url || resData?.url || '';
+    },
+
     changePassword: async (currentPassword: string, newPassword: string) => {
         const response = await apiClient.post<{ success: boolean; message: string }>(
             '/users/change-password',

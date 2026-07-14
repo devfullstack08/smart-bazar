@@ -54,6 +54,12 @@ export function useEnsureProjectConfig(options?: { force?: boolean }) {
                 const data = (raw?.data ?? raw) as ProjectConfig | null;
                 if (data?.projectId) {
                     dispatch(setProjectConfig(data));
+                    if (data.config?.currency) {
+                        localStorage.setItem('project_currency', data.config.currency);
+                        if (typeof window !== 'undefined') {
+                            (window as any).__projectCurrency = data.config.currency;
+                        }
+                    }
                     if (force) {
                         forcedOnceRef.current = true;
                     }

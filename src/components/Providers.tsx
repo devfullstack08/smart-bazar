@@ -7,15 +7,22 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { wagmiConfig } from '@/lib/wagmi/config';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { useEnsureProjectConfig } from '@/hooks/useProjectConfig';
 
 const queryClient = new QueryClient();
+
+function ProjectConfigLoader({ children }: { children: React.ReactNode }) {
+    useEnsureProjectConfig();
+    return <>{children}</>;
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <ThemeProvider>
         <Provider store={store}>
-            <QueryClientProvider client={queryClient}>
-                <WagmiProvider config={wagmiConfig} reconnectOnMount>
+            <ProjectConfigLoader>
+                <QueryClientProvider client={queryClient}>
+                    <WagmiProvider config={wagmiConfig} reconnectOnMount>
                     {children}
                     <Toaster
                         position="top-right"
@@ -43,6 +50,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     />
                 </WagmiProvider>
             </QueryClientProvider>
+            </ProjectConfigLoader>
         </Provider>
         </ThemeProvider>
     );

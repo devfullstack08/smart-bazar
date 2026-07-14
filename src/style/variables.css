@@ -1,0 +1,125 @@
+/* Class-based dark mode for manual toggle (next-themes) */
+@variant dark (&:where(.dark, .dark *));
+
+/* ==========================================
+   Design System (see DESIGN_SYSTEM.md)
+   - 8px grid, radius & motion tokens below
+   - Use tokens; avoid magic numbers
+   ========================================== */
+
+:root {
+  /* Brand — Premium E-Commerce: Champagne Gold & Velvet Navy */
+  --pw-primary: #d4af37;
+  --pw-primary-light: #f3e5ab;
+  --pw-primary-dark: #aa7c11;
+  --pw-secondary: #12192c;
+  --pw-secondary-light: #1b264f;
+  --pw-accent: #c87a53;
+  --pw-accent-light: #dca385;
+  
+  /* Gradient */
+  --pw-gradient-start: #12192c;
+  --pw-gradient-mid: #685028;
+  --pw-gradient-end: #d4af37;
+  
+  /* Status */
+  --pw-success: #10b981;
+  --pw-warning: #f59e0b;
+  --pw-error: #ef4444;
+  
+  /* Light Mode */
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --surface: #f4f4f5;
+  --surface-elevated: #ffffff;
+  --border: #e4e4e7;
+  --muted: #71717a;
+  --muted-foreground: #a1a1aa;
+  
+  /* ---------- 8px grid (design system) ---------- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  
+  /* Radius scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  
+  /* Layout */
+  --section-padding: 6rem;
+  --container-max: 1280px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 48px rgba(0, 229, 160, 0.35);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--pw-primary);
+  --color-primary-light: var(--pw-primary-light);
+  --color-primary-dark: var(--pw-primary-dark);
+  --color-secondary: var(--pw-secondary);
+  --color-secondary-light: var(--pw-secondary-light);
+  --color-accent: var(--pw-accent);
+  --color-accent-light: var(--pw-accent-light);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Touch target minimum (mobile-first) */
+.min-touch {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Dark Mode — Deep, premium Web3 */
+.dark {
+  --background: #050508;
+  --foreground: #fafafa;
+  --surface: #0c0c10;
+  --surface-elevated: #12121a;
+  --border: #27272a;
+  --muted: #a1a1aa;
+  --muted-foreground: #71717a;
+  --shadow-glow: 0 0 56px rgba(249, 115, 22, 0.2);
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

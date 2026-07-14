@@ -5,13 +5,15 @@ import Link from 'next/link';
 import { API_URL } from '@/constants/env';
 import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
 import { updateUser } from '@/lib/store/slices/authSlice';
-import { User as UserIcon, Mail, Phone, Calendar, Shield, Upload, CheckCircle2, XCircle, Clock, Wallet, Key, Copy, Check, Download, Eye, EyeOff } from 'lucide-react';
+import { User as UserIcon, Mail, Phone, Calendar, Shield, Upload, CheckCircle2, XCircle, Clock, Wallet, Key, Copy, Check, Download, Eye, EyeOff, Camera, Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils/cn';
 import toast from 'react-hot-toast';
 import { userApi, authApi } from '@/lib/api/services';
 import { Modal } from '@/components/ui/Modal';
 import Web3ConfigService from '@/lib/services/web3Config.service';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
+import UserProfileImage from '@/components/ui/UserProfileImage';
+import type { User } from '@/types';
 
 interface KYCDocument {
     documentId?: string; // New field from API
@@ -58,6 +60,8 @@ export default function ProfilePage() {
     const [loadingKYC, setLoadingKYC] = useState(false);
     const [showKYCUpload, setShowKYCUpload] = useState(false);
     const [uploadingKYC, setUploadingKYC] = useState(false);
+    const [uploadingProfilePic, setUploadingProfilePic] = useState(false);
+    const profilePicInputRef = useRef<HTMLInputElement>(null);
     const [kycFormData, setKycFormData] = useState({
         type: 'aadhar',
         file: null as File | null,
@@ -166,38 +170,54 @@ export default function ProfilePage() {
     };
 
     const handleSave = async () => {
-        setSaving(true);
-
         try {
-            const updateData: {
-                name?: string;
-                email?: string;
-                phone?: string;
-                walletAddress?: string;
-            } = {};
-
-            if (formData.name) {
-                updateData.name = formData.name;
-            }
-            if (formData.email) {
-                updateData.email = formData.email;
-            }
-            if (formData.phone) {
-                updateData.phone = formData.phone;
-            }
-            if (web3Enabled && 'walletAddress' in formData && !primaryWalletLocked) {
-                updateData.walletAddress = (formData.walletAddress ?? '').trim();
-            }
-
-            const updatedUser = await userApi.updateProfile(updateData);
+            setSaving(true);
+            const updatedUser = await userApi.updateProfile({
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                walletAddress: formData.walletAddress,
+            });
             dispatch(updateUser(updatedUser));
-            toast.success('Profile updated successfully!');
+            toast.success('Profile updated successfully');
             setEditing(false);
         } catch (error: any) {
-            const message = error.response?.data?.message || 'Update failed';
-            toast.error(message);
+            toast.error(error.message || 'Failed to update profile');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please select a valid image file');
+            return;
+        }
+
+        // Validate file size (e.g., max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('Image size must be less than 5MB');
+            return;
+        }
+
+        try {
+            setUploadingProfilePic(true);
+            const newProfilePicUrl = await userApi.uploadProfilePicture(file);
+            if (user) {
+                dispatch(updateUser({ ...user, profilePicture: newProfilePicUrl } as User));
+            }
+            toast.success('Profile picture updated successfully');
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to upload profile picture');
+        } finally {
+            setUploadingProfilePic(false);
+            if (profilePicInputRef.current) {
+                profilePicInputRef.current.value = '';
+            }
         }
     };
 
@@ -470,9 +490,13 @@ export default function ProfilePage() {
                 <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(0,229,160,0.15) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
                 <div className="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-[var(--pw-primary)]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                 <div className="relative z-10 flex items-center gap-2.5 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[var(--pw-primary)] to-emerald-600 flex items-center justify-center text-lg sm:text-2xl font-bold text-white border border-[var(--pw-primary)]/50 dark:border-white/20 shadow-lg shrink-0">
-                        {(user?.fullName || user?.name)?.charAt(0) || 'U'}
-                    </div>
+                    <UserProfileImage
+                        src={(user as any)?.profilePicture}
+                        alt={user?.name ?? 'User'}
+                        width={56}
+                        height={56}
+                        className="rounded-2xl border border-[var(--primary)]/20"
+                    />
                     <div className="min-w-0">
                         <span className="inline-flex items-center gap-1 sm:gap-2 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[var(--pw-primary)]/10 dark:bg-white/10 border border-[var(--pw-primary)]/20 dark:border-white/20 text-[var(--pw-primary)] dark:text-white text-[10px] sm:text-sm font-medium mb-1 sm:mb-2">Account</span>
                         <h1 className="text-base sm:text-2xl md:text-3xl font-bold text-[var(--foreground)] leading-tight truncate" style={{ fontFamily: 'var(--font-display)' }}>My Profile</h1>
@@ -484,10 +508,36 @@ export default function ProfilePage() {
             {/* Profile Card - PWA compact */}
             <div className="premium-card rounded-lg sm:rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
                 {/* Header Section */}
-                <div className="bg-gradient-to-r from-[var(--pw-primary)] via-emerald-500 to-[var(--pw-primary)] p-4 sm:p-6 md:p-8 text-white">
-                    <div className="flex items-center gap-3 sm:gap-6">
-                        <div className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold border border-white/20 shrink-0">
-                            {(user?.fullName || user?.name)?.charAt(0) || 'U'}
+                <div className="bg-gradient-to-r from-[var(--pw-primary)] via-emerald-500 to-[var(--pw-primary)] p-4 sm:p-6 md:p-8 text-white relative">
+                    <div className="absolute inset-0 bg-black/10"></div>
+                    <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 100% 100%, rgba(212,175,55,0.2) 0, transparent 400px)' }}></div>
+                    <div className="relative flex items-center gap-3 sm:gap-6 z-10">
+                        <div className="relative group">
+                            <UserProfileImage
+                                src={(user as any)?.profilePicture}
+                                alt={user?.name ?? 'User'}
+                                width={96}
+                                height={96}
+                                className="rounded-2xl border-2 border-white/30 shadow-lg transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm border border-white/20">
+                                {uploadingProfilePic ? (
+                                    <Loader2 className="animate-spin text-white mb-1" size={24} />
+                                ) : (
+                                    <>
+                                        <Camera className="text-white mb-1" size={24} />
+                                        <span className="text-white text-xs font-semibold">Change</span>
+                                    </>
+                                )}
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    ref={profilePicInputRef}
+                                    onChange={handleProfilePicUpload}
+                                    disabled={uploadingProfilePic}
+                                />
+                            </label>
                         </div>
                         <div className="min-w-0">
                             <h2 className="text-lg sm:text-2xl md:text-3xl font-bold truncate">{user?.fullName || user?.name || 'User'}</h2>

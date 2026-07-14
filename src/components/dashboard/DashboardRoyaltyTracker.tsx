@@ -304,7 +304,7 @@ export default function DashboardRoyaltyTracker({
                           <div className="flex justify-between text-[10px] mb-1 opacity-50 text-[var(--foreground)]">
                             <span>Business</span>
                             <span className="tabular-nums font-medium">
-                              ${biz.current} / ${biz.required}
+                              {formatCurrency(biz.current)} / {formatCurrency(biz.required)}
                             </span>
                           </div>
                           <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden">

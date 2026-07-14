@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { TrendingUp, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, Award } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/cn';
 import { getIncomeTypeLabel } from '@/lib/utils/incomeLabel';
 import type { CappingTrackingData } from '@/types';
@@ -21,14 +21,20 @@ export default function DashboardIncomeOverview({ income, cappingData, loading =
   if (loading) {
     return (
       <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
-        <div className="px-5 pt-5 pb-4 border-b border-[var(--border)]">
-          <div className="h-5 w-40 rounded bg-gray-200 dark:bg-white/10 animate-pulse" />
+        <div className="px-6 py-5 border-b border-[var(--border)]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl shimmer-placeholder" />
+              <div className="h-5 w-40 rounded shimmer-placeholder" />
+            </div>
+            <div className="h-8 w-20 rounded-lg shimmer-placeholder" />
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-px bg-[var(--border)]">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="bg-[var(--surface-elevated)] px-4 py-4">
-              <div className="h-3 w-16 rounded bg-gray-200 dark:bg-white/10 animate-pulse mb-2" />
-              <div className="h-7 w-24 rounded bg-gray-200 dark:bg-white/10 animate-pulse" />
+            <div key={item} className="bg-[var(--surface-elevated)] px-6 py-5 space-y-2">
+              <div className="h-3 w-16 rounded shimmer-placeholder" />
+              <div className="h-6 w-24 rounded shimmer-placeholder" />
             </div>
           ))}
         </div>
@@ -36,86 +42,80 @@ export default function DashboardIncomeOverview({ income, cappingData, loading =
     );
   }
 
+  // Calculate total across categories for proportion mapping
+  const totalVal = income.byType.reduce((acc, curr) => acc + (curr.totalAmount ?? 0), 0);
+
   return (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
 
       {/* ── Header ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[var(--border)]">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
         <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: 'rgba(0,229,160,0.12)' }}
-          >
-            <TrendingUp size={17} style={{ color: 'var(--pw-primary)' }} strokeWidth={2.2} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-[var(--primary)]/20"
+            style={{ backgroundColor: 'rgba(212,175,55,0.1)' }}>
+            <TrendingUp size={18} className="text-primary" strokeWidth={2} />
           </div>
-          <h2
-            className="text-base font-bold text-[var(--foreground)]"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
+          <h2 className="text-base font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-sans)' }}>
             Income Overview
           </h2>
         </div>
         <Link
           href="/income"
-          className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-          style={{ backgroundColor: 'rgba(0,229,160,0.1)', color: 'var(--pw-primary)' }}
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-primary hover:bg-[var(--primary)]/25 shadow-sm"
         >
-          View all <ArrowUpRight size={12} />
+          View Statement <ArrowUpRight size={12} />
         </Link>
       </div>
 
-      {/* ── Top 3 stat cards ───────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-px bg-[var(--border)]">
 
-        {/* Today */}
-        <div className="bg-[var(--surface-elevated)] px-4 py-4">
-          <p className="text-[10px] font-medium uppercase tracking-wide opacity-50 text-[var(--foreground)] mb-1.5">
-            Today
-          </p>
-          <p
-            className="text-xl sm:text-2xl font-bold tabular-nums"
-            style={{ color: 'var(--pw-primary)' }}
-          >
-            {formatCurrency(income.todayIncome ?? 0)}
-          </p>
-        </div>
 
-        {/* Yesterday */}
-        <div className="bg-[var(--surface-elevated)] px-4 py-4">
-          <p className="text-[10px] font-medium uppercase tracking-wide opacity-50 text-[var(--foreground)] mb-1.5">
-            Yesterday
-          </p>
-          <p className="text-xl sm:text-2xl font-bold tabular-nums text-[var(--foreground)]">
-            {formatCurrency(income.yesterdayIncome ?? 0)}
-          </p>
+      {/* ── SVG Proportional Mix bar ─────────────────────────── */}
+      {totalVal > 0 && (
+        <div className="px-6 py-4 border-b border-[var(--border)] bg-black/5 dark:bg-black/15">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2">Earnings Composition</p>
+          <div className="h-3 w-full rounded-full overflow-hidden flex bg-black/15 dark:bg-black/35">
+            {income.byType.map((item, idx) => {
+              const pct = totalVal > 0 ? ((item.totalAmount ?? 0) / totalVal) * 100 : 0;
+              if (pct <= 0) return null;
+              return (
+                <div
+                  key={item.type}
+                  style={{
+                    width: `${pct}%`,
+                    backgroundColor: GOLD_DOT_COLORS[idx % GOLD_DOT_COLORS.length]
+                  }}
+                  className="h-full transition-all duration-300"
+                  title={`${getIncomeTypeLabel(item.type, cappingData?.incomeRegistry)}: ${pct.toFixed(1)}%`}
+                />
+              );
+            })}
+          </div>
         </div>
-
-        {/* Total */}
-        <div className="bg-[var(--surface-elevated)] px-4 py-4">
-          <p className="text-[10px] font-medium uppercase tracking-wide opacity-50 text-[var(--foreground)] mb-1.5">
-            Total Earned
-          </p>
-          <p className="text-xl sm:text-2xl font-bold tabular-nums text-[var(--foreground)]">
-            {formatCurrency(income.totalEarned ?? 0)}
-          </p>
-        </div>
-      </div>
+      )}
 
       {/* ── Income by type table ───────────────────────────── */}
       {income.byType.length === 0 ? (
-        <div className="px-5 py-8 text-center">
-          <p className="text-sm opacity-40 text-[var(--foreground)]">No income recorded yet</p>
+        <div className="px-6 py-12 flex flex-col items-center justify-center text-center space-y-3 bg-black/5 dark:bg-black/15">
+          <div className="w-12 h-12 rounded-full border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]">
+            <Award size={20} />
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-[var(--foreground)]">No Income Logged Yet</h4>
+            <p className="text-[11px] text-[var(--muted-foreground)] mt-1 max-w-[240px] leading-relaxed">
+              Commissions and binary matching payouts appear here in real-time as your network active nodes scale up.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[var(--border)]">
-                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide opacity-40 text-[var(--foreground)]">
-                  Type
+              <tr className="border-b border-[var(--border)] bg-black/5 dark:bg-black/10">
+                <th className="px-6 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+                  Commission Channel
                 </th>
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide opacity-40 text-[var(--foreground)]">
-                  Amount
+                <th className="px-6 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+                  Total Paid
                 </th>
               </tr>
             </thead>
@@ -123,22 +123,20 @@ export default function DashboardIncomeOverview({ income, cappingData, loading =
               {income.byType.map((item, i) => (
                 <tr
                   key={item.type}
-                  className="border-b border-[var(--border)] last:border-0 transition-colors hover:bg-white/[0.03]"
+                  className="border-b border-[var(--border)] last:border-0 transition-colors hover:bg-white/[0.02]"
                 >
-                  <td className="px-5 py-3.5">
+                  <td className="px-6 py-4.5">
                     <div className="flex items-center gap-2.5">
-                      {/* Color dot */}
                       <span
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{ backgroundColor: DOT_COLORS[i % DOT_COLORS.length] }}
+                        className="w-2.5 h-2.5 rounded-full shrink-0 border border-white/10"
+                        style={{ backgroundColor: GOLD_DOT_COLORS[i % GOLD_DOT_COLORS.length] }}
                       />
-                      <span className="text-[var(--foreground)] font-medium text-sm">
+                      <span className="text-[var(--foreground)] font-bold text-sm">
                         {getIncomeTypeLabel(item.type, cappingData?.incomeRegistry)}
                       </span>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-right font-bold tabular-nums text-sm"
-                    style={{ color: 'var(--pw-primary)' }}>
+                  <td className="px-6 py-4.5 text-right font-black tabular-nums text-sm text-primary">
                     {formatCurrency(item.totalAmount ?? 0)}
                   </td>
                 </tr>
@@ -151,6 +149,11 @@ export default function DashboardIncomeOverview({ income, cappingData, loading =
   );
 }
 
-const DOT_COLORS = [
-  'var(--pw-primary)', '#00C2E0', '#A78BFA', '#FBBF24', '#FB7185', '#34D399',
+const GOLD_DOT_COLORS = [
+  'var(--primary)',
+  '#c87a53',
+  '#e2e8f0',
+  '#a37d4c',
+  '#a0522d',
+  '#708090'
 ];

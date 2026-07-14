@@ -24,7 +24,12 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[var(--background)] overflow-x-hidden">
+    <main className="min-h-screen bg-[var(--background)] overflow-x-hidden relative">
+      {/* Premium Radial Ambient Glows & Grid Mesh for Landing */}
+      <div className="absolute top-0 right-0 w-[55%] h-[55%] bg-[var(--primary)]/5 rounded-full blur-[160px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-0 w-[65%] h-[65%] bg-indigo-500/[0.04] rounded-full blur-[180px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.012)_1px,transparent_0)] bg-[size:32px_32px] pointer-events-none opacity-40 z-0" />
+
       <Navbar />
       <Hero />
       <Features />

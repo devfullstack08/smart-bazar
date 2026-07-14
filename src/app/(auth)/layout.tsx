@@ -8,9 +8,14 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="auth-premium-shell overflow-x-hidden flex flex-col min-h-screen min-h-[100dvh]">
+        <div className="auth-premium-shell overflow-x-hidden flex flex-col min-h-screen min-h-[100dvh] relative">
+            {/* Premium Radial Ambient Glows & Grid Mesh */}
+            <div className="absolute top-0 right-0 w-[55%] h-[55%] bg-[var(--primary)]/6 rounded-full blur-[140px] pointer-events-none z-0" />
+            <div className="absolute bottom-0 left-0 w-[65%] h-[65%] bg-indigo-500/[0.04] rounded-full blur-[160px] pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.012)_1px,transparent_0)] bg-[size:32px_32px] pointer-events-none opacity-40 z-0" />
+
             {/* Header with home link */}
-            <header className="flex-shrink-0 z-50 flex items-center justify-between px-4 py-3 border-b border-[var(--border)]/50 bg-[var(--background)]/80 backdrop-blur-md">
+            <header className="flex-shrink-0 z-50 flex items-center justify-between px-4 py-3 border-b border-[var(--border)]/50 bg-[var(--background)]/85 backdrop-blur-md">
                 <Link
                     href="/"
                     className="flex items-center gap-2 text-[var(--foreground)] hover:opacity-90 transition-opacity"

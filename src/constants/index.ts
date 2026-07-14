@@ -57,6 +57,16 @@ export const DEFAULT_COUNTRY_CODE = '+1';
 // LocalStorage Keys
 export const REMEMBER_ME_KEY = 'rememberedEmail';
 
+// Central Static Asset Paths
+export const ASSETS = {
+    DEFAULT_PROFILE_PICTURE: '/assets/images/user-default-profile-picture.png',
+    PRODUCT_BOX: '/assets/images/smart_bazar_product_box.jpg',
+    QUICK_STORE: '/assets/images/quick-actions/package.png',
+    QUICK_DEPOSIT: '/assets/images/quick-actions/deposit.png',
+    QUICK_WITHDRAW: '/assets/images/quick-actions/withdraw.png',
+    QUICK_TEAM: '/assets/images/quick-actions/team.png',
+    QUICK_SUPPORT: '/assets/images/quick-actions/support.png',
+} as const;
 
-export *  from './env';
+export * from './env';
 export * from './storageKey';

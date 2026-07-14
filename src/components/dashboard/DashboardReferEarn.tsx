@@ -28,12 +28,14 @@ export default function DashboardReferEarn({
   referralLink,
   dashboardUser,
   downlineCount,
+  directReferrals = [],
   incomeByType,
   teamLoading = false,
 }: {
   referralLink: string;
   dashboardUser: DashboardUser;
   downlineCount: number;
+  directReferrals?: any[];
   incomeByType: IncomeByType[];
   teamLoading?: boolean;
 }) {
@@ -69,53 +71,74 @@ export default function DashboardReferEarn({
     .filter(i => i.type.toLowerCase().includes('referral'))
     .reduce((s, i) => s + (i.totalAmount ?? 0), 0);
 
+  // Compute binary node distribution
+  const leftCount = directReferrals.filter(d => d.placement?.position === 'left').length;
+  const rightCount = directReferrals.filter(d => d.placement?.position === 'right').length;
+
   return (
     <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
 
       {/* ── Header ───────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-[var(--border)]">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,229,160,0.12)' }}>
-          <Sparkles size={17} style={{ color: 'var(--pw-primary)' }} strokeWidth={2.2} />
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-[var(--border)]">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-[var(--primary)]/20"
+          style={{ backgroundColor: 'rgba(212,175,55,0.1)' }}>
+          <Sparkles size={18} className="text-primary" strokeWidth={2} />
         </div>
         <div>
-          <h2 className="text-base font-bold text-[var(--foreground)] leading-tight"
-            style={{ fontFamily: 'var(--font-display)' }}>
+          <h2 className="text-base font-black text-[var(--foreground)] leading-tight" style={{ fontFamily: 'var(--font-sans)' }}>
             Refer & Earn
           </h2>
-          <p className="text-[11px] opacity-40 text-[var(--foreground)] mt-0.5">
-            Share your link — earn when they join
+          <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5">
+            Share your link — earn direct referral commissions
           </p>
         </div>
       </div>
 
-      <div className="p-5 space-y-5">
+      <div className="p-6 space-y-5">
 
         {/* ── Stats row ────────────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-px bg-[var(--border)] rounded-xl overflow-hidden">
-          <div className="bg-[var(--background)] px-4 py-3 flex flex-col gap-1">
-            <p className="text-[10px] uppercase tracking-wide opacity-40 text-[var(--foreground)] font-semibold">Referrals</p>
-            <TeamStatSkeleton loading={teamLoading} skeletonClassName="h-7 w-14 bg-[var(--surface-elevated)]">
-              <p className="text-xl font-bold tabular-nums" style={{ color: 'var(--pw-primary)' }}>{downlineCount || 0}</p>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-white/[0.02] border border-white/5 rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-[var(--primary)]/10 hover:bg-white/[0.04] transition-all duration-200">
+            <p className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">Referrals</p>
+            <TeamStatSkeleton loading={teamLoading} skeletonClassName="h-5 w-12 bg-white/5 shimmer-placeholder mt-1">
+              <p className="text-base font-black text-primary tabular-nums mt-0.5">{downlineCount || 0}</p>
             </TeamStatSkeleton>
           </div>
-          <div className="bg-[var(--background)] px-4 py-3 flex flex-col gap-1">
-            <p className="text-[10px] uppercase tracking-wide opacity-40 text-[var(--foreground)] font-semibold">User ID</p>
-            <p className="text-sm font-bold text-[var(--foreground)] truncate">{dashboardUser.userId}</p>
+          <div className="bg-white/[0.02] border border-white/5 rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-[var(--primary)]/10 hover:bg-white/[0.04] transition-all duration-200">
+            <p className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">User ID</p>
+            <p className="text-xs font-black text-[var(--foreground)] mt-1 truncate">{dashboardUser.userId}</p>
           </div>
-          <div className="bg-[var(--background)] px-4 py-3 flex flex-col gap-1">
-            <p className="text-[10px] uppercase tracking-wide opacity-40 text-[var(--foreground)] font-semibold">Sponsor</p>
-            <p className="text-sm font-bold text-[var(--foreground)] truncate">{sponsorName}</p>
+          <div className="bg-white/[0.02] border border-white/5 rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-[var(--primary)]/10 hover:bg-white/[0.04] transition-all duration-200">
+            <p className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">Sponsor</p>
+            <p className="text-xs font-black text-[var(--foreground)] mt-1 truncate">{sponsorName}</p>
+          </div>
+        </div>
+
+        {/* Binary Node Placements */}
+        <div className="border border-[var(--border)] rounded-xl bg-black/5 dark:bg-black/15 p-3.5 space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Binary Placements Node</p>
+          <div className="flex items-center gap-4">
+            {/* Left Node */}
+            <div className="flex-1 rounded-lg border border-white/5 bg-[var(--surface)] p-2 text-center">
+              <p className="text-[9px] text-[var(--muted-foreground)] uppercase font-bold">Left Node</p>
+              <p className="text-base font-black text-primary tabular-nums mt-0.5">{leftCount} Directs</p>
+            </div>
+            <div className="h-6 w-px bg-[var(--border)]" />
+            {/* Right Node */}
+            <div className="flex-1 rounded-lg border border-white/5 bg-[var(--surface)] p-2 text-center">
+              <p className="text-[9px] text-[var(--muted-foreground)] uppercase font-bold">Right Node</p>
+              <p className="text-base font-black text-primary tabular-nums mt-0.5">{rightCount} Directs</p>
+            </div>
           </div>
         </div>
 
         {/* Referral income highlight */}
         {referralIncome > 0 && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
-            style={{ backgroundColor: 'rgba(0,229,160,0.08)', border: '1px solid rgba(0,229,160,0.2)' }}>
-            <TrendingUp size={16} style={{ color: 'var(--pw-primary)' }} />
-            <p className="text-sm text-[var(--foreground)] opacity-70">Referral income earned</p>
-            <p className="ml-auto text-sm font-bold tabular-nums" style={{ color: 'var(--pw-primary)' }}>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--primary)]/15"
+            style={{ backgroundColor: 'rgba(212,175,55,0.06)' }}>
+            <TrendingUp size={16} className="text-primary" />
+            <p className="text-xs text-[var(--foreground)] opacity-70">Referral Commissions</p>
+            <p className="ml-auto text-sm font-black tabular-nums text-primary">
               {formatCurrency(referralIncome)}
             </p>
           </div>
@@ -126,17 +149,17 @@ export default function DashboardReferEarn({
 
           {/* QR code */}
           <div className="shrink-0 flex flex-col items-center gap-1.5">
-            <div className="p-2.5 rounded-xl border border-[var(--border)] bg-white">
-              <ReferralQRCode value={referralLink} size={100} />
+            <div className="p-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] shadow-inner">
+              <ReferralQRCode value={referralLink} size={80} className="border-0 bg-transparent p-0" />
             </div>
-            <p className="text-[10px] opacity-40 text-[var(--foreground)]">Scan to join</p>
+            <p className="text-[9px] text-[var(--muted-foreground)] font-bold">Scan to register</p>
           </div>
 
           {/* Link + buttons */}
           <div className="flex-1 min-w-0 flex flex-col gap-2.5">
             {/* Link input */}
-            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)]">
-              <p className="text-xs text-[var(--foreground)] opacity-50 truncate flex-1 min-w-0">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--border)] bg-black/5 dark:bg-black/15">
+              <p className="text-xs text-[var(--foreground)] opacity-50 truncate flex-1 min-w-0 font-mono">
                 {referralLink}
               </p>
             </div>
@@ -144,30 +167,24 @@ export default function DashboardReferEarn({
             {/* Copy button */}
             <button
               onClick={copyReferralLink}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all"
-              style={{
-                backgroundColor: copied ? 'rgba(0,229,160,0.15)' : 'var(--pw-primary)',
-                color: copied ? 'var(--pw-primary)' : '#050508',
-                border: copied ? '1px solid rgba(0,229,160,0.4)' : 'none',
-              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border border-[var(--primary)]/20 text-primary bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 shadow-sm"
             >
-              {copied ? <><Check size={15} /> Copied!</> : <><Copy size={15} /> Copy Link</>}
+              {copied ? <><Check size={14} /> Link Copied!</> : <><Copy size={14} /> Copy Sponsor Link</>}
             </button>
 
             {/* Share + Team */}
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={shareReferralLink}
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-opacity hover:opacity-80"
-                style={{ backgroundColor: 'rgba(0,229,160,0.12)', color: 'var(--pw-primary)' }}
+                className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold border border-white/5 bg-white/5 hover:bg-white/10 text-[var(--foreground)] transition-colors"
               >
-                <Share2 size={13} /> Share
+                <Share2 size={12} /> Share
               </button>
               <Link
                 href="/team"
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold border border-[var(--border)] text-[var(--foreground)] hover:bg-white/[0.04] transition-colors"
+                className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold border border-[var(--border)] text-[var(--foreground)] hover:bg-white/[0.04] transition-colors"
               >
-                <Users size={13} /> My Team
+                <Users size={12} /> Directs List
               </Link>
             </div>
           </div>

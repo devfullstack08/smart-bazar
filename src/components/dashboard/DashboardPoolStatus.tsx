@@ -107,8 +107,8 @@ function getPoolTiers(code: string, cfg: Record<string, any> | null, currentCoun
       const cap = lvl?.maxRewardsCap ?? 0;
       const dayAmt = lvl?.dailyReward;
       const dur = lvl?.durationDays;
-      const nameParts = [`Level ${levelNum}`, `$${cap} cap`];
-      if (daily && dayAmt != null) nameParts.push(`$${dayAmt}/day`);
+      const nameParts = [`Level ${levelNum}`, `${formatCurrency(cap)} cap`];
+      if (daily && dayAmt != null) nameParts.push(`${formatCurrency(dayAmt)}/day`);
       if (daily && dur != null) nameParts.push(`${dur}d max`);
 
       return {
@@ -526,7 +526,7 @@ export default function DashboardPoolStatus({
                             {tier.business && (
                               <div className="mt-1 flex items-center justify-between text-xs">
                                 <span className="text-[var(--muted-foreground)]">Business</span>
-                                <span className="font-semibold text-[var(--foreground)]">${tier.business.current} / ${tier.business.required}</span>
+                                <span className="font-semibold text-[var(--foreground)]">{formatCurrency(tier.business.current)} / {formatCurrency(tier.business.required)}</span>
                               </div>
                             )}
                           </div>

@@ -20,8 +20,10 @@ import {
     BarChart3,
     Headphones,
     Ticket,
+    Layers,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import UserProfileImage from '@/components/ui/UserProfileImage';
 import { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
 import { logout, restoreAuth } from '@/lib/store/slices/authSlice';
@@ -30,21 +32,22 @@ import { formatCurrency } from '@/lib/utils/cn';
 import { STORAGE_KEYS } from '@/constants/storageKey';
 import { storageGetItem } from '@/lib/safe-storage';
 import { useLotteryFeatureGate } from '@/hooks/useLotteryFeatureGate';
-
-// Smart Bazar: no Rank income, no Auto pool package — nav includes Team Level Status (like global_bridge_ai)
+ 
+// Smart Bazar: no Rank income — nav includes Team Levels & Global Autopool
 const baseNavigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Bazar Store', href: '/packages', icon: Package },
-    { name: 'Income', href: '/income', icon: DollarSign },
-    { name: 'Passbook', href: '/passbook', icon: BookOpen },
-    { name: 'Affiliates', href: '/team', icon: Users },
-    { name: 'Team Level Status', href: '/team-level-status', icon: BarChart3 },
-    { name: 'Affiliate Tree', href: '/genealogy', icon: GitBranch },
-    { name: 'Merchant Wallet', href: '/wallet', icon: Wallet },
-    { name: 'Support', href: '/support', icon: Headphones },
+    { name: 'My Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Smart Packages', href: '/packages', icon: Package },
+    { name: 'My Earnings', href: '/income', icon: DollarSign },
+    { name: 'Global Autopool', href: '/autopool', icon: Layers },
+    { name: 'Transaction Ledger', href: '/passbook', icon: BookOpen },
+    { name: 'Direct Referrals', href: '/team', icon: Users },
+    { name: 'Team Levels', href: '/team-level-status', icon: BarChart3 },
+    { name: 'Binary Network', href: '/genealogy', icon: GitBranch },
+    { name: 'Wallet & Funds', href: '/wallet', icon: Wallet },
+    { name: 'Help & Support', href: '/support', icon: Headphones },
     { name: 'Profile', href: '/profile', icon: User },
 ];
-
+ 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -57,9 +60,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [mounted, setMounted] = useState(false);
     const { lotteryEnabled } = useLotteryFeatureGate();
     const navigation = [
-        ...baseNavigation.slice(0, 8),
+        ...baseNavigation.slice(0, 9),
         ...(lotteryEnabled ? [{ name: 'Lottery', href: '/lottery', icon: Ticket }] : []),
-        ...baseNavigation.slice(8),
+        ...baseNavigation.slice(9),
     ];
 
     useEffect(() => {
@@ -104,7 +107,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     return (
-        <div className="min-h-screen max-w-[100vw] bg-[var(--background)]">
+        <div className="min-h-screen max-w-[100vw] bg-[var(--background)] relative overflow-hidden">
+            {/* Premium Radial Ambient Glows & Grid Mesh */}
+            <div className="absolute top-0 right-0 w-[45%] h-[45%] bg-[var(--primary)]/4 rounded-full blur-[140px] pointer-events-none z-0" />
+            <div className="absolute bottom-0 left-0 w-[55%] h-[55%] bg-indigo-500/[0.03] rounded-full blur-[160px] pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.01)_1px,transparent_0)] bg-[size:32px_32px] pointer-events-none opacity-40 z-0" />
+
             {/* overflow-x-hidden only on <main> so header nav can use overflow-x-auto */}
             {/* Top bar only — no sidebar, Linear/Stripe style */}
             <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-md safe-area-inset-top">
@@ -170,9 +178,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 min-h-[44px] min-w-[44px] sm:min-w-0 sm:pl-2 sm:pr-3"
                                 aria-expanded={userMenuOpen}
                             >
-                                <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
-                                    {mounted && (user?.fullName ?? user?.name) ? ((user?.fullName ?? user?.name) ?? 'U').charAt(0).toUpperCase() : 'U'}
-                                </div>
+                                <UserProfileImage
+                                    src={(user as any)?.profilePicture}
+                                    alt={user?.name ?? 'User'}
+                                    width={32}
+                                    height={32}
+                                    className="rounded-lg border border-white/5"
+                                />
                                 <ChevronDown className={`h-4 w-4 text-[var(--muted-foreground)] hidden sm:block transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                             </button>
                             {userMenuOpen && (

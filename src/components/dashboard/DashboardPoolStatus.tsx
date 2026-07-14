@@ -204,7 +204,7 @@ export default function DashboardPoolStatus({
     const required = pool.eligibilityStatus?.required ?? 100;
     const needMore = Math.max(0, required - current);
     const progressPct = required > 0 ? Math.min(100, (current / required) * 100) : 0;
-    const accentColor = isEarning ? 'var(--pw-primary)' : '#FBBF24';
+    const accentColor = isEarning ? '#8b5cf6' : '#f59e0b'; // Violet Purple / Amber-Orange
 
     return (
       <div key={pool.incomeTypeCode}>
@@ -293,7 +293,7 @@ export default function DashboardPoolStatus({
               </div>
               <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3">
                 <p className="text-xs uppercase tracking-wide opacity-40 text-[var(--foreground)] mb-1">This Month</p>
-                <p className="text-xl font-bold tabular-nums" style={{ color: 'var(--pw-primary)' }}>
+                <p className="text-xl font-bold tabular-nums" style={{ color: '#8b5cf6' }}>
                   {formatCurrency(pool.receivedThisMonth)}
                 </p>
               </div>
@@ -302,8 +302,8 @@ export default function DashboardPoolStatus({
             {!isEarning && needMore > 0 && (
               <Link
                 href="/team"
-                className="flex items-center justify-between gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-colors"
-                style={{ backgroundColor: 'rgba(212,175,55,0.1)', color: 'var(--pw-primary)', borderColor: 'rgba(212,175,55,0.25)', borderWidth: '1px' }}
+                className="flex items-center justify-between gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-colors border"
+                style={{ backgroundColor: 'rgba(139,92,246,0.08)', color: '#8b5cf6', borderColor: 'rgba(139,92,246,0.25)' }}
               >
                 <span className="flex items-center gap-2">
                   <Users size={15} />
@@ -329,7 +329,7 @@ export default function DashboardPoolStatus({
                     <div className={cn(
                       'rounded-xl px-4 py-2.5 border',
                       rank > 0
-                        ? 'border-[var(--pw-primary)]/40 bg-[var(--pw-primary)]/10'
+                        ? 'border-violet-500/40 bg-violet-500/10'
                         : 'border-[var(--border)] bg-[var(--surface)]'
                     )}>
                       <p className="text-sm font-semibold text-[var(--foreground)]">
@@ -345,7 +345,7 @@ export default function DashboardPoolStatus({
                 {poolDetails.members && poolDetails.members.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-wide opacity-60 text-[var(--foreground)]">
-                      {poolDetails.incomeTypeCode === 'leaderboard_pool'
+                       {poolDetails.incomeTypeCode === 'leaderboard_pool'
                         ? 'Top qualifiers (by lifetime active directs)'
                         : 'Members'}
                     </p>
@@ -388,9 +388,9 @@ export default function DashboardPoolStatus({
                             className={cn(
                               'flex items-center gap-3 px-3 border-b border-[var(--border)] last:border-b-0 text-sm transition-colors',
                               isYou && isLb
-                                ? 'py-3 bg-gradient-to-r from-[var(--pw-primary)]/22 via-[var(--pw-primary)]/10 to-transparent shadow-[inset_4px_0_0_0_var(--pw-primary)]'
+                                ? 'py-3 bg-gradient-to-r from-violet-500/22 via-violet-500/10 to-transparent shadow-[inset_4px_0_0_0_#8b5cf6]'
                                 : isYou
-                                  ? 'py-2.5 bg-[var(--pw-primary)]/8'
+                                  ? 'py-2.5 bg-violet-500/8'
                                   : 'py-2.5',
                             )}
                           >
@@ -398,9 +398,9 @@ export default function DashboardPoolStatus({
                               className={cn(
                                 'shrink-0 w-10 text-center font-bold tabular-nums',
                                 isYou && isLb
-                                  ? 'text-sm text-[var(--pw-primary)]'
+                                  ? 'text-sm text-[#8b5cf6]'
                                   : isYou
-                                    ? 'text-xs text-[var(--pw-primary)]'
+                                    ? 'text-xs text-[#8b5cf6]'
                                     : 'text-xs opacity-60 text-[var(--foreground)]',
                               )}
                             >
@@ -420,8 +420,8 @@ export default function DashboardPoolStatus({
                                 </span>
                                 {isYou && isLb && (
                                   <span
-                                    className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border border-[var(--pw-primary)]/50"
-                                    style={{ backgroundColor: 'rgba(212,175,55,0.2)', color: 'var(--pw-primary)' }}
+                                    className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border border-violet-500/40"
+                                    style={{ backgroundColor: 'rgba(139,92,246,0.2)', color: '#8b5cf6' }}
                                   >
                                     Your rank
                                   </span>
@@ -429,14 +429,14 @@ export default function DashboardPoolStatus({
                                 {isYou && !isLb && (
                                   <span
                                     className="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded"
-                                    style={{ backgroundColor: 'rgba(212,175,55,0.2)', color: 'var(--pw-primary)' }}
+                                    style={{ backgroundColor: 'rgba(139,92,246,0.2)', color: '#8b5cf6' }}
                                   >
                                     You
                                   </span>
                                 )}
                               </div>
                               {isYou && isLb && (
-                                <p className="text-[10px] font-medium text-[var(--pw-primary)] mt-1 leading-snug">
+                                <p className="text-[10px] font-medium text-[#8b5cf6] mt-1 leading-snug">
                                   This is you — every extra direct can move you up.
                                 </p>
                               )}
@@ -448,7 +448,7 @@ export default function DashboardPoolStatus({
                               <span
                                 className={cn(
                                   'shrink-0 w-12 text-right text-xs font-bold tabular-nums',
-                                  isYou ? 'text-[var(--pw-primary)]' : 'text-[var(--foreground)]',
+                                  isYou ? 'text-[#8b5cf6]' : 'text-[var(--foreground)]',
                                 )}
                               >
                                 {m.joinCount ?? m.directCount ?? '—'}
@@ -491,7 +491,7 @@ export default function DashboardPoolStatus({
                               <span className="text-sm font-semibold text-[var(--foreground)] truncate">{tier.name}</span>
                               <div className="flex items-center gap-1 shrink-0">
                                 {tier.paying && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-[var(--pw-primary)]/25 text-emerald-800 dark:text-emerald-300">
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-violet-500/20 text-[#8b5cf6]">
                                     Paying
                                   </span>
                                 )}
@@ -552,14 +552,14 @@ export default function DashboardPoolStatus({
                     );
                     setPoolDetails(details ?? null);
                   } catch {
-                    toast.error('Could not load pool details');
+                     toast.error('Could not load pool details');
                   } finally {
                     setPoolDetailsLoading(null);
                   }
                 }}
                 disabled={poolDetailsLoading === pool.incomeTypeCode}
                 className="text-sm font-semibold transition-opacity disabled:opacity-40"
-                style={{ color: 'var(--pw-primary)' }}
+                style={{ color: '#8b5cf6' }}
               >
                 {poolDetailsLoading === pool.incomeTypeCode ? 'Loading…' : 'View full details →'}
               </button>
@@ -576,8 +576,8 @@ export default function DashboardPoolStatus({
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 pt-4 sm:pt-5 pb-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10">
-            <Layers size={18} className="text-primary" strokeWidth={2.2} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-purple-550/20 bg-purple-500/10">
+            <Layers size={18} className="text-purple-600 dark:text-purple-400" strokeWidth={2.2} />
           </div>
           <div className="min-w-0">
             <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] leading-tight"
@@ -589,7 +589,7 @@ export default function DashboardPoolStatus({
         </div>
         {/* Summary badges */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-primary/10 text-primary">
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-purple-500/10 text-purple-650 dark:text-purple-400">
             {displayPools.filter(p => p.eligibilityStatus?.isEligible).length} Earning
           </span>
           <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
@@ -625,7 +625,7 @@ export default function DashboardPoolStatus({
                     ? 'border-emerald-500/40 bg-emerald-500/[0.07] dark:bg-emerald-500/10'
                     : 'border-[var(--border)] bg-[var(--surface-elevated)]',
                   isRowOpen
-                    ? 'ring-2 ring-[var(--pw-primary)]/45 ring-offset-2 ring-offset-[var(--background)] dark:ring-offset-[var(--surface-elevated)]'
+                    ? 'ring-2 ring-purple-500/40 ring-offset-2 ring-offset-[var(--background)] dark:ring-offset-[var(--surface-elevated)]'
                     : '',
                 )}
               >

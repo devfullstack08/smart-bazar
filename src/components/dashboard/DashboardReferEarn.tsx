@@ -80,8 +80,8 @@ export default function DashboardReferEarn({
 
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-[var(--border)]">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-[var(--primary)]/20 bg-[var(--primary)]/10">
-          <Sparkles size={18} className="text-primary" strokeWidth={2} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-blue-500/20 bg-blue-500/10">
+          <Sparkles size={18} className="text-blue-600 dark:text-blue-400" strokeWidth={2} />
         </div>
         <div>
           <h2 className="text-base font-bold text-[var(--foreground)] leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
@@ -97,17 +97,17 @@ export default function DashboardReferEarn({
 
         {/* ── Stats row ────────────────────────────────────────── */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-[var(--primary)]/20 hover:bg-[var(--surface)]/70 transition-all duration-200">
+          <div className="bg-[var(--surface)] border border-blue-500/15 rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all duration-200">
             <p className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">Referrals</p>
             <TeamStatSkeleton loading={teamLoading} skeletonClassName="h-5 w-12 bg-[var(--border)] mt-1">
-              <p className="text-base font-black text-primary tabular-nums mt-0.5">{downlineCount || 0}</p>
+              <p className="text-base font-black text-blue-600 dark:text-blue-400 tabular-nums mt-0.5">{downlineCount || 0}</p>
             </TeamStatSkeleton>
           </div>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-[var(--primary)]/20 hover:bg-[var(--surface)]/70 transition-all duration-200">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-blue-500/15 hover:bg-[var(--surface)]/70 transition-all duration-200">
             <p className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">User ID</p>
             <p className="text-xs font-black text-[var(--foreground)] mt-1 truncate">{dashboardUser.userId}</p>
           </div>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-[var(--primary)]/20 hover:bg-[var(--surface)]/70 transition-all duration-200">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2.5 flex flex-col gap-0.5 hover:border-blue-500/15 hover:bg-[var(--surface)]/70 transition-all duration-200">
             <p className="text-[9px] uppercase tracking-wider text-[var(--muted-foreground)] font-bold">Sponsor</p>
             <p className="text-xs font-black text-[var(--foreground)] mt-1 truncate">{sponsorName}</p>
           </div>
@@ -118,8 +118,8 @@ export default function DashboardReferEarn({
           <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)] text-center">Referral Placements Node</p>
           
           <div className="flex flex-col items-center relative">
-            {/* Root Node (You) */}
-            <div className="w-12 h-12 rounded-full border border-primary/30 bg-[var(--surface-elevated)] shadow-sm shadow-primary/10 flex items-center justify-center text-primary font-bold text-xs z-10">
+            {/* Root Node (You) - Vibrant Blue/Indigo */}
+            <div className="w-12 h-12 rounded-full border border-blue-500/30 bg-[var(--surface-elevated)] shadow-sm shadow-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs z-10">
               YOU
             </div>
             
@@ -133,15 +133,15 @@ export default function DashboardReferEarn({
             
             {/* Placements Leaves Grid */}
             <div className="grid grid-cols-2 gap-8 w-full mt-4">
-              {/* Left Leaf Card */}
-              <div className="flex flex-col items-center p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] text-center shadow-inner hover:border-primary/10 transition-colors">
-                <p className="text-[9px] text-[var(--muted-foreground)] uppercase tracking-wider font-bold">Left Placements</p>
-                <p className="text-sm font-black text-primary tabular-nums mt-1">{leftCount} Directs</p>
+              {/* Left Leaf Card - Vibrant Emerald */}
+              <div className="flex flex-col items-center p-3.5 rounded-xl border border-emerald-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-emerald-500/30 transition-colors">
+                <p className="text-[9px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-extrabold">Left Placements</p>
+                <p className="text-sm font-black text-emerald-600 dark:text-emerald-400 tabular-nums mt-1">{leftCount} Directs</p>
               </div>
-              {/* Right Leaf Card */}
-              <div className="flex flex-col items-center p-3.5 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] text-center shadow-inner hover:border-primary/10 transition-colors">
-                <p className="text-[9px] text-[var(--muted-foreground)] uppercase tracking-wider font-bold">Right Placements</p>
-                <p className="text-sm font-black text-primary tabular-nums mt-1">{rightCount} Directs</p>
+              {/* Right Leaf Card - Vibrant Rose/Red */}
+              <div className="flex flex-col items-center p-3.5 rounded-xl border border-rose-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-rose-500/30 transition-colors">
+                <p className="text-[9px] text-rose-600 dark:text-rose-400 uppercase tracking-wider font-extrabold">Right Placements</p>
+                <p className="text-sm font-black text-rose-600 dark:text-rose-400 tabular-nums mt-1">{rightCount} Directs</p>
               </div>
             </div>
           </div>
@@ -149,11 +149,11 @@ export default function DashboardReferEarn({
 
         {/* Referral income highlight */}
         {referralIncome > 0 && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--primary)]/15"
-            style={{ backgroundColor: 'rgba(212,175,55,0.06)' }}>
-            <TrendingUp size={16} className="text-primary" />
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-blue-500/20"
+            style={{ backgroundColor: 'rgba(37,99,235,0.06)' }}>
+            <TrendingUp size={16} className="text-blue-600 dark:text-blue-400" />
             <p className="text-xs text-[var(--foreground)] opacity-70">Referral Commissions</p>
-            <p className="ml-auto text-sm font-black tabular-nums text-primary">
+            <p className="ml-auto text-sm font-black tabular-nums text-blue-600 dark:text-blue-400">
               {formatCurrency(referralIncome)}
             </p>
           </div>
@@ -182,7 +182,7 @@ export default function DashboardReferEarn({
             {/* Copy button */}
             <button
               onClick={copyReferralLink}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all btn btn-primary shadow-sm"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             >
               {copied ? <><Check size={14} /> Link Copied!</> : <><Copy size={14} /> Copy Sponsor Link</>}
             </button>

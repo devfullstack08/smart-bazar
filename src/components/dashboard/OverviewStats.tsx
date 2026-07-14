@@ -35,57 +35,57 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
 
   const statItems = [
     {
-      label: 'Today\'s Earnings',
+      label: "Today's Earnings",
       value: formatCurrency(income.todayIncome ?? 0),
       icon: DollarSign,
-      glowColor: 'rgba(16, 185, 129, 0.04)', // emerald
+      glowColor: 'rgba(16, 185, 129, 0.05)', // emerald
       textColor: 'text-emerald-600 dark:text-emerald-400',
-      borderStyle: 'border-[var(--border)]'
+      borderStyle: 'rgba(16, 185, 129, 0.2)'
     },
     {
       label: 'Total Profit',
       value: formatCurrency(wallet.totalEarned),
       icon: TrendingUp,
-      glowColor: 'rgba(59, 130, 246, 0.04)', // blue
-      textColor: 'text-blue-600 dark:text-blue-400',
-      borderStyle: 'border-[var(--border)]'
+      glowColor: 'rgba(139, 92, 246, 0.05)', // violet/purple
+      textColor: 'text-violet-600 dark:text-violet-400',
+      borderStyle: 'rgba(139, 92, 246, 0.2)'
     },
     {
       label: 'Total Deposited',
       value: formatCurrency(wallet.totalDeposited ?? 0),
       icon: ArrowDownToLine,
-      glowColor: 'rgba(245, 158, 11, 0.04)', // amber
-      textColor: 'text-amber-600 dark:text-amber-400',
-      borderStyle: 'border-[var(--border)]'
+      glowColor: 'rgba(249, 115, 22, 0.05)', // orange
+      textColor: 'text-orange-600 dark:text-orange-400',
+      borderStyle: 'rgba(249, 115, 22, 0.2)'
     },
     {
       label: 'Total Withdrawn',
       value: formatCurrency(wallet.totalWithdrawn),
       icon: ArrowUpToLine,
-      glowColor: 'rgba(107, 114, 128, 0.04)', // gray
-      textColor: 'text-zinc-500 dark:text-gray-400',
-      borderStyle: 'border-[var(--border)]'
+      glowColor: 'rgba(244, 63, 94, 0.05)', // rose/red
+      textColor: 'text-rose-600 dark:text-rose-400',
+      borderStyle: 'rgba(244, 63, 94, 0.2)'
     }
   ];
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 min-w-0">
-      {/* Hero Available Balance Card */}
+      {/* Hero Available Balance Card - Primary Vibrant Blue/Indigo */}
       <div 
-        className="col-span-2 sm:col-span-4 lg:col-span-1 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 group"
+        className="col-span-2 sm:col-span-4 lg:col-span-1 rounded-2xl border p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 group"
         style={{ 
-          background: 'linear-gradient(135deg, rgba(212,175,55,0.06) 0%, var(--surface-elevated) 100%)',
-          borderColor: 'rgba(212, 175, 55, 0.25)'
+          background: 'linear-gradient(135deg, rgba(37,99,235,0.06) 0%, var(--surface-elevated) 100%)',
+          borderColor: 'rgba(37, 99, 235, 0.2)'
         }}
       >
-        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
         <div className="flex items-center justify-between">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface)]">
-            <Wallet size={16} className="text-primary" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-blue-500/20 bg-blue-500/10">
+            <Wallet size={16} className="text-blue-600 dark:text-blue-400" />
           </div>
           <Link
             href="/wallet"
-            className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-primary hover:bg-[var(--surface)]/80 transition-all shadow-sm"
+            className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-all shadow-sm"
           >
             Wallet <ArrowRight size={10} />
           </Link>
@@ -95,7 +95,7 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
           <p className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">
             Available Balance
           </p>
-          <p className="text-xl sm:text-2xl font-black text-primary truncate mt-0.5 tabular-nums">
+          <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 truncate mt-0.5 tabular-nums">
             {formatCurrency(available)}
           </p>
           {locked > 0 && (
@@ -113,8 +113,11 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
         return (
           <div 
             key={item.label}
-            className={`col-span-1 sm:col-span-2 lg:col-span-1 rounded-2xl border ${item.borderStyle} bg-[var(--surface-elevated)] p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5`}
-            style={{ background: `linear-gradient(135deg, ${item.glowColor} 0%, var(--surface-elevated) 100%)` }}
+            className="col-span-1 sm:col-span-2 lg:col-span-1 rounded-2xl border p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+            style={{ 
+              background: `linear-gradient(135deg, ${item.glowColor} 0%, var(--surface-elevated) 100%)`,
+              borderColor: item.borderStyle
+            }}
           >
             <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface)]">
               <Icon size={16} className={item.textColor} />
@@ -124,7 +127,7 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
               <p className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">
                 {item.label}
               </p>
-              <p className="text-xl sm:text-2xl font-black text-[var(--foreground)] truncate mt-0.5 tabular-nums">
+              <p className={`text-xl sm:text-2xl font-black ${item.textColor} truncate mt-0.5 tabular-nums`}>
                 {item.value}
               </p>
             </div>

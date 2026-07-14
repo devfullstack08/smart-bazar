@@ -11,7 +11,7 @@ interface ActivePackage {
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
-  active:      { label: 'Staked',      color: 'var(--primary)', bg: 'rgba(212,175,55,0.10)'  },
+  active:      { label: 'Staked',      color: '#10b981',        bg: 'rgba(16,185,129,0.1)'   }, // Emerald green
   cap_reached: { label: 'Cap Reached', color: '#c87a53',        bg: 'rgba(200,122,83,0.10)' },
   expired:     { label: 'Matured',     color: '#94a3b8',        bg: 'rgba(148,163,184,0.10)'},
 };
@@ -38,9 +38,8 @@ export default function DashboardPackages({ activePackages, loading = false }: {
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-[var(--primary)]/20"
-            style={{ backgroundColor: 'rgba(212,175,55,0.1)' }}>
-            <Package size={18} className="text-primary" strokeWidth={2} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-emerald-500/20 bg-emerald-500/10">
+            <Package size={18} className="text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
           </div>
           <h2 className="text-base font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-sans)' }}>
             My Memberships
@@ -49,7 +48,7 @@ export default function DashboardPackages({ activePackages, loading = false }: {
         {activePackages.length > 0 && (
           <Link
             href="/packages"
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-primary hover:bg-[var(--primary)]/20 shadow-sm"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all border border-emerald-500/20 bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 hover:bg-emerald-500/20 shadow-sm"
           >
             Store <ArrowRight size={12} />
           </Link>
@@ -58,11 +57,11 @@ export default function DashboardPackages({ activePackages, loading = false }: {
 
       {/* ── Package list ─────────────────────────────────────── */}
       {activePackages.length > 0 ? (
-        <div className="p-4 sm:p-5 flex flex-col gap-2.5 bg-black/10">
+        <div className="p-4 sm:p-5 flex flex-col gap-2.5 bg-[var(--surface)]">
           {activePackages.slice(0, 5).map((pkg, i) => {
             const s = STATUS_MAP[pkg.status ?? 'active'] ?? STATUS_MAP.active;
             return (
-              <div key={i} className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-white/[0.01] border border-white/5 hover:border-[var(--primary)]/15 hover:bg-white/[0.03] transition-all duration-200">
+              <div key={i} className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]/40 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all duration-200 shadow-sm">
 
                 {/* Left: icon + value + date */}
                 <div className="flex items-center gap-3 min-w-0">
@@ -90,9 +89,9 @@ export default function DashboardPackages({ activePackages, loading = false }: {
           })}
         </div>
       ) : (
-        <div className="px-6 py-10 flex flex-col items-center text-center space-y-4 bg-black/10">
+        <div className="px-6 py-10 flex flex-col items-center text-center space-y-4 bg-[var(--surface)]">
           <div className="w-12 h-12 rounded-full border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] bg-white/[0.02]">
-            <ShoppingCart size={20} className="text-primary" />
+            <ShoppingCart size={20} className="text-emerald-500" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-[var(--foreground)]">No Active Memberships</h3>
@@ -102,7 +101,7 @@ export default function DashboardPackages({ activePackages, loading = false }: {
           </div>
           <Link
             href="/packages"
-            className="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl transition-all border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-primary hover:bg-[var(--primary)]/20 shadow-sm"
+            className="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl transition-all border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 shadow-sm"
           >
             <ShoppingCart size={13} /> Buy Membership
           </Link>

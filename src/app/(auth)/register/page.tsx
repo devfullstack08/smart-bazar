@@ -407,11 +407,12 @@ function RegisterForm() {
                                     <div className="flex gap-2">
                                         <select
                                             {...register('countryCode')}
+                                            defaultValue={DEFAULT_COUNTRY_CODE}
                                             className="shrink-0 w-[5.5rem] sm:w-28 px-2 sm:px-3 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:ring-2 focus:ring-[var(--pw-primary)]/40 text-sm"
                                         >
                                             {COUNTRY_CODES.map((country) => (
-                                                <option key={country.code} value={country.code}>
-                                                    {country.flag} {country.code}
+                                                <option key={country.code} value={country.dialCode}>
+                                                    {country.flag} {country.dialCode}
                                                 </option>
                                             ))}
                                         </select>

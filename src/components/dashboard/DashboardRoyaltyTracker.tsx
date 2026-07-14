@@ -161,7 +161,7 @@ export default function DashboardRoyaltyTracker({
         <Link
           href="/income"
           className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold transition-opacity hover:opacity-80 sm:self-center"
-          style={{ color: 'var(--pw-primary)' }}
+          style={{ color: ROYALTY_ACCENT }}
         >
           Income history
           <ChevronRight className="h-4 w-4" />
@@ -351,7 +351,7 @@ export default function DashboardRoyaltyTracker({
           <Link
             href="/team"
             className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-80"
-            style={{ color: 'var(--pw-primary)' }}
+            style={{ color: ROYALTY_ACCENT }}
           >
             View team
             <ChevronRight className="h-4 w-4" />

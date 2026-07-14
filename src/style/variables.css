@@ -27,14 +27,14 @@
   --pw-warning: #f59e0b;
   --pw-error: #ef4444;
   
-  /* Light Mode */
-  --background: #fafafa;
-  --foreground: #0a0a0a;
-  --surface: #f4f4f5;
+  /* Light Mode - Warm & Vibrant Champagne Palette */
+  --background: #fdfbf7;
+  --foreground: #0f172a;
+  --surface: #f7f5ef;
   --surface-elevated: #ffffff;
-  --border: #e4e4e7;
-  --muted: #71717a;
-  --muted-foreground: #a1a1aa;
+  --border: #e6dfd3;
+  --muted: #64748b;
+  --muted-foreground: #94a3b8;
   
   /* ---------- 8px grid (design system) ---------- */
   --space-0: 0;

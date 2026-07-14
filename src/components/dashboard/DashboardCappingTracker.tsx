@@ -30,7 +30,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
   const isCapped = cappingData.isCappingReached || cappingData.remainingCapping <= 0.001;
   const isNearLimit = !isCapped && cappingData.remainingCapping <= cappingData.currentCapping * 0.2 && cappingData.remainingCapping > 0;
 
-  const activeColor = isCapped ? '#f43f5e' : isNearLimit ? '#fbbf24' : 'var(--pw-primary)';
+  const activeColor = isCapped ? '#f43f5e' : isNearLimit ? '#fbbf24' : '#f59e0b'; // Amber/Orange
 
   const levels = cappingData.levelAchievements ?? [];
   const nextLevel = cappingData.nextLevel;
@@ -41,8 +41,8 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
 
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-[var(--border)]">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-[var(--primary)]/20 bg-[var(--primary)]/10">
-          <Target size={18} className="text-primary" strokeWidth={2} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-amber-500/20 bg-amber-500/10">
+          <Target size={18} className="text-amber-600 dark:text-amber-400" strokeWidth={2} />
         </div>
         <div>
           <h2 className="text-base font-bold text-[var(--foreground)] leading-tight"
@@ -69,7 +69,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
           </div>
           <Link
             href="/packages"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary px-5 py-3 text-sm font-bold text-zinc-950 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-650 hover:from-amber-400 hover:to-amber-500 px-5 py-3 text-sm font-bold text-white shadow-md shadow-amber-500/10 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
           >
             <ShoppingCart size={15} /> Browse Packages
           </Link>
@@ -95,7 +95,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-lg font-black text-[var(--foreground)] leading-none tabular-nums">
+                <span className="text-lg font-black text-[var(--foreground)] leading-none tabular-nums" style={{ color: activeColor }}>
                   {Math.round(pct)}%
                 </span>
                 <span className="text-[9px] text-[var(--muted-foreground)] mt-0.5 uppercase tracking-wider font-bold">used</span>
@@ -112,7 +112,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
               </div>
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] p-3 shadow-sm">
                 <p className="text-[9px] uppercase tracking-wider font-bold text-[var(--muted-foreground)]">Earned</p>
-                <p className="text-sm font-extrabold tabular-nums text-primary mt-0.5">
+                <p className="text-sm font-extrabold tabular-nums text-amber-600 dark:text-amber-400 mt-0.5">
                   {formatCurrency(cappingData.totalEarned ?? 0)}
                 </p>
               </div>
@@ -135,7 +135,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
               />
             </div>
             <div className="flex justify-between text-xs">
-              <span className="font-bold text-primary">
+              <span className="font-bold text-amber-650 dark:text-amber-400">
                 {formatCurrency(cappingData.totalEarned ?? 0)} earned
               </span>
               <span className="text-[var(--muted-foreground)] font-medium">{Math.round(pct)}% of limit</span>
@@ -149,10 +149,10 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
               {(cappingData.referralCappingTotal ?? 0) > 0 && (
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles size={14} className="text-primary" />
+                    <Sparkles size={14} className="text-amber-500" />
                     <span className="text-xs font-semibold text-[var(--foreground)] opacity-70">Referral Booster</span>
                   </div>
-                  <span className="text-xs font-bold tabular-nums text-primary">
+                  <span className="text-xs font-bold tabular-nums text-amber-600 dark:text-amber-400">
                     +{formatCurrency(cappingData.referralCappingTotal ?? 0)}
                   </span>
                 </div>
@@ -162,11 +162,11 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
               {multiplier && (
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <TrendingUp size={14} className="text-primary" />
+                    <TrendingUp size={14} className="text-amber-500" />
                     <span className="text-xs font-semibold text-[var(--foreground)] opacity-70">Multiplier</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-primary">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
                       {multiplier.total}×
                     </span>
                     <span className="text-[9px] text-[var(--muted-foreground)]">
@@ -193,7 +193,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
                     <div key={lvl.level} className="flex items-center gap-3">
                       <div className="shrink-0">
                         {lvl.achieved ? (
-                          <div className="w-5 h-5 rounded-full flex items-center justify-center bg-primary/20 border border-primary/40 text-primary">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center bg-amber-500/20 border border-amber-500/40 text-amber-655 dark:text-amber-400">
                             <CheckCircle2 size={12} strokeWidth={2.5} />
                           </div>
                         ) : (
@@ -216,7 +216,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
                             className="h-full rounded-full transition-all duration-500"
                             style={{
                               width: `${lvlPct}%`,
-                              backgroundColor: lvl.achieved ? 'var(--pw-primary)' : 'rgba(212,175,55,0.3)',
+                              backgroundColor: lvl.achieved ? '#f59e0b' : 'rgba(245,158,11,0.2)',
                             }}
                           />
                         </div>
@@ -230,7 +230,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
 
           {/* Next level nudge */}
           {nextLevel && !isCapped && (
-            <div className="rounded-xl px-4 py-3 flex items-center justify-between border border-primary/20 bg-primary/5">
+            <div className="rounded-xl px-4 py-3 flex items-center justify-between border border-amber-500/20 bg-amber-500/5">
               <div>
                 <p className="text-xs font-bold text-[var(--foreground)]">
                   Level {nextLevel.level} Unlock Progress
@@ -239,7 +239,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
                   Need {nextLevel.remaining} more {nextLevel.remaining === 1 ? 'member' : 'members'} to boost your multiplier.
                 </p>
               </div>
-              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
+              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                 {nextLevel.currentMembers}/{nextLevel.membersRequired}
               </span>
             </div>
@@ -268,7 +268,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
           {/* CTA Link */}
           <Link
             href="/team"
-            className="flex items-center gap-2 text-xs font-bold text-primary hover:opacity-80 transition-opacity pt-1"
+            className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:opacity-85 transition-opacity pt-1"
           >
             <Share2 size={13} /> Refer more to increase limit →
           </Link>

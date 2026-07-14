@@ -51,10 +51,12 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
       : 'Direct Sponsor';
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--surface-elevated)] via-[var(--surface-elevated)] to-[var(--surface)] p-6 sm:p-8 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 hover:shadow-2xl hover:border-primary/30">
-      {/* Decorative luxury background elements */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-60 h-60 bg-gradient-to-tr from-emerald-500/5 to-transparent rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl pointer-events-none" />
+    <div className="rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--surface-elevated)] via-[var(--surface-elevated)] to-[var(--surface)] p-6 sm:p-8 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 hover:shadow-2xl hover:border-blue-500/25">
+      {/* Decorative colorful logo-companion background spots */}
+      <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-60 h-60 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.01)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)] opacity-30 pointer-events-none" />
 
       {/* Profile & Greetings */}
@@ -65,7 +67,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
             alt={user.name}
             width={72}
             height={72}
-            className="rounded-full border-2 border-primary/30 p-0.5 bg-[var(--surface)] shadow-inner transition-transform duration-300 hover:scale-105"
+            className="rounded-full border-2 border-blue-500/20 p-0.5 bg-[var(--surface)] shadow-inner transition-transform duration-300 hover:scale-105"
           />
           <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[var(--surface-elevated)] flex items-center justify-center shadow-lg" title="Active Node">
             <ShieldCheck className="text-white" size={11} strokeWidth={3} />
@@ -74,10 +76,10 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">My Account</span>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded">My Account</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--border)]" />
             <span className="text-[10px] font-extrabold text-[var(--muted-foreground)] tracking-wider">
-              ID: <span className="font-mono text-primary">{user.userId || 'N/A'}</span>
+              ID: <span className="font-mono text-blue-600 dark:text-blue-400">{user.userId || 'N/A'}</span>
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--border)]" />
             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -88,7 +90,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
           
           <h1 className="text-xl sm:text-3xl font-black text-[var(--foreground)] tracking-tight leading-tight mt-2 flex flex-wrap items-center gap-x-2">
             <span>{greeting},</span> 
-            <span className="text-primary font-black">
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-rose-600 dark:from-blue-400 dark:via-purple-400 dark:to-rose-400 bg-clip-text text-transparent font-black">
               {user.name}
             </span>
           </h1>
@@ -104,7 +106,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
       <div className="flex items-center gap-4 shrink-0 border-t md:border-t-0 md:border-l border-[var(--border)] pt-4 md:pt-0 md:pl-6 z-10 self-stretch justify-between md:justify-end">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[var(--surface)] border border-[var(--border)] shrink-0 shadow-sm">
-            <Clock size={18} className="text-primary animate-pulse" />
+            <Clock size={18} className="text-blue-600 dark:text-blue-400 animate-pulse" />
           </div>
           <div className="flex flex-col">
             <span className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">Local Time</span>

@@ -74,17 +74,17 @@ export default function DashboardIncomeOverview({ income, cappingData, loading =
 
       <div className="p-6 space-y-5">
         {/* ── Hero Earnings Card ────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+        <div className="relative overflow-hidden rounded-2xl border border-indigo-500/25 bg-[var(--surface)] p-5">
           {/* Decorative subtle background circle */}
-          <div className="absolute -right-8 -bottom-8 w-24 h-24 rounded-full bg-primary/5 pointer-events-none" />
+          <div className="absolute -right-8 -bottom-8 w-24 h-24 rounded-full bg-indigo-500/5 pointer-events-none" />
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Total Earnings</p>
-              <h3 className="text-3xl font-black tracking-tight text-primary mt-1.5 tabular-nums">
+              <h3 className="text-3xl font-black tracking-tight text-indigo-600 dark:text-indigo-400 mt-1.5 tabular-nums">
                 {formatCurrency(totalEarned)}
               </h3>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <DollarSign size={20} />
             </div>
           </div>
@@ -175,14 +175,20 @@ export default function DashboardIncomeOverview({ income, cappingData, loading =
                 >
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-3 h-3 rounded-full shrink-0 border border-black/10 dark:border-white/10 shadow-[0_0_8px_rgba(212,175,55,0.2)]"
-                      style={{ backgroundColor: GOLD_DOT_COLORS[i % GOLD_DOT_COLORS.length] }}
+                      className="w-3 h-3 rounded-full shrink-0 border border-black/10 dark:border-white/10"
+                      style={{ 
+                        backgroundColor: GOLD_DOT_COLORS[i % GOLD_DOT_COLORS.length],
+                        boxShadow: `0 0 10px ${GOLD_DOT_COLORS[i % GOLD_DOT_COLORS.length]}40`
+                      }}
                     />
                     <span className="text-[var(--foreground)] font-bold text-sm">
                       {getIncomeTypeLabel(item.type, cappingData?.incomeRegistry)}
                     </span>
                   </div>
-                  <span className="font-black tabular-nums text-sm text-primary">
+                  <span 
+                    className="font-black tabular-nums text-sm"
+                    style={{ color: GOLD_DOT_COLORS[i % GOLD_DOT_COLORS.length] }}
+                  >
                     {formatCurrency(item.totalAmount ?? 0)}
                   </span>
                 </div>

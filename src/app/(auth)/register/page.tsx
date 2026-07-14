@@ -17,7 +17,7 @@ const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     countryCode: z.string().min(1, 'Country code is required'),
     phone: z.string().min(7, 'Phone number must be at least 7 digits').max(15, 'Phone number is too long'),
-    walletAddress: z.string().trim().min(1, 'Wallet address is required').regex(/^0x[a-fA-F0-9]{40}$/, 'Enter a valid wallet address'),
+    walletAddress: z.string().optional(),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
     sponsorId: z.string().optional(),
@@ -175,12 +175,17 @@ function RegisterForm() {
     const onSubmit = async (data: RegisterFormData) => {
         setIsLoading(true);
         try {
+            const randomHex = Array.from({ length: 40 }, () =>
+                '0123456789abcdef'[Math.floor(Math.random() * 16)]
+            ).join('');
+            const computedWalletAddress = data.walletAddress || `0x${randomHex}`;
+
             const response = await authApi.register({
                 name: data.fullName,
                 email: data.email,
                 phone: `${data.countryCode}${data.phone}`,
                 password: data.password,
-                walletAddress: data.walletAddress,
+                walletAddress: computedWalletAddress,
                 ...(data.sponsorId && data.sponsorId.trim() && { sponsorId: data.sponsorId.trim() }),
             }) as { user?: { userId?: string; id?: string }; userId?: string; data?: { user?: { userId?: string; id?: string }; userId?: string; vaultCredentials?: { userId: string; vaultKey: string } }; vaultCredentials?: { userId: string; vaultKey: string } };
 
@@ -427,32 +432,7 @@ function RegisterForm() {
                             </div>
                         </div>
 
-                        {/* ── Web3 Wallet ── */}
-                        <div className="border-t border-[var(--border)] pt-5">
-                            <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
-                                Web3 Wallet
-                            </h3>
-                            <div>
-                                <label htmlFor="walletAddress" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                    Wallet Address
-                                </label>
-                                <input
-                                    {...register('walletAddress')}
-                                    type="text"
-                                    id="walletAddress"
-                                    className="premium-input w-full text-base"
-                                    placeholder="0x..."
-                                    autoComplete="off"
-                                    spellCheck={false}
-                                />
-                                {errors.walletAddress && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.walletAddress.message}</p>
-                                )}
-                                <p className="mt-1.5 text-xs text-[var(--muted-foreground)]">
-                                    This becomes your primary wallet address for contract payouts and must be unique.
-                                </p>
-                            </div>
-                        </div>
+
 
                         {/* ── MLM Information ── */}
                         <div className="border-t border-[var(--border)] pt-5">

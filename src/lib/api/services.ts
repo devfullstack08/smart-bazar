@@ -1182,6 +1182,58 @@ export const userApi = {
         return response.data;
     },
 
+    setPin: async (pin: string, currentPassword: string) => {
+        const response = await apiClient.post<{ success: boolean; message: string }>(
+            '/users/pin/set',
+            { pin, currentPassword },
+            withProjectId()
+        );
+        return response.data;
+    },
+
+    changePin: async (currentPin: string, newPin: string) => {
+        const response = await apiClient.post<{ success: boolean; message: string }>(
+            '/users/pin/change',
+            { currentPin, newPin },
+            withProjectId()
+        );
+        return response.data;
+    },
+
+    getPasskeyRegisterOptions: async () => {
+        const response = await apiClient.post(
+            '/users/passkey/register/options',
+            {},
+            withProjectId()
+        );
+        return response.data;
+    },
+
+    verifyPasskeyRegister: async (assertionResponse: any, deviceName?: string) => {
+        const response = await apiClient.post(
+            '/users/passkey/register/verify',
+            { response: assertionResponse, deviceName },
+            withProjectId()
+        );
+        return response.data;
+    },
+
+    listPasskeys: async () => {
+        const response = await apiClient.get<{ success: boolean; data: any[] }>(
+            '/users/passkey/list',
+            withProjectId()
+        );
+        return response.data.data;
+    },
+
+    deletePasskey: async (credentialId: string) => {
+        const response = await apiClient.delete<{ success: boolean; message: string }>(
+            `/users/passkey/${credentialId}`,
+            withProjectId()
+        );
+        return response.data;
+    },
+
     getCommissions: async (
         userId: string,
         filters?: {

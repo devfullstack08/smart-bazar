@@ -121,7 +121,7 @@ function LoginForm() {
     // PIN Authentication Handler (calls backend loginWithPin endpoint)
     const handlePinSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (pinCode.length !== 6 || !verifiedUser) return;
+        if (pinCode.length < 4 || pinCode.length > 6 || !verifiedUser) return;
         setIsLoading(true);
         dispatch(loginStart());
         try {
@@ -544,24 +544,24 @@ function LoginForm() {
                                         <form onSubmit={handlePinSubmit} className="space-y-5">
                                             <div>
                                                 <label htmlFor="pinCode" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                                    Enter 6-Digit PIN
+                                                    Enter Security PIN (4-6 Digits)
                                                 </label>
                                                 <input
-                                                    type="text"
+                                                    type="password"
                                                     id="pinCode"
                                                     maxLength={6}
                                                     inputMode="numeric"
                                                     pattern="[0-9]*"
                                                     value={pinCode}
                                                     onChange={(e) => setPinCode(e.target.value.replace(/\D/g, ''))}
-                                                    placeholder="••••••"
+                                                    placeholder="••••"
                                                     className="w-full tracking-[1.1em] text-center font-mono text-base py-3 rounded-xl border border-[var(--border)] bg-black/10 focus:ring-2 focus:ring-[var(--pw-primary)]/20 focus:border-primary"
                                                 />
                                             </div>
 
                                             <button
                                                 type="submit"
-                                                disabled={pinCode.length !== 6 || isLoading}
+                                                disabled={pinCode.length < 4 || pinCode.length > 6 || isLoading}
                                                 className="premium-btn-primary w-full py-3 text-sm sm:text-base font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {isLoading ? (

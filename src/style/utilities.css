@@ -74,7 +74,7 @@
 }
 
 .glow-text {
-  text-shadow: 0 0 48px rgba(0, 229, 160, 0.6);
+  text-shadow: 0 0 48px rgba(212, 175, 55, 0.6);
 }
 
 /* ==========================================
@@ -145,12 +145,12 @@
   background: linear-gradient(135deg, var(--pw-primary) 0%, var(--pw-primary-dark) 50%, var(--pw-secondary) 100%);
   color: #050508;
   font-weight: 700;
-  box-shadow: 0 4px 20px rgba(0, 229, 160, 0.4);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 229, 160, 0.5);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.45);
 }
 
 .btn-secondary {

@@ -9,8 +9,5 @@ export const STORAGE_KEYS = {
     ADMIN_USER: 'admin_user',
     ADMIN_TOKEN: 'rcoin_admin_token',
     SLIPPAGE: 'rcoin_slippage',
-    LAST_NETWORK: 'rcoin_last_network',
-    // lottery
-    LOTTERY_SHOP_GUIDE_TOUR: 'bloomx_has_seen_lottery_shop_tour',
-    LOTTERY_ARENA_GUIDE_TOUR: 'bloomx_has_seen_lottery_arena_tour'
+    LAST_NETWORK: 'rcoin_last_network'
 } as const;

@@ -17,7 +17,6 @@ import DashboardPackages from '@/components/dashboard/DashboardPackages';
 import OffersSection from '@/components/dashboard/OffersSection';
 import DashboardPopup from '@/components/dashboard/DashboardPopup';
 import DashboardMediaStrip from '@/components/dashboard/DashboardMediaStrip';
-import LotteryStatusBanner from '@/components/lottery/LotteryStatusBanner';
 
 export default function DashboardPage() {
     const [dashboardUser, setDashboardUser] = useState<DashboardData['user']>({
@@ -289,8 +288,6 @@ export default function DashboardPage() {
 
             {/* Dashboard media uploaded from project-admin settings */}
             <DashboardMediaStrip items={dashboardMedia} loading={loadingDashboardMedia} />
-
-            <LotteryStatusBanner />
 
             {/* 1. Welcome Header (Grows full width) */}
             <DashboardWelcomeCard user={dashboardUser} loading={loadingProfile} />

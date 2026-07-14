@@ -37,7 +37,6 @@ export function normalizeWalletTypeCode(value: unknown): string {
 const WALLET_LABELS: Record<string, string> = {
     MAIN_WALLET: 'Main Wallet',
     FUND_WALLET: 'Fund Wallet',
-    LOTTERY_WALLET: 'Lottery Wallet',
 };
 
 export function getWalletLabel(walletTypeCode?: WalletTypeCode): string {

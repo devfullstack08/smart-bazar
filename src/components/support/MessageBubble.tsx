@@ -16,12 +16,12 @@ export function MessageBubble({ message, isMine }: { message: SupportMessageDto;
             <div
                 className={`max-w-[min(100%,28rem)] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-lg ${
                     isMine
-                        ? 'rounded-br-md bg-gradient-to-br from-[var(--pw-primary)] to-[#00a870] text-black'
+                        ? 'rounded-br-md bg-gradient-to-br from-primary to-primary-dark text-zinc-950'
                         : 'rounded-bl-md border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]'
                 }`}
             >
                 {!isMine && (
-                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--pw-primary)]">
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
                         Support
                     </p>
                 )}

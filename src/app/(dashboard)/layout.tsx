@@ -19,7 +19,6 @@ import {
     BookOpen,
     BarChart3,
     Headphones,
-    Ticket,
     Layers,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -31,7 +30,6 @@ import { authApi, walletApi } from '@/lib/api/services';
 import { formatCurrency } from '@/lib/utils/cn';
 import { STORAGE_KEYS } from '@/constants/storageKey';
 import { storageGetItem } from '@/lib/safe-storage';
-import { useLotteryFeatureGate } from '@/hooks/useLotteryFeatureGate';
  
 // Smart Bazar: no Rank income — nav includes Team Levels & Global Autopool
 const baseNavigation = [
@@ -42,7 +40,7 @@ const baseNavigation = [
     { name: 'Transaction Ledger', href: '/passbook', icon: BookOpen },
     { name: 'Direct Referrals', href: '/team', icon: Users },
     { name: 'Team Levels', href: '/team-level-status', icon: BarChart3 },
-    { name: 'Binary Network', href: '/genealogy', icon: GitBranch },
+    { name: 'Genealogy', href: '/genealogy', icon: GitBranch },
     { name: 'Wallet & Funds', href: '/wallet', icon: Wallet },
     { name: 'Help & Support', href: '/support', icon: Headphones },
     { name: 'Profile', href: '/profile', icon: User },
@@ -58,12 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [availableBalance, setAvailableBalance] = useState<number | null>(null);
     const [loadingBalance, setLoadingBalance] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const { lotteryEnabled } = useLotteryFeatureGate();
-    const navigation = [
-        ...baseNavigation.slice(0, 9),
-        ...(lotteryEnabled ? [{ name: 'Lottery', href: '/lottery', icon: Ticket }] : []),
-        ...baseNavigation.slice(9),
-    ];
+    const navigation = baseNavigation;
 
     useEffect(() => {
         setMounted(true);
@@ -183,7 +176,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     alt={user?.name ?? 'User'}
                                     width={32}
                                     height={32}
-                                    className="rounded-lg border border-white/5"
+                                    className="rounded-full border border-white/10"
                                 />
                                 <ChevronDown className={`h-4 w-4 text-[var(--muted-foreground)] hidden sm:block transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                             </button>

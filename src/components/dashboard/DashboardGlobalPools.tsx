@@ -16,13 +16,13 @@ const POOL_LABELS: Record<string, string> = {
 
 // Each pool gets a distinct accent so the grid feels alive
 const POOL_COLORS: Record<string, { color: string; bg: string }> = {
-  booster_pool:     { color: 'var(--pw-primary)', bg: 'rgba(0,229,160,0.10)'   },
+  booster_pool:     { color: 'var(--pw-primary)', bg: 'rgba(212,175,55,0.10)'   },
   club_pool:        { color: '#00C2E0', bg: 'rgba(0,194,224,0.10)'   },
   salary_pool:      { color: '#A78BFA', bg: 'rgba(167,139,250,0.10)' },
   leaderboard_pool: { color: '#FBBF24', bg: 'rgba(251,191,36,0.10)'  },
   royalty_pool:     { color: '#FB7185', bg: 'rgba(251,113,133,0.10)' },
 };
-const FALLBACK = { color: 'var(--pw-primary)', bg: 'rgba(0,229,160,0.10)' };
+const FALLBACK = { color: 'var(--pw-primary)', bg: 'rgba(212,175,55,0.10)' };
 
 function poolLabel(key: string) {
   return POOL_LABELS[key] ?? key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());

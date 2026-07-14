@@ -176,8 +176,8 @@ export default function IncomeTypes() {
                             className="absolute inset-0 pointer-events-none"
                             style={{
                                 background:
-                                    'radial-gradient(ellipse 50% 100% at 0% 50%, rgba(0,229,160,0.07), transparent),' +
-                                    'radial-gradient(ellipse 40% 80% at 100% 50%, rgba(139,92,246,0.07), transparent)',
+                                    'radial-gradient(ellipse 50% 100% at 0% 50%, rgba(212,175,55,0.07), transparent),' +
+                                    'radial-gradient(ellipse 40% 80% at 100% 50%, rgba(139,92,246,0.05), transparent)',
                             }}
                             aria-hidden
                         />

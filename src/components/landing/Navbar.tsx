@@ -57,7 +57,7 @@ export default function Navbar() {
                             aria-label={APP_NAME}
                         >
                             <div
-                                className="w-9 h-9 rounded-xl flex items-center justify-center transition-shadow duration-300 group-hover:shadow-[0_0_20px_rgba(0,229,160,0.4)]"
+                                className="w-9 h-9 rounded-xl flex items-center justify-center transition-shadow duration-300 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
                                 style={{ background: 'linear-gradient(135deg, var(--pw-primary), var(--pw-primary-dark))' }}
                             >
                                 <Zap className="w-4.5 h-4.5 text-[#050508]" />

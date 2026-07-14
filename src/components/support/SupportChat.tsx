@@ -229,7 +229,7 @@ export function SupportChat({
                             <button
                                 type="button"
                                 onClick={() => submitMarkComplete(false)}
-                                className="rounded-lg bg-[var(--pw-primary)] px-4 py-2 text-sm font-medium text-black hover:opacity-90"
+                                className="rounded-lg bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary px-4 py-2 text-sm font-bold text-zinc-950 shadow-md shadow-primary/10 transition hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 Complete
                             </button>
@@ -239,7 +239,7 @@ export function SupportChat({
             )}
             <div className="shrink-0 border-b border-[var(--border)] px-4 py-3 sm:px-5">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs text-[var(--pw-primary)]">{ticket.ticketNumber}</span>
+                    <span className="font-mono text-xs text-primary">{ticket.ticketNumber}</span>
                     <TicketStatusBadge status={ticket.status} />
                 </div>
                 <h1 className="mt-1 text-lg font-semibold text-[var(--foreground)]">{ticket.subject}</h1>
@@ -247,7 +247,7 @@ export function SupportChat({
                     <button
                         type="button"
                         onClick={() => setCsatOpen(true)}
-                        className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[var(--pw-primary)]/40 bg-[var(--pw-primary)]/10 px-3 py-1.5 text-xs font-medium text-[var(--pw-primary)] transition hover:bg-[var(--pw-primary)]/20"
+                        className="mt-3 inline-flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/25"
                     >
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         Mark as completed
@@ -269,7 +269,7 @@ export function SupportChat({
                     <MessageBubble key={m.id} message={m} isMine={m.senderRole === 'user'} />
                 ))}
                 {peerTyping && (
-                    <p className="text-xs italic text-[var(--pw-primary)]" aria-live="polite">
+                    <p className="text-xs italic text-primary" aria-live="polite">
                         Support is typing…
                     </p>
                 )}
@@ -341,12 +341,12 @@ export function SupportChat({
                                     emitTyping?.(false);
                                 }}
                                 placeholder={pendingImage ? 'Add a caption (optional)…' : 'Type your message...'}
-                                className="min-h-[44px] flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-base text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-[var(--pw-primary)]/40 sm:text-sm"
+                                className="min-h-[44px] flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-base text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-primary/40 sm:text-sm"
                             />
                             <button
                                 type="submit"
                                 disabled={sending || (!pendingImage && !text.trim()) || (!!pendingImage && !onSendImage)}
-                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--pw-primary)] text-black transition hover:opacity-90 disabled:opacity-40"
+                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-zinc-950 transition shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 <Send className="h-4 w-4" />
                             </button>

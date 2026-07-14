@@ -11,7 +11,8 @@ import {
     Loader2,
     AlertCircle,
     CheckCircle2,
-    Lock
+    Lock,
+    Percent
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,7 @@ export default function AutoPoolPage() {
     if (isLoading) {
         return (
             <div className="flex h-[80vh] items-center justify-center">
-                <Loader2 className="h-12 w-12 animate-spin text-indigo-500" />
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
         );
     }
@@ -86,19 +87,19 @@ export default function AutoPoolPage() {
     if (!poolData?.hasMatrix) {
         return (
             <div className="flex h-[80vh] flex-col items-center justify-center space-y-6 text-center">
-                <div className="rounded-full bg-indigo-100 p-6 dark:bg-indigo-900/20">
-                    <Layers className="h-16 w-16 text-indigo-600 dark:text-indigo-400" />
+                <div className="rounded-full bg-primary/10 p-6">
+                    <Layers className="h-16 w-16 text-primary" />
                 </div>
                 <div className="max-w-md space-y-2">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    <h2 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-white">
                         Join the Global Auto Pool
                     </h2>
-                    <p className="text-gray-500 dark:text-gray-400">
+                    <p className="text-zinc-500 dark:text-zinc-400">
                         You are not currently enrolled in the Global Auto Pool. Purchase the specific package to enter the matrix and start earning.
                     </p>
                 </div>
                 <Link href="/packages">
-                    <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                    <Button size="lg" className="bg-primary hover:bg-primary-dark text-black font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
                         Buy Component Package
                     </Button>
                 </Link>
@@ -110,30 +111,30 @@ export default function AutoPoolPage() {
     const { summary, activeEntry, matrix, config } = poolData;
 
     return (
-        <div className="space-y-8 p-6 lg:p-8 animate-in fade-in duration-500">
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in duration-500">
 
             {/* Header */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-700 p-8 text-white shadow-2xl">
-                <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 -mb-10 -ml-10 h-64 w-64 rounded-full bg-black/10 blur-3xl"></div>
+            <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-gradient-to-br from-amber-50/30 via-white to-amber-50/10 dark:from-[rgba(18,25,44,0.85)] dark:via-[rgba(10,14,24,0.95)] dark:to-[rgba(8,10,18,0.98)] p-6 sm:p-8 shadow-sm">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-60 h-60 bg-gradient-to-tr from-emerald-500/5 to-transparent rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl pointer-events-none" />
 
                 <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-center">
                     <div>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold">Global Auto-Pool</h1>
-                            <span className="rounded-full bg-white/20 px-3 py-1 text-sm font-medium backdrop-blur-md">
+                            <h1 className="text-2xl sm:text-3xl font-black text-zinc-800 dark:text-white tracking-tight leading-tight">Global Auto-Pool</h1>
+                            <span className="rounded-full bg-primary/10 text-primary border border-primary/20 px-3 py-1 text-xs font-bold">
                                 {config.width}x{config.depth} Matrix
                             </span>
                         </div>
-                        <p className="mt-2 text-indigo-100">
+                        <p className="mt-2 text-zinc-500 dark:text-white/60 text-sm">
                             Your automated income engine is running.
                         </p>
                     </div>
 
                     <div className="flex gap-4">
-                        <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-md">
-                            <p className="text-sm text-indigo-200">Total Earned</p>
-                            <p className="text-2xl font-bold">${summary.totalEarned.toFixed(2)}</p>
+                        <div className="rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-4 shadow-sm">
+                            <p className="text-xs uppercase tracking-widest text-zinc-400 dark:text-white/40 font-extrabold">Total Earned</p>
+                            <p className="text-xl sm:text-2xl font-black text-primary truncate mt-0.5 tabular-nums">${summary.totalEarned.toFixed(2)}</p>
                         </div>
                     </div>
                 </div>
@@ -173,10 +174,10 @@ export default function AutoPoolPage() {
                 <div className="space-y-8 lg:col-span-1">
 
                     {/* Active Entry Card */}
-                    <Card className="overflow-hidden rounded-2xl border-none shadow-lg">
-                        <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 text-white">
-                            <h3 className="flex items-center gap-2 text-lg font-semibold">
-                                <Target className="h-5 w-5 text-indigo-400" />
+                    <Card className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] shadow-sm">
+                        <div className="border-b border-[var(--border)] p-5">
+                            <h3 className="flex items-center gap-2 text-md font-extrabold text-zinc-800 dark:text-white">
+                                <Target className="h-5 w-5 text-primary" />
                                 Current Active Entry
                             </h3>
                         </div>
@@ -184,77 +185,43 @@ export default function AutoPoolPage() {
                             {activeEntry ? (
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-gray-500">Matrix ID</span>
-                                        <span className="font-mono text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                                        <span className="text-xs font-bold text-zinc-500 dark:text-white/60">Matrix ID</span>
+                                        <span className="font-mono text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded">
                                             #{activeEntry.matrixId.slice(-6)}
                                         </span>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">L1 Progress</span>
-                                            <span className="font-medium">{activeEntry.childrenCount} / {config.width}</span>
+                                        <div className="flex justify-between text-xs">
+                                            <span className="text-zinc-500 dark:text-white/60 font-bold">L1 Progress</span>
+                                            <span className="font-bold text-zinc-700 dark:text-white/80">{activeEntry.childrenCount} / {config.width}</span>
                                         </div>
-                                        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                                        <div className="h-2 w-full rounded-full bg-zinc-100 dark:bg-white/10 overflow-hidden">
                                             <div
-                                                className="h-full bg-indigo-500 transition-all duration-1000"
+                                                className="h-full bg-primary transition-all duration-1000"
                                                 style={{ width: `${(activeEntry.childrenCount / config.width) * 100}%` }}
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
                                         <div>
-                                            <p className="text-xs text-gray-500 uppercase tracking-wider">Level</p>
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeEntry.level}</p>
+                                            <p className="text-[10px] font-extrabold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Level</p>
+                                            <p className="text-xl font-black text-zinc-800 dark:text-white mt-0.5">{activeEntry.level}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-gray-500 uppercase tracking-wider">Position</p>
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeEntry.position}</p>
+                                            <p className="text-[10px] font-extrabold text-zinc-400 dark:text-white/40 uppercase tracking-widest">Position</p>
+                                            <p className="text-xl font-black text-zinc-800 dark:text-white mt-0.5">{activeEntry.position}</p>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <CheckCircle2 className="h-12 w-12 mx-auto text-emerald-500 mb-3" />
-                                    <p>All entries completed!</p>
+                                <div className="text-center py-8 text-zinc-500 dark:text-white/60">
+                                    <CheckCircle2 className="h-12 w-12 mx-auto text-emerald-500 mb-3 animate-bounce" />
+                                    <p className="font-bold text-sm">All entries completed!</p>
                                     <p className="text-xs mt-1">Waiting for new rebirth...</p>
                                 </div>
                             )}
-                        </div>
-                    </Card>
-
-                    {/* Earnings Breakdown */}
-                    <Card className="rounded-2xl border-gray-100 shadow-lg">
-                        <div className="p-6">
-                            <h3 className="mb-6 font-semibold text-gray-900 dark:text-white">Earnings Breakdown</h3>
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between rounded-xl bg-emerald-50 p-4 dark:bg-emerald-900/20">
-                                    <div className="flex items-center gap-3">
-                                        <div className="rounded-full bg-emerald-100 p-2 text-emerald-600">
-                                            <DollarSign className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Main Wallet</p>
-                                            <p className="text-xs text-gray-500">60% Allocation</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-lg font-bold text-emerald-600">${summary.mainWalletEarned.toFixed(2)}</p>
-                                </div>
-
-                                <div className="flex items-center justify-between rounded-xl bg-amber-50 p-4 dark:bg-amber-900/20">
-                                    <div className="flex items-center gap-3">
-                                        <div className="rounded-full bg-amber-100 p-2 text-amber-600">
-                                            <RotateCcw className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Rebirth Wallet</p>
-                                            <p className="text-xs text-gray-500">25% Allocation</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-lg font-bold text-amber-600">${summary.rebirthWalletEarned.toFixed(2)}</p>
-                                </div>
-                            </div>
                         </div>
                     </Card>
                 </div>
@@ -264,36 +231,38 @@ export default function AutoPoolPage() {
 
                     {/* Level 1 */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600">1</span>
+                        <h3 className="text-md font-extrabold text-zinc-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">1</span>
                             Direct Downline (Level 1)
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {matrix.level1.map((entry) => (
+                            {matrix.level1?.map((entry) => (
                                 <MatrixEntryCard key={entry.matrixId} entry={entry} />
                             ))}
                             {/* Placeholders */}
-                            {Array.from({ length: Math.max(0, config.width - matrix.level1.length) }).map((_, i) => (
+                            {Array.from({ length: Math.max(0, config.width - (matrix.level1?.length || 0)) }).map((_, i) => (
                                 <EmptySlotCard key={i} />
                             ))}
                         </div>
                     </div>
 
-                    {/* Level 2 */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-xs font-bold text-purple-600">2</span>
-                            2nd Generation (Level 2)
-                        </h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                            {matrix.level2.map((entry) => (
-                                <MatrixEntryCard key={entry.matrixId} entry={entry} isSmall />
-                            ))}
-                            {Array.from({ length: Math.max(0, (config.width * config.width) - matrix.level2.length) }).map((_, i) => (
-                                <EmptySlotCard key={i} isSmall />
-                            ))}
+                    {/* Level 2 (Only rendered if depth is 2 or higher) */}
+                    {config.depth >= 2 && (
+                        <div>
+                            <h3 className="text-md font-extrabold text-zinc-800 dark:text-white mb-4 flex items-center gap-2">
+                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">2</span>
+                                2nd Generation (Level 2)
+                            </h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                                {matrix.level2?.map((entry) => (
+                                    <MatrixEntryCard key={entry.matrixId} entry={entry} isSmall />
+                                ))}
+                                {Array.from({ length: Math.max(0, (config.width * config.width) - (matrix.level2?.length || 0)) }).map((_, i) => (
+                                    <EmptySlotCard key={i} isSmall />
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -303,18 +272,18 @@ export default function AutoPoolPage() {
 // Reuseable Components
 function StatCard({ title, value, icon: Icon, color }: any) {
     const colors: Record<string, string> = {
-        blue: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20',
-        emerald: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20',
-        amber: 'text-amber-600 bg-amber-50 dark:bg-amber-900/20',
-        purple: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20',
+        blue: 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/20',
+        emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20',
+        amber: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20',
+        purple: 'text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20',
     };
 
     return (
-        <Card className="p-6 transition-all hover:shadow-md">
+        <Card className="p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 border-[var(--border)] bg-[var(--surface-elevated)] shadow-sm relative overflow-hidden">
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-sm font-medium text-gray-500">{title}</p>
-                    <h4 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{value}</h4>
+                    <p className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">{title}</p>
+                    <h4 className="mt-2 text-2xl font-black text-zinc-800 dark:text-white tabular-nums">{value}</h4>
                 </div>
                 <div className={`rounded-xl p-3 ${colors[color] || colors.blue}`}>
                     <Icon className="h-6 w-6" />
@@ -328,25 +297,25 @@ function MatrixEntryCard({ entry, isSmall }: { entry: MatrixEntry, isSmall?: boo
     const isFilled = entry.status === 'Filled';
 
     return (
-        <div className={`relative group overflow-hidden rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${isFilled ? 'border-emerald-200 bg-emerald-50/30' : ''}`}>
+        <div className={`relative group overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] p-4 shadow-sm transition-all hover:shadow-md ${isFilled ? 'border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/10' : ''}`}>
             <div className="flex items-center gap-3">
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold 
-            ${isFilled ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'}`}>
+            ${isFilled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary/10 text-primary border border-primary/20'}`}>
                     #{entry.position}
                 </div>
                 <div className="overflow-hidden">
-                    <p className="truncate text-xs font-medium text-gray-500">Member</p>
-                    <p className="truncate text-sm font-bold text-gray-900 dark:text-white">
+                    <p className="truncate text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-bold">Member</p>
+                    <p className="truncate text-sm font-bold text-zinc-800 dark:text-white">
                         {entry.userId.slice(0, 8)}...
                     </p>
                 </div>
             </div>
             {!isSmall && (
-                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs">
-                    <span className={`px-2 py-0.5 rounded-full font-medium ${isFilled ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
+                <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-3 text-xs">
+                    <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${isFilled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary/10 text-primary'}`}>
                         {entry.status}
                     </span>
-                    <span className="text-gray-400">
+                    <span className="text-zinc-400 dark:text-zinc-500 text-[10px]">
                         {new Date(entry.joinedAt).toLocaleDateString()}
                     </span>
                 </div>
@@ -357,11 +326,11 @@ function MatrixEntryCard({ entry, isSmall }: { entry: MatrixEntry, isSmall?: boo
 
 function EmptySlotCard({ isSmall }: { isSmall?: boolean }) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50/50 p-4 text-center transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
-            <div className="mb-2 rounded-full bg-gray-200 p-2 dark:bg-gray-700">
-                <Lock className="h-4 w-4 text-gray-400" />
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)]/30 p-4 text-center transition-all hover:bg-zinc-50 dark:hover:bg-white/[0.02]">
+            <div className="mb-2 rounded-full bg-zinc-100 dark:bg-white/5 p-2">
+                <Lock className="h-4 w-4 text-zinc-400 dark:text-zinc-600" />
             </div>
-            {!isSmall && <span className="text-xs font-medium text-gray-400">Empty Slot</span>}
+            {!isSmall && <span className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Locked Slot</span>}
         </div>
     );
 }

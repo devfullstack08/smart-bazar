@@ -1097,17 +1097,19 @@ export const userApi = {
             data: User & {
                 name?: string;
                 joinedAt?: string;
+                profileImage?: string;
             }
         }>(
             '/users/profile',
             withProjectId()
         );
-        // Map API response to User type (normalize name -> fullName, joinedAt -> joinDate)
+        // Map API response to User type (normalize name -> fullName, joinedAt -> joinDate, profileImage -> profilePicture)
         const profileData = response.data.data;
         return {
             ...profileData,
             fullName: profileData.name || profileData.fullName || '',
             joinDate: profileData.joinedAt || profileData.joinDate || '',
+            profilePicture: profileData.profileImage || profileData.profilePicture || '',
         } as User;
     },
 
@@ -1132,18 +1134,20 @@ export const userApi = {
             data: User & {
                 name?: string;
                 joinedAt?: string;
+                profileImage?: string;
             }
         }>(
             '/users/profile',
             data,
             withProjectId()
         );
-        // Map API response to User type (normalize name -> fullName, joinedAt -> joinDate)
+        // Map API response to User type (normalize name -> fullName, joinedAt -> joinDate, profileImage -> profilePicture)
         const profileData = response.data.data;
         return {
             ...profileData,
             fullName: profileData.name || profileData.fullName || '',
             joinDate: profileData.joinedAt || profileData.joinDate || '',
+            profilePicture: profileData.profileImage || profileData.profilePicture || '',
         } as User;
     },
 
@@ -1151,7 +1155,7 @@ export const userApi = {
         const formData = new FormData();
         formData.append('file', file);
         
-        const response = await fetch(`${API_URL}/users/profile/picture`, {
+        const response = await fetch(`${API_URL}/users/profile/photo`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -1161,12 +1165,12 @@ export const userApi = {
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ message: 'Profile picture upload failed' }));
-            throw new Error(error.error || error.message || 'Profile picture upload failed');
+            const error = await response.json().catch(() => ({ message: 'Profile photo upload failed' }));
+            throw new Error(error.error || error.message || 'Profile photo upload failed');
         }
 
         const resData = await response.json();
-        return resData?.data?.profilePicture || resData?.profilePicture || resData?.data?.url || resData?.url || '';
+        return resData?.data?.profileImage || resData?.profileImage || '';
     },
 
     changePassword: async (currentPassword: string, newPassword: string) => {

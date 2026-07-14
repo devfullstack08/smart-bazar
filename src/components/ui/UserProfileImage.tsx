@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ASSETS } from '@/constants';
+import { getFileUrl } from '@/lib/utils/file';
 
 interface UserProfileImageProps {
   src?: string | null;
@@ -24,7 +25,7 @@ export default function UserProfileImage({
 
   useEffect(() => {
     if (src) {
-      setImageSrc(src);
+      setImageSrc(getFileUrl(src));
     } else {
       setImageSrc(ASSETS.DEFAULT_PROFILE_PICTURE);
     }

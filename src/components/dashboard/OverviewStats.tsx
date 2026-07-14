@@ -38,33 +38,33 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
       label: 'Today\'s Earnings',
       value: formatCurrency(income.todayIncome ?? 0),
       icon: DollarSign,
-      glowColor: 'rgba(16, 185, 129, 0.15)', // emerald
-      textColor: 'text-emerald-400',
-      borderStyle: 'border-emerald-500/10'
+      glowColor: 'rgba(16, 185, 129, 0.08)', // emerald
+      textColor: 'text-emerald-600 dark:text-emerald-400',
+      borderStyle: 'border-[var(--border)] dark:border-emerald-500/10'
     },
     {
       label: 'Total Profit',
       value: formatCurrency(wallet.totalEarned),
       icon: TrendingUp,
-      glowColor: 'rgba(59, 130, 246, 0.15)', // blue
-      textColor: 'text-blue-400',
-      borderStyle: 'border-blue-500/10'
+      glowColor: 'rgba(59, 130, 246, 0.08)', // blue
+      textColor: 'text-blue-600 dark:text-blue-400',
+      borderStyle: 'border-[var(--border)] dark:border-blue-500/10'
     },
     {
       label: 'Total Deposited',
       value: formatCurrency(wallet.totalDeposited ?? 0),
       icon: ArrowDownToLine,
-      glowColor: 'rgba(245, 158, 11, 0.15)', // amber
-      textColor: 'text-amber-400',
-      borderStyle: 'border-amber-500/10'
+      glowColor: 'rgba(245, 158, 11, 0.08)', // amber
+      textColor: 'text-amber-600 dark:text-amber-400',
+      borderStyle: 'border-[var(--border)] dark:border-amber-500/10'
     },
     {
       label: 'Total Withdrawn',
       value: formatCurrency(wallet.totalWithdrawn),
       icon: ArrowUpToLine,
-      glowColor: 'rgba(107, 114, 128, 0.15)', // gray
-      textColor: 'text-gray-400',
-      borderStyle: 'border-gray-500/10'
+      glowColor: 'rgba(107, 114, 128, 0.08)', // gray
+      textColor: 'text-zinc-500 dark:text-gray-400',
+      borderStyle: 'border-[var(--border)] dark:border-gray-500/10'
     }
   ];
 
@@ -72,20 +72,20 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 min-w-0">
       {/* Hero Available Balance Card */}
       <div 
-        className="col-span-2 sm:col-span-4 lg:col-span-1 rounded-2xl border bg-[var(--surface-elevated)] p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 group"
+        className="col-span-2 sm:col-span-4 lg:col-span-1 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 group"
         style={{ 
-          background: 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(18,18,26,0.95) 100%)',
-          borderColor: 'rgba(212, 175, 55, 0.15)'
+          background: 'linear-gradient(135deg, rgba(212,175,55,0.06) 0%, var(--surface-elevated) 100%)',
+          borderColor: 'rgba(212, 175, 55, 0.25)'
         }}
       >
-        <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
         <div className="flex items-center justify-between">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 bg-white/5">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5">
             <Wallet size={16} className="text-primary" />
           </div>
           <Link
             href="/wallet"
-            className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg border border-white/10 bg-white/5 text-primary hover:bg-white/10 transition-all shadow-sm"
+            className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5 text-primary hover:bg-zinc-100 dark:hover:bg-white/10 transition-all shadow-sm"
           >
             Wallet <ArrowRight size={10} />
           </Link>
@@ -99,8 +99,8 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
             {formatCurrency(available)}
           </p>
           {locked > 0 && (
-            <p className="text-[8px] font-medium text-amber-500 mt-0.5 truncate flex items-center gap-0.5">
-              <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse" />
+            <p className="text-[8px] font-medium text-amber-600 dark:text-amber-500 mt-0.5 truncate flex items-center gap-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
               Locked: {formatCurrency(locked)}
             </p>
           )}
@@ -114,9 +114,9 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
           <div 
             key={item.label}
             className={`col-span-1 sm:col-span-2 lg:col-span-1 rounded-2xl border ${item.borderStyle} bg-[var(--surface-elevated)] p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5`}
-            style={{ background: `linear-gradient(135deg, ${item.glowColor} 0%, rgba(18,18,26,0.95) 100%)` }}
+            style={{ background: `linear-gradient(135deg, ${item.glowColor} 0%, var(--surface-elevated) 100%)` }}
           >
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-white/5 bg-white/[0.03]">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/[0.03]">
               <Icon size={16} className={item.textColor} />
             </div>
             
@@ -124,7 +124,7 @@ export default function OverviewStats({ wallet, income, loading = false }: Overv
               <p className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">
                 {item.label}
               </p>
-              <p className="text-xl sm:text-2xl font-black text-white truncate mt-0.5 tabular-nums">
+              <p className="text-xl sm:text-2xl font-black text-zinc-800 dark:text-white truncate mt-0.5 tabular-nums">
                 {item.value}
               </p>
             </div>

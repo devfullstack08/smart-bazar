@@ -303,7 +303,7 @@ export default function DashboardPoolStatus({
               <Link
                 href="/team"
                 className="flex items-center justify-between gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-colors"
-                style={{ backgroundColor: 'rgba(0,229,160,0.1)', color: 'var(--pw-primary)', border: '1px solid rgba(0,229,160,0.25)' }}
+                style={{ backgroundColor: 'rgba(212,175,55,0.1)', color: 'var(--pw-primary)', borderColor: 'rgba(212,175,55,0.25)', borderWidth: '1px' }}
               >
                 <span className="flex items-center gap-2">
                   <Users size={15} />
@@ -421,7 +421,7 @@ export default function DashboardPoolStatus({
                                 {isYou && isLb && (
                                   <span
                                     className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border border-[var(--pw-primary)]/50"
-                                    style={{ backgroundColor: 'rgba(0,229,160,0.22)', color: 'var(--pw-primary)' }}
+                                    style={{ backgroundColor: 'rgba(212,175,55,0.2)', color: 'var(--pw-primary)' }}
                                   >
                                     Your rank
                                   </span>
@@ -429,7 +429,7 @@ export default function DashboardPoolStatus({
                                 {isYou && !isLb && (
                                   <span
                                     className="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded"
-                                    style={{ backgroundColor: 'rgba(0,229,160,0.2)', color: 'var(--pw-primary)' }}
+                                    style={{ backgroundColor: 'rgba(212,175,55,0.2)', color: 'var(--pw-primary)' }}
                                   >
                                     You
                                   </span>
@@ -576,9 +576,8 @@ export default function DashboardPoolStatus({
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 pt-4 sm:pt-5 pb-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: 'rgba(0,229,160,0.12)' }}>
-            <Layers size={18} style={{ color: 'var(--pw-primary)' }} strokeWidth={2.2} />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/10">
+            <Layers size={18} className="text-primary" strokeWidth={2.2} />
           </div>
           <div className="min-w-0">
             <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] leading-tight"
@@ -590,8 +589,7 @@ export default function DashboardPoolStatus({
         </div>
         {/* Summary badges */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: 'rgba(0,229,160,0.1)', color: 'var(--pw-primary)' }}>
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-primary/10 text-primary">
             {displayPools.filter(p => p.eligibilityStatus?.isEligible).length} Earning
           </span>
           <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">

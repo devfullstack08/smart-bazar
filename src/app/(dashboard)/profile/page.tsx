@@ -495,10 +495,10 @@ export default function ProfilePage() {
                         alt={user?.name ?? 'User'}
                         width={56}
                         height={56}
-                        className="rounded-2xl border border-[var(--primary)]/20"
+                        className="rounded-full border border-primary/20"
                     />
                     <div className="min-w-0">
-                        <span className="inline-flex items-center gap-1 sm:gap-2 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[var(--pw-primary)]/10 dark:bg-white/10 border border-[var(--pw-primary)]/20 dark:border-white/20 text-[var(--pw-primary)] dark:text-white text-[10px] sm:text-sm font-medium mb-1 sm:mb-2">Account</span>
+                        <span className="inline-flex items-center gap-1 sm:gap-2 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] sm:text-sm font-medium mb-1 sm:mb-2">Account</span>
                         <h1 className="text-base sm:text-2xl md:text-3xl font-bold text-[var(--foreground)] leading-tight truncate" style={{ fontFamily: 'var(--font-display)' }}>My Profile</h1>
                         <p className="text-[var(--muted-foreground)] text-[11px] sm:text-sm mt-0.5 sm:mt-1">Manage your account information</p>
                     </div>
@@ -506,27 +506,27 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Card - PWA compact */}
-            <div className="premium-card rounded-lg sm:rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+            <div className="premium-card rounded-lg sm:rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-lg">
                 {/* Header Section */}
-                <div className="bg-gradient-to-r from-[var(--pw-primary)] via-emerald-500 to-[var(--pw-primary)] p-4 sm:p-6 md:p-8 text-white relative">
+                <div className="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-6 sm:p-8 border-b border-[var(--border)] text-white relative">
                     <div className="absolute inset-0 bg-black/10"></div>
-                    <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 100% 100%, rgba(212,175,55,0.2) 0, transparent 400px)' }}></div>
+                    <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 100% 100%, rgba(212,175,55,0.08) 0, transparent 400px)' }}></div>
                     <div className="relative flex items-center gap-3 sm:gap-6 z-10">
-                        <div className="relative group">
+                        <div className="relative group shrink-0">
                             <UserProfileImage
                                 src={(user as any)?.profilePicture}
                                 alt={user?.name ?? 'User'}
                                 width={96}
                                 height={96}
-                                className="rounded-2xl border-2 border-white/30 shadow-lg transition-transform duration-300 group-hover:scale-105"
+                                className="rounded-full border-2 border-white/20 shadow-lg transition-transform duration-300 group-hover:scale-105"
                             />
-                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm border border-white/20">
+                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm border border-white/20">
                                 {uploadingProfilePic ? (
                                     <Loader2 className="animate-spin text-white mb-1" size={24} />
                                 ) : (
                                     <>
-                                        <Camera className="text-white mb-1" size={24} />
-                                        <span className="text-white text-xs font-semibold">Change</span>
+                                        <Camera className="text-white mb-1" size={20} />
+                                        <span className="text-white text-[10px] font-bold uppercase tracking-wider">Change</span>
                                     </>
                                 )}
                                 <input 
@@ -567,13 +567,13 @@ export default function ProfilePage() {
                             <div className="flex flex-wrap gap-2 sm:gap-3">
                                 <button
                                     onClick={() => setEditing(true)}
-                                    className="btn btn-primary px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl font-semibold text-[10px] sm:text-sm"
+                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-zinc-950 font-bold text-[11px] sm:text-sm shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
                                 >
                                     Edit Profile
                                 </button>
                                 <button
                                     onClick={handleOpenChangePasswordModal}
-                                    className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl border border-[var(--border)] font-semibold text-[10px] sm:text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
+                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 font-semibold text-[11px] sm:text-sm transition-all duration-200"
                                 >
                                     Change Password
                                 </button>
@@ -590,14 +590,14 @@ export default function ProfilePage() {
                                             walletAddress: (user as { walletAddress?: string })?.walletAddress || '',
                                         });
                                     }}
-                                    className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl border border-[var(--border)] font-semibold text-[10px] sm:text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
+                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 font-semibold text-[11px] sm:text-sm transition-all duration-200"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="btn btn-primary px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl font-semibold text-[10px] sm:text-sm disabled:opacity-50"
+                                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-zinc-950 font-bold text-[11px] sm:text-sm shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none"
                                 >
                                     {saving ? 'Saving...' : 'Save Changes'}
                                 </button>

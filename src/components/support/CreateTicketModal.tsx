@@ -61,7 +61,7 @@ export function CreateTicketModal({ open, onClose, onSubmit }: Props) {
                         <select
                             value={category}
                             onChange={(e) => setCategory(e.target.value as SupportCategory)}
-                            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-[var(--pw-primary)]/50"
+                            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-primary/50"
                         >
                             {categories.map((c) => (
                                 <option key={c.id} value={c.id}>
@@ -75,7 +75,7 @@ export function CreateTicketModal({ open, onClose, onSubmit }: Props) {
                         <input
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
-                            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-[var(--pw-primary)]/50"
+                            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-primary/50"
                             placeholder="What do you need help with?"
                             maxLength={500}
                             required
@@ -87,7 +87,7 @@ export function CreateTicketModal({ open, onClose, onSubmit }: Props) {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             rows={5}
-                            className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-[var(--pw-primary)]/50"
+                            className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-primary/50"
                             placeholder="Describe your issue in detail..."
                             required
                         />
@@ -95,7 +95,7 @@ export function CreateTicketModal({ open, onClose, onSubmit }: Props) {
                     <button
                         type="submit"
                         disabled={loading || subject.trim().length < 3}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--pw-primary)] py-3 text-sm font-semibold text-black shadow-lg transition hover:opacity-95 disabled:opacity-40"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary py-3 text-sm font-bold text-zinc-950 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none"
                     >
                         {loading ? (
                             'Sending...'

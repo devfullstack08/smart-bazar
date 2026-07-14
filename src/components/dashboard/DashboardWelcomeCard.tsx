@@ -51,11 +51,11 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
       : 'Direct Sponsor';
 
   return (
-    <div className="rounded-2xl border border-white/10 welcome-card-banner p-6 sm:p-8 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 hover:shadow-2xl hover:border-[var(--primary)]/30">
+    <div className="rounded-2xl border border-[var(--border)] bg-gradient-to-br from-amber-50/30 via-white to-amber-50/10 dark:from-[rgba(18,25,44,0.85)] dark:via-[rgba(10,14,24,0.95)] dark:to-[rgba(8,10,18,0.98)] p-6 sm:p-8 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 hover:shadow-2xl hover:border-primary/30">
       {/* Decorative luxury background elements */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[var(--primary)]/15 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-60 h-60 bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)] opacity-30 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-60 h-60 bg-gradient-to-tr from-emerald-500/5 to-transparent rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.01)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_100%)] opacity-30 pointer-events-none" />
 
       {/* Profile & Greetings */}
       <div className="flex items-center gap-4 sm:gap-6 min-w-0 z-10">
@@ -65,7 +65,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
             alt={user.name}
             width={72}
             height={72}
-            className="rounded-2xl border-2 border-[var(--primary)]/30 p-0.5 bg-black/40 shadow-inner shadow-black/80 transition-transform duration-300 hover:scale-105"
+            className="rounded-full border-2 border-primary/30 p-0.5 bg-black/5 dark:bg-black/40 shadow-inner transition-transform duration-300 hover:scale-105"
           />
           <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[var(--surface-elevated)] flex items-center justify-center shadow-lg" title="Active Node">
             <ShieldCheck className="text-white" size={11} strokeWidth={3} />
@@ -74,46 +74,46 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded">My Account</span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <span className="text-[10px] font-extrabold text-white/90 tracking-wider">
-              ID: <span className="font-mono text-[var(--primary-light)]">{user.userId || 'N/A'}</span>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">My Account</span>
+            <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-white/20" />
+            <span className="text-[10px] font-extrabold text-zinc-500 dark:text-white/90 tracking-wider">
+              ID: <span className="font-mono text-primary">{user.userId || 'N/A'}</span>
             </span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-white/20" />
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
               Active Node
             </span>
           </div>
           
-          <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight mt-2 flex flex-wrap items-center gap-x-2">
+          <h1 className="text-xl sm:text-3xl font-black text-zinc-800 dark:text-white tracking-tight leading-tight mt-2 flex flex-wrap items-center gap-x-2">
             <span>{greeting},</span> 
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-light)] via-white to-[var(--primary-light)] filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.2)]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-800 to-amber-600 dark:from-primary-light dark:via-white dark:to-primary-light filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.1)]">
               {user.name}
             </span>
           </h1>
           
-          <p className="text-white/60 text-xs sm:text-sm mt-1.5 flex items-center gap-1.5">
+          <p className="text-zinc-500 dark:text-white/60 text-xs sm:text-sm mt-1.5 flex items-center gap-1.5">
             <span>Sponsor:</span>
-            <span className="font-semibold text-white/90 bg-white/5 px-2 py-0.5 rounded border border-white/5">{sponsorName}</span>
+            <span className="font-semibold text-zinc-700 dark:text-white/90 bg-zinc-100 dark:bg-white/5 px-2 py-0.5 rounded border border-zinc-200 dark:border-white/5">{sponsorName}</span>
           </p>
         </div>
       </div>
 
       {/* Clock and Verification badge */}
-      <div className="flex items-center gap-4 shrink-0 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6 z-10 self-stretch justify-between md:justify-end">
+      <div className="flex items-center gap-4 shrink-0 border-t md:border-t-0 md:border-l border-zinc-200 dark:border-white/10 pt-4 md:pt-0 md:pl-6 z-10 self-stretch justify-between md:justify-end">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/[0.03] border border-white/10 shrink-0 shadow-lg">
-            <Clock size={18} className="text-[var(--primary)] animate-pulse" />
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-zinc-100 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10 shrink-0 shadow-sm">
+            <Clock size={18} className="text-primary animate-pulse" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[9px] uppercase tracking-widest text-white/40 font-extrabold">Local Time</span>
-            <p className="text-lg font-black text-white tracking-tight mt-0.5 tabular-nums">
+            <span className="text-[9px] uppercase tracking-widest text-zinc-400 dark:text-white/40 font-extrabold">Local Time</span>
+            <p className="text-lg font-black text-zinc-800 dark:text-white tracking-tight mt-0.5 tabular-nums">
               {localTime || '--:--'}
             </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 }

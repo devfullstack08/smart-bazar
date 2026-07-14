@@ -41,9 +41,8 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
 
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-[var(--border)]">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,229,160,0.12)' }}>
-          <Target size={17} style={{ color: 'var(--pw-primary)' }} strokeWidth={2.2} />
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
+          <Target size={17} className="text-primary" strokeWidth={2.2} />
         </div>
         <div>
           <h2 className="text-base font-bold text-[var(--foreground)] leading-tight"
@@ -59,9 +58,8 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
       {/* No active package state */}
       {!cappingData.hasActivePackage ? (
         <div className="px-5 py-10 flex flex-col items-center text-center gap-4">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: 'rgba(0,229,160,0.1)' }}>
-            <ShoppingCart size={20} style={{ color: 'var(--pw-primary)' }} />
+          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-primary/10">
+            <ShoppingCart size={20} className="text-primary" />
           </div>
           <div>
             <p className="text-sm font-semibold text-[var(--foreground)]">No active package</p>
@@ -211,7 +209,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
                             className="h-full rounded-full transition-all duration-500"
                             style={{
                               width: `${lvlPct}%`,
-                              backgroundColor: lvl.achieved ? 'var(--pw-primary)' : 'rgba(0,229,160,0.4)',
+                              backgroundColor: lvl.achieved ? 'var(--pw-primary)' : 'rgba(212,175,55,0.4)',
                             }}
                           />
                         </div>
@@ -226,7 +224,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
           {/* Next level nudge */}
           {nextLevel && !isCapped && (
             <div className="rounded-xl px-4 py-3 flex items-center justify-between"
-              style={{ backgroundColor: 'rgba(0,229,160,0.06)', border: '1px solid rgba(0,229,160,0.15)' }}>
+              style={{ backgroundColor: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.15)' }}>
               <div>
                 <p className="text-xs font-semibold text-[var(--foreground)]">
                   Level {nextLevel.level} unlock
@@ -236,7 +234,7 @@ export default function DashboardCappingTracker({ cappingData, loading = false }
                 </p>
               </div>
               <span className="text-xs font-bold px-2.5 py-1 rounded-lg"
-                style={{ backgroundColor: 'rgba(0,229,160,0.12)', color: 'var(--pw-primary)' }}>
+                style={{ backgroundColor: 'rgba(212,175,55,0.12)', color: 'var(--pw-primary)' }}>
                 {nextLevel.currentMembers}/{nextLevel.membersRequired}
               </span>
             </div>

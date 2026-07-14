@@ -62,8 +62,8 @@
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(rgba(0, 229, 160, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 160, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.04) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
 }
@@ -335,7 +335,7 @@ a:focus-visible {
 
 /* Selection */
 ::selection {
-  background: rgba(0, 229, 160, 0.35);
+  background: rgba(212, 175, 55, 0.35);
   color: inherit;
 }
 
@@ -486,10 +486,10 @@ a:focus-visible {
 .gba-gb {
   padding: 1px;
   border-radius: 20px;
-  background: rgba(0, 229, 160, 0.22);
+  background: rgba(212, 175, 55, 0.22);
 }
 .dark .gba-gb {
-  background: rgba(0, 229, 160, 0.12);
+  background: rgba(212, 175, 55, 0.12);
 }
 .gba-gb > * {
   border-color: transparent !important;

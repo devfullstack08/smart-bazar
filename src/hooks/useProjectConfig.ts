@@ -35,7 +35,7 @@ export function useEnsureProjectConfig(options?: { force?: boolean }) {
         const shouldPauseAfterError = !force && error && !projectConfig;
 
         if (!projectId || loading || canUseCache || shouldPauseAfterError) return;
-        // For `force: true` (e.g. /lottery), a single successful load is enough. Do
+        // For `force: true`, a single successful load is enough. Do
         // not also require `projectConfig` in this guard — a separate hook instance’s
         // ref is reset on remount, and requiring `projectConfig` caused re-fetch
         // loops with `lastFetched` / `loading` dependency churn. Ref alone is
@@ -73,7 +73,7 @@ export function useEnsureProjectConfig(options?: { force?: boolean }) {
                 // Always clear loading when this request finishes — if we skip
                 // `setLoading(false)` on cancel (Strict Mode / fast re-run), global
                 // `loading` stays true forever and the effect bails on
-                // `if (loading)` with no in-flight fetch (deadlock on /lottery).
+                // `if (loading)` with no in-flight fetch.
                 dispatch(setLoading(false));
             });
 

@@ -24,9 +24,6 @@ interface ProjectConfigData {
     timezone: string;
     maxUsers: number;
     allowedDomains: string[];
-    lottery?: {
-        enabled?: boolean;
-    };
 }
 
 interface ProjectMetadata {

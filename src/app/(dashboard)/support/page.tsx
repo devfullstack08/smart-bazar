@@ -51,7 +51,7 @@ export default function SupportPage() {
         <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[var(--pw-primary)]/25 bg-[var(--pw-primary)]/10 px-3 py-1 text-xs font-medium text-[var(--pw-primary)]">
+                    <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                         <Headphones className="h-3.5 w-3.5" />
                         Help center
                     </div>
@@ -59,7 +59,7 @@ export default function SupportPage() {
                     <p className="mt-1 text-sm text-[var(--muted-foreground)]">
                         Create a ticket to request changes (for example primary wallet updates) or get help from our team.
                         {totalUnread > 0 && (
-                            <span className="ml-2 text-[var(--pw-primary)]">
+                            <span className="ml-2 text-primary font-semibold">
                                 {totalUnread} unread message{totalUnread === 1 ? '' : 's'}
                             </span>
                         )}
@@ -68,7 +68,7 @@ export default function SupportPage() {
                 <button
                     type="button"
                     onClick={() => setModal(true)}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--pw-primary)] px-5 py-3 text-sm font-semibold text-black shadow-lg transition hover:opacity-95"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary px-5 py-3 text-sm font-bold text-zinc-950 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
                 >
                     <Plus className="h-4 w-4" />
                     New ticket
@@ -88,7 +88,7 @@ export default function SupportPage() {
                     <button
                         type="button"
                         onClick={() => setModal(true)}
-                        className="mt-4 text-sm font-medium text-[var(--pw-primary)] hover:underline"
+                        className="mt-4 text-sm font-medium text-primary hover:underline"
                     >
                         Open your first ticket
                     </button>

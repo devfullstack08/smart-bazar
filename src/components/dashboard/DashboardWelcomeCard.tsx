@@ -80,9 +80,9 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
           <UserProfileImage
             src={(user as any)?.profilePicture}
             alt={user.name}
-            width={72}
-            height={72}
-            className="!w-[52px] !h-[52px] md:!w-[72px] md:!h-[72px] aspect-square rounded-full border border-blue-500/20 p-0.5 bg-[var(--surface)] shadow-inner transition-transform duration-300 hover:scale-105"
+            width={88}
+            height={88}
+            className="!w-[64px] !h-[64px] md:!w-[88px] md:!h-[88px] aspect-square rounded-full border-2 border-blue-500 dark:border-blue-400 p-0.5 bg-[var(--surface)] shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-transform duration-300 hover:scale-105"
           />
           <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border border-[var(--surface-elevated)] flex items-center justify-center shadow" title="Active Node">
             <ShieldCheck className="text-white" size={9} strokeWidth={3} />

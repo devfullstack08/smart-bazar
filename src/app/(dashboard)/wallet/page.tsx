@@ -7,12 +7,13 @@ import { IPaymentConfig } from '@/types/paymentConfig';
 import { walletApi, paymentApi } from '@/lib/api/services';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { formatCurrency, formatDateTime, formatDate } from '@/lib/utils/cn';
-import { Wallet as WalletIcon, RefreshCw, ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown, DollarSign, CreditCard, Upload, History, CheckCircle, XCircle, Clock, Image as ImageIcon, Lock } from 'lucide-react';
+import { Wallet as WalletIcon, RefreshCw, ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown, DollarSign, CreditCard, Upload, History, CheckCircle, XCircle, Clock, Image as ImageIcon, Lock, ArrowRightLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { StatsCard } from '@/components/ui/StatsCard';
 import { Modal } from '@/components/ui/Modal';
 import { DepositModal } from '@/components/wallet/deposit/DepositModal';
 import { WithdrawalModal } from '@/components/wallet/withdrawal/WithdrawalModal';
+import { TransferFundsModal } from '@/components/wallet/transfer/TransferFundsModal';
 import { ConnectWalletButton } from '@/components/wallet/ConnectWalletButton';
 
 export default function WalletPage() {
@@ -35,8 +36,11 @@ export default function WalletPage() {
     const [loading, setLoading] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(false);
     const [loadingPaymentHistory, setLoadingPaymentHistory] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [walletConfig, setWalletConfig] = useState<any>(null);
     const [showWithdrawModal, setShowWithdrawModal] = useState(false);
     const [showDepositModal, setShowDepositModal] = useState(false);
+    const [showTransferModal, setShowTransferModal] = useState(false);
     const [showPaymentHistory, setShowPaymentHistory] = useState(false);
     const [filters, setFilters] = useState({
         category: '',
@@ -80,10 +84,20 @@ export default function WalletPage() {
         }
     }, [filters.limit, filters.skip, filters.category]);
 
+    const fetchWalletConfig = useCallback(async () => {
+        try {
+            const config = await walletApi.getWalletConfig();
+            setWalletConfig(config);
+        } catch (error) {
+            console.error('Failed to fetch wallet config:', error);
+        }
+    }, []);
+
     useEffect(() => {
         fetchWalletState();
+        fetchWalletConfig();
         fetchPaymentMethods();
-    }, [fetchWalletState]);
+    }, [fetchWalletState, fetchWalletConfig]);
 
     useEffect(() => {
         fetchTransactions();
@@ -357,21 +371,28 @@ export default function WalletPage() {
                         <div className="flex flex-wrap gap-1.5 sm:gap-2 ml-auto">
                             <button
                                 onClick={() => setShowDepositModal(true)}
-                                className="btn btn-primary px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm"
+                                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm shadow-md transition-colors"
                             >
                                 <Upload size={14} />
                                 Deposit
                             </button>
                             <button
                                 onClick={() => setShowWithdrawModal(true)}
-                                className="btn btn-primary px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm"
+                                className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm shadow-md transition-colors"
                             >
                                 <CreditCard size={14} />
                                 Withdraw
                             </button>
                             <button
+                                onClick={() => setShowTransferModal(true)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm shadow-md transition-colors"
+                            >
+                                <ArrowRightLeft size={14} />
+                                Transfer
+                            </button>
+                            <button
                                 onClick={() => setShowPaymentHistory(true)}
-                                className="btn btn-secondary px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm"
+                                className="bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)] px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 text-sm shadow-md transition-colors"
                             >
                                 <History size={14} />
                                 History
@@ -441,14 +462,25 @@ export default function WalletPage() {
                 )}
             </div>
 
-            {/* Withdrawal Modal */}
-            <WithdrawalModal
-                isOpen={showWithdrawModal}
-                onClose={() => setShowWithdrawModal(false)}
-                paymentMethods={paymentMethods}
-                walletData={walletState}
-                onSuccess={handleWithdrawalSuccess}
-            />
+            {showWithdrawModal && (
+                <WithdrawalModal
+                    isOpen={showWithdrawModal}
+                    onClose={() => setShowWithdrawModal(false)}
+                    balance={walletState.wallet.availableBalance}
+                    paymentMethods={paymentMethods}
+                    onSuccess={handleWithdrawalSuccess}
+                />
+            )}
+
+            {showTransferModal && (
+                <TransferFundsModal
+                    isOpen={showTransferModal}
+                    onClose={() => setShowTransferModal(false)}
+                    walletConfig={walletConfig}
+                    walletState={walletState}
+                    onSuccess={handleDepositSuccess}
+                />
+            )}
 
             {/* Deposit Modal */}
             <DepositModal

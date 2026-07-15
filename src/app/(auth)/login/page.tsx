@@ -75,7 +75,7 @@ function LoginForm() {
         setIsLoading(true);
         setCheckError(null);
         try {
-            const result = await authApi.checkUser(data.emailOrUserId);
+            const result = await authApi.checkUser(data.emailOrUserId, { security: true });
             if (result.exists) {
                 setVerifiedUser({
                     emailOrUserId: data.emailOrUserId,

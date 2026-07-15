@@ -144,20 +144,24 @@ export const authApi = {
         return response.data;
     },
 
-    /** Check if user exists by email or userId - for two-step login. Returns { exists: boolean, name?: string, hasPinSet?: boolean, hasPasskey?: boolean }. */
-    checkUser: async (emailOrUserId: string) => {
+    /** Check if user exists by email or userId. Security fields are opt-in for PIN/passkey screens. */
+    checkUser: async (emailOrUserId: string, options: { security?: boolean } = {}) => {
         const encoded = encodeURIComponent(emailOrUserId.trim());
+        const query = options.security ? '?security=true' : '';
         const response = await apiClient.get<{ exists: boolean; name?: string; hasPinSet?: boolean; hasPasskey?: boolean; data?: { exists: boolean; name?: string; hasPinSet?: boolean; hasPasskey?: boolean } }>(
-            `/users/check-user/${encoded}`,
+            `/users/check-user/${encoded}${query}`,
             withProjectId()
         );
         const data = response.data as any;
-        return {
+        const result: { exists: boolean; name: string; hasPinSet?: boolean; hasPasskey?: boolean } = {
             exists: data?.exists ?? data?.data?.exists ?? false,
             name: data?.name ?? data?.data?.name ?? '',
-            hasPinSet: data?.hasPinSet ?? data?.data?.hasPinSet ?? false,
-            hasPasskey: data?.hasPasskey ?? data?.data?.hasPasskey ?? false,
         };
+        if (options.security) {
+            result.hasPinSet = data?.hasPinSet ?? data?.data?.hasPinSet ?? false;
+            result.hasPasskey = data?.hasPasskey ?? data?.data?.hasPasskey ?? false;
+        }
+        return result;
     },
 
     logout: async () => {
@@ -588,6 +592,41 @@ export const teamApi = {
 
 // ==================== WALLET APIs ====================
 export const walletApi = {
+    /**
+     * P2P transfer: send amount to another user. Uses transactionSettings.transfer.
+     */
+    transferP2P: async (toUserId: string, amount: number, sourceWalletTypeCode?: string) => {
+        const response = await apiClient.post<{ success: boolean; message: string; data?: { reference: string; feeAmount?: number } }>(
+            '/users/wallet/p2p/transfer',
+            { toUserId, amount, ...(sourceWalletTypeCode && { sourceWalletTypeCode }) },
+            withProjectId()
+        );
+        return response.data?.data ?? response.data;
+    },
+
+    /**
+     * Transfer amount between wallets (same user). Omit amount for full balance.
+     */
+    walletTransfer: async (fromWalletTypeCode: string, toWalletTypeCode: string, amount: number): Promise<void> => {
+        await apiClient.post(
+            '/users/wallet/transfer',
+            { fromWalletTypeCode, toWalletTypeCode, amount },
+            withProjectId()
+        );
+    },
+
+    /**
+     * Get wallet config and transfer settings
+     */
+    getWalletConfig: async (): Promise<unknown> => {
+        const response = await apiClient.get<{
+            success: boolean;
+            message: string;
+            data: unknown;
+        }>('/users/wallet/settings', withProjectId());
+        return response.data?.data ?? response.data ?? {};
+    },
+
     /**
      * Get wallet state (balance, summary, statistics). No pagination.
      * Use this for overview; cache and refresh after deposit/withdrawal/income.

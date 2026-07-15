@@ -533,6 +533,15 @@ export interface WalletState {
     totalWithdrawn: number;
     totalEarned: number;
   };
+  wallets?: Array<{
+    typeCode: string;
+    balance: number;
+    availableBalance: number;
+    totalDeposited?: number;
+    totalWithdrawn?: number;
+    totalEarned?: number;
+  }>;
+  walletRouting?: Record<string, unknown>;
   summary: {
     totalCredit: number;
     totalDebit: number;

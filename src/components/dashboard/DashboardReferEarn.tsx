@@ -39,25 +39,39 @@ export default function DashboardReferEarn({
   incomeByType: IncomeByType[];
   teamLoading?: boolean;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const copyReferralLink = async () => {
+  const buildSideLink = (side: 'left' | 'right') => {
     try {
-      await navigator.clipboard.writeText(referralLink);
-      setCopied(true);
+      const url = new URL(referralLink);
+      url.searchParams.set('side', side);
+      return url.toString();
+    } catch {
+      const separator = referralLink.includes('?') ? '&' : '?';
+      return `${referralLink}${separator}side=${side}`;
+    }
+  };
+
+  const leftReferralLink = buildSideLink('left');
+  const rightReferralLink = buildSideLink('right');
+
+  const copyReferralLink = async (link = referralLink, key = 'default') => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(key);
       toast.success('Referral link copied!');
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(null), 2000);
     } catch {
       toast.error('Failed to copy');
     }
   };
 
-  const shareReferralLink = async () => {
+  const shareReferralLink = async (link = referralLink) => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Join me!', text: `Join using my referral link: ${referralLink}`, url: referralLink });
-      } catch { copyReferralLink(); }
-    } else { copyReferralLink(); }
+        await navigator.share({ title: 'Join me!', text: `Join using my referral link: ${link}`, url: link });
+      } catch { copyReferralLink(link); }
+    } else { copyReferralLink(link); }
   };
 
   const sponsorName =
@@ -137,11 +151,25 @@ export default function DashboardReferEarn({
               <div className="flex flex-col items-center p-3.5 rounded-xl border border-emerald-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-emerald-500/30 transition-colors">
                 <p className="text-[9px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-extrabold">Left Placements</p>
                 <p className="text-sm font-black text-emerald-600 dark:text-emerald-400 tabular-nums mt-1">{leftCount} Directs</p>
+                <button
+                  onClick={() => copyReferralLink(leftReferralLink, 'left')}
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15 transition-colors"
+                >
+                  {copied === 'left' ? <Check size={11} /> : <Copy size={11} />}
+                  {copied === 'left' ? 'Copied' : 'Copy Left Link'}
+                </button>
               </div>
               {/* Right Leaf Card - Vibrant Rose/Red */}
               <div className="flex flex-col items-center p-3.5 rounded-xl border border-rose-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-rose-500/30 transition-colors">
                 <p className="text-[9px] text-rose-600 dark:text-rose-400 uppercase tracking-wider font-extrabold">Right Placements</p>
                 <p className="text-sm font-black text-rose-600 dark:text-rose-400 tabular-nums mt-1">{rightCount} Directs</p>
+                <button
+                  onClick={() => copyReferralLink(rightReferralLink, 'right')}
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-[10px] font-black text-rose-700 dark:text-rose-300 hover:bg-rose-500/15 transition-colors"
+                >
+                  {copied === 'right' ? <Check size={11} /> : <Copy size={11} />}
+                  {copied === 'right' ? 'Copied' : 'Copy Right Link'}
+                </button>
               </div>
             </div>
           </div>
@@ -181,16 +209,16 @@ export default function DashboardReferEarn({
 
             {/* Copy button */}
             <button
-              onClick={copyReferralLink}
+              onClick={() => copyReferralLink(referralLink, 'default')}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             >
-              {copied ? <><Check size={14} /> Link Copied!</> : <><Copy size={14} /> Copy Sponsor Link</>}
+              {copied === 'default' ? <><Check size={14} /> Link Copied!</> : <><Copy size={14} /> Copy Sponsor Link</>}
             </button>
 
             {/* Share + Team */}
             <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={shareReferralLink}
+                onClick={() => shareReferralLink(referralLink)}
                 className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/80 text-[var(--foreground)] transition-colors"
               >
                 <Share2 size={12} /> Share

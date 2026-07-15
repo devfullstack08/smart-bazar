@@ -39,6 +39,7 @@ function RegisterForm() {
     const [sponsorValid, setSponsorValid] = useState<boolean | null>(null);
     const [isValidatingSponsor, setIsValidatingSponsor] = useState(false);
     const [sponsorName, setSponsorName] = useState<string | null>(null);
+    const [placementSide, setPlacementSide] = useState<'left' | 'right' | null>(null);
     const [registrationSuccess, setRegistrationSuccess] = useState<{
         userId: string;
         email: string;
@@ -139,11 +140,13 @@ function RegisterForm() {
     }, [clearErrors]);
 
     useEffect(() => {
-        const querySponsor = searchParams.get('sponsor');
+        const querySponsor = searchParams.get('ref') || searchParams.get('sponsor');
+        const querySide = searchParams.get('side');
         if (querySponsor) {
             setValue('sponsorId', querySponsor);
             validateSponsor(querySponsor);
         }
+        setPlacementSide(querySide === 'left' || querySide === 'right' ? querySide : null);
     }, [searchParams, setValue, validateSponsor]);
 
     const onSubmit = async (data: RegisterFormData) => {
@@ -173,6 +176,7 @@ function RegisterForm() {
                 walletAddress: mockWalletAddress,
                 password: data.password,
                 sponsorId: data.sponsorId || undefined,
+                ...(data.sponsorId && placementSide ? { placement: { position: placementSide } } : {}),
             });
 
             if (response?.user) {
@@ -472,6 +476,11 @@ function RegisterForm() {
                                             <p className="mt-1 text-xs text-green-500 flex items-center gap-1">
                                                 <CheckCircle2 size={12} />
                                                 {sponsorName ? <>Valid sponsor: <span className="font-semibold">{sponsorName}</span></> : 'Valid sponsor ID'}
+                                            </p>
+                                        )}
+                                        {placementSide && (
+                                            <p className="mt-2 inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[11px] font-semibold text-[var(--muted-foreground)]">
+                                                Preferred binary side: <span className="ml-1 capitalize text-[var(--foreground)]">{placementSide}</span>
                                             </p>
                                         )}
                                     </div>

@@ -268,7 +268,7 @@ export default function DashboardPage() {
         }
     };
 
-    const referralLink = `${siteOrigin}/register?sponsor=${dashboardUser?.userId || ''}`;
+    const referralLink = `${siteOrigin}/register?ref=${dashboardUser?.userId || ''}`;
 
     return (
         <div className="space-y-6 sm:space-y-8 pb-12 overflow-x-hidden min-w-0">

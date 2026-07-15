@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Package as PackageType } from '@/types';
-import { packageApi } from '@/lib/api/services';
+import { Package as PackageType, WalletState } from '@/types';
+import { packageApi, walletApi } from '@/lib/api/services';
 import { formatCurrency, formatDate } from '@/lib/utils/cn';
-import { CheckCircle2, TrendingUp, Zap, Package, Calendar, Award, ShoppingCart, Percent, AlertCircle, ShieldCheck, X, Receipt, ArrowRight } from 'lucide-react';
+import { StatsCard } from '@/components/ui/StatsCard';
+import { CheckCircle2, TrendingUp, Zap, Package, Calendar, Award, ShoppingCart, Percent, AlertCircle, ShieldCheck, X, Receipt, ArrowRight, Wallet } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAppSelector } from '@/lib/store/hooks';
 import { APP_CONSTANTS } from '@/constants/app';
@@ -31,11 +32,22 @@ export default function PackagesPage() {
     const [loadingActive, setLoadingActive] = useState(true);
     const [purchasing, setPurchasing] = useState<string | null>(null);
     const [checkoutPkg, setCheckoutPkg] = useState<PackageType | null>(null);
+    const [walletState, setWalletState] = useState<WalletState | null>(null);
 
     useEffect(() => {
         fetchPackages();
         fetchActivePackages();
+        fetchWalletState();
     }, []);
+
+    const fetchWalletState = async () => {
+        try {
+            const data = await walletApi.getWalletState();
+            setWalletState(data);
+        } catch (error) {
+            console.error('Failed to fetch wallet state:', error);
+        }
+    };
 
     const fetchPackages = async () => {
         try {
@@ -104,6 +116,25 @@ export default function PackagesPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Wallet Balances */}
+            {walletState && walletState.wallets && walletState.wallets.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {walletState.wallets.map((w: any, idx: number) => {
+                        const rawType = w.walletTypeCode || w.typeCode || 'MAIN';
+                        const label = rawType.split('_')[0];
+                        const title = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase() + ' Balance';
+                        return (
+                            <StatsCard
+                                key={rawType || idx}
+                                title={title}
+                                value={formatCurrency(w.balance)}
+                                icon={<Wallet size={24} />}
+                            />
+                        );
+                    })}
+                </div>
+            )}
 
             {/* Active Nodes List */}
             {activePackages.length > 0 && (

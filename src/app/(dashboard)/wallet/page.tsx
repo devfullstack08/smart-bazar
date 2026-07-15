@@ -211,28 +211,39 @@ export default function WalletPage() {
                 </div>
             </div>
 
-            {/* Wallet Summary Cards - 2x2 on mobile */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
-                <StatsCard
-                    title="Current Balance"
-                    value={formatCurrency(wallet.balance)}
-                    icon={<WalletIcon size={24} />}
-                />
-                <StatsCard
-                    title="Total Earned"
-                    value={formatCurrency(wallet.totalEarned)}
-                    icon={<TrendingUp size={24} />}
-                />
-                <StatsCard
-                    title="Total Withdrawn"
-                    value={formatCurrency(wallet.totalWithdrawn)}
-                    icon={<TrendingDown size={24} />}
-                />
-                <StatsCard
-                    title="Available Balance"
-                    value={formatCurrency(wallet.availableBalance)}
-                    icon={<DollarSign size={24} />}
-                />
+            {/* Wallet Summary Cards - Dynamic */}
+            <div className="grid grid-cols-2 r:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+                {(walletState.wallets && walletState.wallets.length > 0 ? walletState.wallets : [
+                    { typeCode: 'MAIN', balance: wallet.balance }
+                ]).map((w: any, idx: number) => {
+                    const rawType = w.walletTypeCode || w.typeCode || 'MAIN';
+                    const label = rawType.split('_')[0];
+                    const title = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase() + ' Balance';
+                    return (
+                        <StatsCard
+                            key={rawType || idx}
+                            title={title}
+                            value={formatCurrency(w.balance)}
+                            icon={<WalletIcon size={24} />}
+                        />
+                    );
+                })}
+                
+                {/* Aggregate stats to fill the rest of the 4 columns if there are 1-2 wallets */}
+                {(!walletState.wallets || walletState.wallets.length <= 2) && (
+                    <>
+                        <StatsCard
+                            title="Total Earned"
+                            value={formatCurrency(wallet.totalEarned)}
+                            icon={<TrendingUp size={24} />}
+                        />
+                        <StatsCard
+                            title="Total Withdrawn"
+                            value={formatCurrency(wallet.totalWithdrawn)}
+                            icon={<TrendingDown size={24} />}
+                        />
+                    </>
+                )}
             </div>
 
             {lockedAmount > 0 && (
@@ -466,7 +477,7 @@ export default function WalletPage() {
                 <WithdrawalModal
                     isOpen={showWithdrawModal}
                     onClose={() => setShowWithdrawModal(false)}
-                    balance={walletState.wallet.availableBalance}
+                    walletData={walletState}
                     paymentMethods={paymentMethods}
                     onSuccess={handleWithdrawalSuccess}
                 />

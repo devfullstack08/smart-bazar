@@ -29,7 +29,7 @@ export default function AuthLayout({
                     <ThemeToggle />
                 </div>
             </header>
-            <div className="container-landing flex flex-1 min-h-0 min-w-0 flex-col w-full max-w-full relative overflow-y-auto overflow-x-hidden pb-safe">
+            <div className="flex flex-1 min-h-0 min-w-0 flex-col w-full max-w-full relative overflow-y-auto overflow-x-hidden pb-safe">
                 {children}
             </div>
         </div>

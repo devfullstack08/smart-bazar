@@ -7,10 +7,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, UserPlus, CheckCircle2, Loader2, Copy, Check, Download } from 'lucide-react';
-import AppBrand from '@/components/ui/AppBrand';
+import { Eye, EyeOff, CheckCircle2, Loader2, Copy, Check, Download, ShoppingBag, TrendingUp, Award } from 'lucide-react';
 import { authApi } from '@/lib/api/services';
-import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from '@/constants';
+import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE, APP_CONSTANTS } from '@/constants';
 
 const registerSchema = z.object({
     fullName: z.string().min(3, 'Full name must be at least 3 characters'),
@@ -110,108 +109,87 @@ function RegisterForm() {
         }
     }, [watch]);
 
-    const password = watch('password');
     const sponsorId = watch('sponsorId');
+    const password = watch('password');
 
     const validateSponsor = useCallback(async (id: string) => {
-        if (!id || id.trim().length < 3) {
+        if (!id) {
             setSponsorValid(null);
             setSponsorName(null);
-            setIsValidatingSponsor(false);
             clearErrors('sponsorId');
             return;
         }
         setIsValidatingSponsor(true);
-        setSponsorValid(null);
-        setSponsorName(null);
         try {
-            const response = await authApi.validateSponsor(id.trim());
-            const isValid = response?.valid ?? response?.success ?? response?.data?.valid ?? false;
-            const sponsorData = response?.data || response;
-            if (isValid) {
+            const res = await authApi.validateSponsor(id);
+            if (res?.isValid) {
                 setSponsorValid(true);
-                const name = sponsorData?.sponsor?.name || sponsorData?.name || sponsorData?.fullName || sponsorData?.user?.name || sponsorData?.user?.fullName || null;
-                setSponsorName(name);
+                setSponsorName(res.sponsorName ?? null);
                 clearErrors('sponsorId');
             } else {
                 setSponsorValid(false);
                 setSponsorName(null);
-                setError('sponsorId', { type: 'manual', message: 'Invalid sponsor ID. Please check and try again.' });
             }
-        } catch (error: any) {
+        } catch {
             setSponsorValid(false);
             setSponsorName(null);
-            setError('sponsorId', { type: 'manual', message: error.response?.data?.message || 'Invalid sponsor ID' });
         } finally {
             setIsValidatingSponsor(false);
         }
-    }, [setError, clearErrors]);
+    }, [clearErrors]);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const sponsorFromUrl = searchParams.get('sponsor');
-            if (sponsorFromUrl && sponsorFromUrl.trim().length >= 3) {
-                const currentSponsorId = watch('sponsorId');
-                if (!currentSponsorId || currentSponsorId.trim() === '') {
-                    setValue('sponsorId', sponsorFromUrl.trim(), { shouldDirty: true, shouldValidate: false });
-                    validateSponsor(sponsorFromUrl.trim());
-                }
-            }
+        const querySponsor = searchParams.get('sponsor');
+        if (querySponsor) {
+            setValue('sponsorId', querySponsor);
+            validateSponsor(querySponsor);
         }
-    }, [searchParams, setValue, watch, validateSponsor]);
-
-    useEffect(() => {
-        if (!sponsorId || sponsorId.trim().length < 3) {
-            setSponsorValid(null);
-            setSponsorName(null);
-            setIsValidatingSponsor(false);
-            clearErrors('sponsorId');
-            return;
-        }
-        const timeoutId = setTimeout(() => { validateSponsor(sponsorId); }, 800);
-        return () => clearTimeout(timeoutId);
-    }, [sponsorId, validateSponsor, clearErrors]);
+    }, [searchParams, setValue, validateSponsor]);
 
     const onSubmit = async (data: RegisterFormData) => {
         setIsLoading(true);
         try {
-            const randomHex = Array.from({ length: 40 }, () =>
-                '0123456789abcdef'[Math.floor(Math.random() * 16)]
-            ).join('');
-            const computedWalletAddress = data.walletAddress || `0x${randomHex}`;
+            if (data.sponsorId) {
+                const check = await authApi.validateSponsor(data.sponsorId);
+                if (!check?.isValid) {
+                    setSponsorValid(false);
+                    setSponsorName(null);
+                    setError('sponsorId', { type: 'manual', message: 'Sponsor ID is invalid' });
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
+            const hexChars = '0123456789abcdef';
+            let mockWalletAddress = '0x';
+            for (let i = 0; i < 40; i++) {
+                mockWalletAddress += hexChars[Math.floor(Math.random() * 16)];
+            }
 
             const response = await authApi.register({
                 name: data.fullName,
                 email: data.email,
                 phone: `${data.countryCode}${data.phone}`,
+                walletAddress: mockWalletAddress,
                 password: data.password,
-                walletAddress: computedWalletAddress,
-                ...(data.sponsorId && data.sponsorId.trim() && { sponsorId: data.sponsorId.trim() }),
-            }) as { user?: { userId?: string; id?: string }; userId?: string; data?: { user?: { userId?: string; id?: string }; userId?: string; vaultCredentials?: { userId: string; vaultKey: string } }; vaultCredentials?: { userId: string; vaultKey: string } };
-
-            if (typeof window !== 'undefined') sessionStorage.removeItem('registerFormData');
-
-            const payload = response?.data ?? response;
-            const baseUser = payload?.user ?? payload;
-            const vault = payload?.vaultCredentials ?? response?.vaultCredentials ?? null;
-            const userId = baseUser?.userId ?? (baseUser as { id?: string })?.id ?? payload?.userId ?? response?.userId ?? '';
-            setRegistrationSuccess({
-                userId: userId || data.email,
-                email: data.email,
-                name: data.fullName,
-                password: data.password,
-                walletAddress: data.walletAddress,
-                vaultUserId: vault?.userId ?? userId ?? '',
-                vaultKey: vault?.vaultKey ?? undefined,
+                sponsorId: data.sponsorId || undefined,
             });
-            toast.success('Registration successful! Save your Vault Key securely.');
-        } catch (error: any) {
-            const msg = error.response?.data?.message || error.response?.data?.error || 'Registration failed';
-            if (typeof msg === 'string' && msg.toLowerCase().includes('project context')) {
-                toast.error('Server configuration error. Please try again later.');
-            } else {
-                toast.error(msg);
+
+            if (response?.user) {
+                sessionStorage.removeItem('registerFormData');
+                setRegistrationSuccess({
+                    userId: response.user.userId,
+                    email: response.user.email,
+                    name: response.user.name,
+                    password: data.password,
+                    walletAddress: response.user.walletAddress || undefined,
+                    vaultUserId: response.vaultUserId || undefined,
+                    vaultKey: response.vaultKey || undefined,
+                });
+                toast.success('Registration successful!');
             }
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message || 'Registration failed');
         } finally {
             setIsLoading(false);
         }
@@ -243,9 +221,10 @@ function RegisterForm() {
 
     const passwordStrength = getPasswordStrength();
 
-    // ── Success screen ──
-    if (registrationSuccess) {
+    const renderSuccessCard = () => {
+        if (!registrationSuccess) return null;
         const creds = registrationSuccess;
+
         const CredentialRow = ({ label, value, field }: { label: string; value: string; field: string }) => (
             <div className="flex flex-col gap-2 p-3 sm:p-4 rounded-xl bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/80 dark:border-amber-700/50">
                 <div className="flex items-center justify-between gap-2">
@@ -266,344 +245,362 @@ function RegisterForm() {
         );
 
         return (
-            <div className="flex items-start justify-center min-h-[calc(100vh-4rem)] py-6 px-4">
-                <div className="w-full max-w-lg">
-                    {/* Form card - native styling on mobile, boxed on desktop */}
-                    <div className="border-0 sm:border border-[var(--border)] bg-transparent sm:bg-[var(--surface-elevated)] sm:auth-panel rounded-none sm:rounded-2xl p-0 sm:p-8 shadow-none">
-                        <div className="text-center mb-6">
-                            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[var(--pw-primary)]/15 flex items-center justify-center text-[var(--pw-primary)]">
-                                <CheckCircle2 className="w-8 h-8" />
-                            </div>
-                            <h1 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] mb-2">Registration Successful!</h1>
-                            <p className="text-sm text-[var(--muted-foreground)]">
-                                Screenshot or save these credentials — you'll need them to log in.
-                            </p>
-                        </div>
-                        <div className="space-y-3 mb-4">
-                            <CredentialRow label="User ID" value={creds.userId} field="userId" />
-                            <CredentialRow label="Email" value={creds.email} field="email" />
-                            <CredentialRow label="Name" value={creds.name} field="name" />
-                            {creds.walletAddress && (
-                                <CredentialRow label="Wallet Address" value={creds.walletAddress} field="walletAddress" />
-                            )}
-                            <CredentialRow label="Password" value={creds.password} field="password" />
-                        </div>
-
-                        {/* Vault Key — required for password recovery */}
-                        {creds.vaultKey && creds.vaultUserId && (
-                            <div className="mb-4 p-3 sm:p-4 rounded-xl border bg-[var(--pw-primary)]/5 border-[var(--pw-primary)]/30" style={{ fontFamily: 'var(--font-mono), ui-monospace, monospace' }}>
-                                <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--pw-primary)] mb-2">Vault Key (for password recovery)</p>
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <code className="text-sm text-[var(--foreground)] break-all font-mono">{creds.vaultKey}</code>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(creds.vaultKey!, 'vaultKey')}
-                                        className="shrink-0 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[var(--pw-primary)] bg-[var(--pw-primary)]/15 rounded-lg hover:bg-[var(--pw-primary)]/25 transition-colors"
-                                    >
-                                        {copiedField === 'vaultKey' ? <Check size={12} /> : <Copy size={12} />}
-                                        {copiedField === 'vaultKey' ? 'Copied' : 'Copy'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const txt = `User ID: ${creds.vaultUserId}\nVault Key: ${creds.vaultKey}\n\nSave this. We cannot recover it for you.`;
-                                            const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-                                            const url = URL.createObjectURL(blob);
-                                            const a = document.createElement('a');
-                                            a.href = url;
-                                            a.download = 'vault-credentials.txt';
-                                            document.body.appendChild(a);
-                                            a.click();
-                                            document.body.removeChild(a);
-                                            URL.revokeObjectURL(url);
-                                        }}
-                                        className="shrink-0 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[var(--pw-primary)] bg-[var(--pw-primary)]/15 rounded-lg hover:bg-[var(--pw-primary)]/25 transition-colors"
-                                    >
-                                        <Download size={12} /> Save .txt
-                                    </button>
-                                </div>
-                                <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2">Save this. We cannot recover it for you.</p>
-                            </div>
-                        )}
-
-                        <p className="text-xs text-amber-700 dark:text-amber-400 mb-5 text-center">
-                            Keep your password safe and do not share it with anyone.
-                        </p>
-                        <Link
-                            href="/login"
-                            className="block w-full py-3 rounded-xl font-semibold text-center bg-[var(--pw-primary)] text-[#050508] hover:opacity-90 transition-opacity"
-                        >
-                            Go to Login
-                        </Link>
+            <div className="border border-[var(--border)] bg-[var(--surface-elevated)] auth-panel rounded-2xl p-6 sm:p-8 shadow-sm">
+                <div className="text-center mb-6">
+                    <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[var(--pw-primary)]/15 flex items-center justify-center text-[var(--pw-primary)]">
+                        <CheckCircle2 className="w-8 h-8" />
                     </div>
+                    <h1 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] mb-2">Registration Successful!</h1>
+                    <p className="text-sm text-[var(--muted-foreground)]">
+                        Screenshot or save these credentials — you'll need them to log in.
+                    </p>
+                </div>
+
+                <div className="space-y-4 mb-6">
+                    <CredentialRow label="User ID (Username)" value={creds.userId} field="userId" />
+                    <CredentialRow label="Email Address" value={creds.email} field="email" />
+                    <CredentialRow label="Password" value={creds.password} field="password" />
+
+                    {creds.vaultUserId && creds.vaultKey && (
+                        <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/5 mt-4">
+                            <h4 className="text-xs font-bold text-red-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+                                Secure Recovery Vault Key Created
+                            </h4>
+                            <p className="text-[11px] text-[var(--muted-foreground)] mb-3 leading-relaxed">
+                                A personal credentials backup key has been initialized. Copy and write this key down in a safe offline location.
+                            </p>
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <button
+                                    type="button"
+                                    onClick={() => copyToClipboard(creds.vaultKey!, 'vaultKey')}
+                                    className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-[var(--pw-primary)] bg-[var(--pw-primary)]/15 rounded-lg hover:bg-[var(--pw-primary)]/25 transition-colors"
+                                >
+                                    {copiedField === 'vaultKey' ? <Check size={12} /> : <Copy size={12} />}
+                                    {copiedField === 'vaultKey' ? 'Copied' : 'Copy'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const txt = `User ID: ${creds.vaultUserId}\nVault Key: ${creds.vaultKey}\n\nSave this. We cannot recover it for you.`;
+                                        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = 'vault-credentials.txt';
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                        URL.revokeObjectURL(url);
+                                    }}
+                                    className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-[var(--pw-primary)] bg-[var(--pw-primary)]/15 rounded-lg hover:bg-[var(--pw-primary)]/25 transition-colors"
+                                >
+                                    <Download size={12} /> Save .txt
+                                </button>
+                            </div>
+                            <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2">Save this. We cannot recover it for you.</p>
+                        </div>
+                    )}
+
+                    <p className="text-xs text-amber-700 dark:text-amber-400 mb-5 text-center">
+                        Keep your password safe and do not share it with anyone.
+                    </p>
+                    <Link
+                        href="/login"
+                        className="block w-full py-3 rounded-xl font-semibold text-center bg-[var(--pw-primary)] text-[#050508] hover:opacity-90 transition-opacity"
+                    >
+                        Go to Login
+                    </Link>
                 </div>
             </div>
         );
-    }
+    };
 
-    // ── Register form ──
     return (
-        // flex-1 min-h-full: fill auth content area; overflow only when form is tall. pb-20 for mobile feature strip
-        <div className="relative flex-1 flex items-center justify-center min-h-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 overflow-x-hidden">
-            <div className="relative z-10 w-full max-w-2xl">
-                {/* Form card - native styling on mobile, boxed on desktop */}
-                <div className="border-0 sm:border border-[var(--border)] bg-transparent sm:bg-[var(--surface-elevated)] sm:auth-panel rounded-none sm:rounded-2xl p-0 sm:p-6 md:p-8 shadow-none">
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
-                        {/* Clean Inline Header */}
-                        <div className="mb-4 sm:mb-6">
-                            <h1 className="text-xl sm:text-2xl font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>
-                                Create Account
-                            </h1>
-                            <p className="text-xs text-[var(--muted-foreground)]">Register a new affiliate profile on Smart Bazar</p>
-                        </div>
+        <div className="flex flex-1 flex-col lg:flex-row w-full min-h-full relative">
+            {/* Left side: Full-Bleed Logo Branding Column (Sticky on scroll) */}
+            <div 
+                className="hidden lg:flex lg:w-[45%] xl:w-[40%] relative overflow-hidden shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white sticky top-0"
+                style={{ height: 'calc(100vh - 53px)' }}
+            >
+                {/* Subtle soft gradient over the white to give it premium depth */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-zinc-100 dark:from-zinc-100 dark:to-zinc-300 z-0 pointer-events-none" />
+                <img
+                    src={APP_CONSTANTS.APP_LOGO_URL}
+                    className="absolute inset-0 w-full h-full object-contain p-8 lg:p-16 xl:p-20 z-10 mix-blend-multiply"
+                    alt="Smart Bazar Logo"
+                />
+            </div>
 
-                        {/* ── Personal Information ── */}
-                        <div>
-                            <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
-                                Personal Information
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                {/* Full Name */}
-                                <div>
-                                    <label htmlFor="fullName" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                        Full Name
-                                    </label>
-                                    <input
-                                        {...register('fullName')}
-                                        type="text"
-                                        id="fullName"
-                                        className="premium-input w-full text-base"
-                                        placeholder="John Doe"
-                                        autoComplete="name"
+            {/* Right side: Registration Form Panel (Transparent, Scrollable) */}
+            <div className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-transparent min-h-full relative">
+                <div className="w-full max-w-3xl my-auto">
+                    {registrationSuccess ? (
+                        renderSuccessCard()
+                    ) : (
+                        <div className="bg-transparent relative overflow-hidden">
+                            
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8 relative z-10">
+                                {/* Header */}
+                                <div className="mb-6 sm:mb-10 text-left">
+                                    <img
+                                        src={APP_CONSTANTS.APP_LOGO_URL}
+                                        className="h-10 w-auto object-contain mb-6 lg:hidden"
+                                        alt="Smart Bazar Logo"
                                     />
-                                    {errors.fullName && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.fullName.message}</p>
-                                    )}
+                                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>
+                                        Create Account
+                                    </h1>
+                                    <p className="text-sm text-[var(--muted-foreground)] mt-2">Register a new affiliate profile on Smart Bazar</p>
                                 </div>
 
-                                {/* Email */}
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                        Email Address
-                                    </label>
-                                    <input
-                                        {...register('email')}
-                                        type="email"
-                                        id="email"
-                                        className="premium-input w-full text-base"
-                                        placeholder="you@example.com"
-                                        autoComplete="email"
-                                    />
-                                    {errors.email && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Phone — full width */}
-                                <div className="sm:col-span-2">
-                                    <label htmlFor="phone" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                        Phone Number
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <select
-                                            {...register('countryCode')}
-                                            defaultValue={DEFAULT_COUNTRY_CODE}
-                                            className="shrink-0 w-[5.5rem] sm:w-28 px-2 sm:px-3 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:ring-2 focus:ring-[var(--pw-primary)]/40 text-sm"
-                                        >
-                                            {COUNTRY_CODES.map((country) => (
-                                                <option key={country.code} value={country.dialCode}>
-                                                    {country.flag} {country.dialCode}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <input
-                                            {...register('phone')}
-                                            type="tel"
-                                            id="phone"
-                                            inputMode="numeric"
-                                            className="premium-input flex-1 min-w-0 text-base"
-                                            placeholder="1234567890"
-                                            autoComplete="tel-national"
-                                        />
-                                    </div>
-                                    {errors.phone && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        {/* ── MLM Information ── */}
-                        <div className="border-t border-[var(--border)] pt-5">
-                            <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
-                                MLM Information
-                            </h3>
+                            {/* ── Personal Information ── */}
                             <div>
-                                <label htmlFor="sponsorId" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                    Sponsor ID{' '}
-                                    <span className="text-[var(--muted-foreground)] font-normal text-xs">(Optional)</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        {...register('sponsorId')}
-                                        type="text"
-                                        id="sponsorId"
-                                        onBlur={(e) => {
-                                            const value = e.target.value.trim();
-                                            if (value.length >= 3) validateSponsor(value);
-                                        }}
-                                        className="premium-input w-full pr-10 text-base"
-                                        placeholder="Enter sponsor ID"
-                                    />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                        {isValidatingSponsor ? (
-                                            <Loader2 className="w-5 h-5 text-[var(--pw-primary)] animate-spin" />
-                                        ) : sponsorValid === true ? (
-                                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                        ) : sponsorValid === false ? (
-                                            <span className="text-red-500 text-lg leading-none">✗</span>
-                                        ) : null}
-                                    </div>
-                                </div>
-                                {errors.sponsorId && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.sponsorId.message}</p>
-                                )}
-                                {sponsorValid === false && !errors.sponsorId && (
-                                    <p className="mt-1 text-xs text-red-500">Invalid sponsor ID</p>
-                                )}
-                                {sponsorValid === true && (
-                                    <p className="mt-1 text-xs text-green-500 flex items-center gap-1">
-                                        <CheckCircle2 size={12} />
-                                        {sponsorName ? <>Valid sponsor: <span className="font-semibold">{sponsorName}</span></> : 'Valid sponsor ID'}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* ── Security ── */}
-                        <div className="border-t border-[var(--border)] pt-5">
-                            <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
-                                Security
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                {/* Password */}
-                                <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                        Password
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            {...register('password')}
-                                            type={showPassword ? 'text' : 'password'}
-                                            id="password"
-                                            className="premium-input w-full pr-11"
-                                            placeholder="••••••••"
-                                            autoComplete="new-password"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-                                        >
-                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                    </div>
-                                    {password && (
-                                        <div className="mt-2">
-                                            <div className="flex gap-1 mb-1">
-                                                {[1, 2, 3, 4, 5].map((i) => (
-                                                    <div
-                                                        key={i}
-                                                        className={`h-1 flex-1 rounded-full transition-all ${i <= passwordStrength.strength ? passwordStrength.color : 'bg-gray-200 dark:bg-white/10'}`}
-                                                    />
-                                                ))}
-                                            </div>
-                                            <p className="text-xs text-[var(--muted-foreground)]">{passwordStrength.label}</p>
+                                <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
+                                    Personal Information
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        {/* Full Name */}
+                                        <div>
+                                            <label htmlFor="fullName" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                                Full Name
+                                            </label>
+                                            <input
+                                                {...register('fullName')}
+                                                type="text"
+                                                id="fullName"
+                                                className="premium-input w-full text-base"
+                                                placeholder="John Doe"
+                                                autoComplete="name"
+                                            />
+                                            {errors.fullName && (
+                                                <p className="mt-1 text-xs text-red-500">{errors.fullName.message}</p>
+                                            )}
                                         </div>
-                                    )}
-                                    {errors.password && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+
+                                        {/* Email */}
+                                        <div>
+                                            <label htmlFor="email" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                                Email Address
+                                            </label>
+                                            <input
+                                                {...register('email')}
+                                                type="email"
+                                                id="email"
+                                                className="premium-input w-full text-base"
+                                                placeholder="you@example.com"
+                                                autoComplete="email"
+                                            />
+                                            {errors.email && (
+                                                <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+                                            )}
+                                        </div>
+
+                                        {/* Phone — full width */}
+                                        <div className="sm:col-span-2">
+                                            <label htmlFor="phone" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                                Phone Number
+                                            </label>
+                                            <div className="flex gap-2">
+                                                <select
+                                                    {...register('countryCode')}
+                                                    defaultValue={DEFAULT_COUNTRY_CODE}
+                                                    className="shrink-0 w-[5.5rem] sm:w-28 px-2 sm:px-3 py-3 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:ring-2 focus:ring-[var(--pw-primary)]/40 text-sm"
+                                                >
+                                                    {COUNTRY_CODES.map((country) => (
+                                                        <option key={country.code} value={country.dialCode}>
+                                                            {country.flag} {country.dialCode}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    {...register('phone')}
+                                                    type="tel"
+                                                    id="phone"
+                                                    inputMode="numeric"
+                                                    className="premium-input flex-1 min-w-0 text-base"
+                                                    placeholder="1234567890"
+                                                    autoComplete="tel-national"
+                                                />
+                                            </div>
+                                            {errors.phone && (
+                                                <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* ── MLM Information ── */}
+                                <div className="border-t border-[var(--border)] pt-5">
+                                    <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
+                                        MLM Information
+                                    </h3>
+                                    <div>
+                                        <label htmlFor="sponsorId" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                            Sponsor ID{' '}
+                                            <span className="text-[var(--muted-foreground)] font-normal text-xs">(Optional)</span>
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                {...register('sponsorId')}
+                                                type="text"
+                                                id="sponsorId"
+                                                onBlur={(e) => {
+                                                    const value = e.target.value.trim();
+                                                    if (value.length >= 3) validateSponsor(value);
+                                                }}
+                                                className="premium-input w-full pr-10 text-base"
+                                                placeholder="Enter sponsor ID"
+                                            />
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                {isValidatingSponsor ? (
+                                                    <Loader2 className="w-5 h-5 text-[var(--pw-primary)] animate-spin" />
+                                                ) : sponsorValid === true ? (
+                                                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                                ) : sponsorValid === false ? (
+                                                    <span className="text-red-500 text-lg leading-none">✗</span>
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                        {errors.sponsorId && (
+                                            <p className="mt-1 text-xs text-red-500">{errors.sponsorId.message}</p>
+                                        )}
+                                        {sponsorValid === false && !errors.sponsorId && (
+                                            <p className="mt-1 text-xs text-red-500">Invalid sponsor ID</p>
+                                        )}
+                                        {sponsorValid === true && (
+                                            <p className="mt-1 text-xs text-green-500 flex items-center gap-1">
+                                                <CheckCircle2 size={12} />
+                                                {sponsorName ? <>Valid sponsor: <span className="font-semibold">{sponsorName}</span></> : 'Valid sponsor ID'}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* ── Security ── */}
+                                <div className="border-t border-[var(--border)] pt-5">
+                                    <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
+                                        Security
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        {/* Password */}
+                                        <div>
+                                            <label htmlFor="password" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                                Password
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    {...register('password')}
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    id="password"
+                                                    className="premium-input w-full pr-11"
+                                                    placeholder="••••••••"
+                                                    autoComplete="new-password"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                                                >
+                                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                            {password && (
+                                                <div className="mt-2">
+                                                    <div className="flex gap-1 mb-1">
+                                                        {[1, 2, 3, 4, 5].map((i) => (
+                                                            <div
+                                                                key={i}
+                                                                className={`h-1 flex-1 rounded-full transition-all ${i <= passwordStrength.strength ? passwordStrength.color : 'bg-gray-200 dark:bg-white/10'}`}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                    <p className="text-xs text-[var(--muted-foreground)]">{passwordStrength.label}</p>
+                                                </div>
+                                            )}
+                                            {errors.password && (
+                                                <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+                                            )}
+                                        </div>
+
+                                        {/* Confirm Password */}
+                                        <div>
+                                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+                                                Confirm Password
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    {...register('confirmPassword')}
+                                                    type={showConfirmPassword ? 'text' : 'password'}
+                                                    id="confirmPassword"
+                                                    className="premium-input w-full pr-11"
+                                                    placeholder="••••••••"
+                                                    autoComplete="new-password"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+                                                >
+                                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                            {errors.confirmPassword && (
+                                                <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* ── Terms ── */}
+                                <div className="border-t border-[var(--border)] pt-5">
+                                    <label className="flex items-start gap-3 cursor-pointer">
+                                        <input
+                                            {...register('acceptTerms')}
+                                            type="checkbox"
+                                            className="w-4 h-4 shrink-0 mt-0.5 text-[var(--pw-primary)] border-[var(--border)] rounded focus:ring-[var(--pw-primary)]/50"
+                                        />
+                                        <span className="text-sm text-[var(--foreground)] leading-relaxed text-left">
+                                            I accept the{' '}
+                                            <Link href="/terms" className="text-[var(--pw-primary)] hover:opacity-80 font-medium underline-offset-2 hover:underline">
+                                                Terms and Conditions
+                                            </Link>{' '}
+                                            and{' '}
+                                            <Link href="/privacy" className="text-[var(--pw-primary)] hover:opacity-80 font-medium underline-offset-2 hover:underline">
+                                                Privacy Policy
+                                            </Link>
+                                        </span>
+                                    </label>
+                                    {errors.acceptTerms && (
+                                        <p className="mt-1 text-xs text-red-500">{errors.acceptTerms.message}</p>
                                     )}
                                 </div>
 
-                                {/* Confirm Password */}
-                                <div>
-                                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                        Confirm Password
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            {...register('confirmPassword')}
-                                            type={showConfirmPassword ? 'text' : 'password'}
-                                            id="confirmPassword"
-                                            className="premium-input w-full pr-11"
-                                            placeholder="••••••••"
-                                            autoComplete="new-password"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-                                        >
-                                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                    </div>
-                                    {errors.confirmPassword && (
-                                        <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>
-                                    )}
-                                </div>
+                                {/* Submit */}
+                                <button
+                                    type="submit"
+                                    disabled={isLoading || (!!sponsorId && sponsorId.trim().length > 0 && sponsorValid === false)}
+                                    className="premium-btn-primary w-full py-3 text-sm sm:text-base font-semibold"
+                                >
+                                    {isLoading ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            Creating Account...
+                                        </span>
+                                    ) : 'Create Account'}
+                                </button>
+                            </form>
+
+                            <div className="mt-5 text-center">
+                                <p className="text-sm text-[var(--muted-foreground)]">
+                                    Already have an account?{' '}
+                                    <Link href="/login" className="font-semibold text-[var(--pw-primary)] hover:opacity-80">
+                                        Sign in
+                                    </Link>
+                                </p>
                             </div>
                         </div>
-
-                        {/* ── Terms ── */}
-                        <div className="border-t border-[var(--border)] pt-5">
-                            <label className="flex items-start gap-3 cursor-pointer">
-                                <input
-                                    {...register('acceptTerms')}
-                                    type="checkbox"
-                                    className="w-4 h-4 shrink-0 mt-0.5 text-[var(--pw-primary)] border-[var(--border)] rounded focus:ring-[var(--pw-primary)]/50"
-                                />
-                                <span className="text-sm text-[var(--foreground)] leading-relaxed">
-                                    I accept the{' '}
-                                    <Link href="/terms" className="text-[var(--pw-primary)] hover:opacity-80 font-medium underline-offset-2 hover:underline">
-                                        Terms and Conditions
-                                    </Link>{' '}
-                                    and{' '}
-                                    <Link href="/privacy" className="text-[var(--pw-primary)] hover:opacity-80 font-medium underline-offset-2 hover:underline">
-                                        Privacy Policy
-                                    </Link>
-                                </span>
-                            </label>
-                            {errors.acceptTerms && (
-                                <p className="mt-1 text-xs text-red-500">{errors.acceptTerms.message}</p>
-                            )}
-                        </div>
-
-                        {/* Submit */}
-                        <button
-                            type="submit"
-                            disabled={isLoading || (!!sponsorId && sponsorId.trim().length > 0 && sponsorValid === false)}
-                            className="premium-btn-primary w-full py-3 text-sm sm:text-base font-semibold"
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Creating Account...
-                                </span>
-                            ) : 'Create Account'}
-                        </button>
-                    </form>
-
-                    <div className="mt-5 text-center">
-                        <p className="text-sm text-[var(--muted-foreground)]">
-                            Already have an account?{' '}
-                            <Link href="/login" className="font-semibold text-[var(--pw-primary)] hover:opacity-80">
-                                Sign in
-                            </Link>
-                        </p>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -123,9 +123,12 @@ function RegisterForm() {
         setIsValidatingSponsor(true);
         try {
             const res = await authApi.validateSponsor(id);
-            if (res?.isValid) {
+            const data = res?.data || res;
+            const isValid = data?.valid || data?.isValid || false;
+            
+            if (isValid) {
                 setSponsorValid(true);
-                setSponsorName(res.sponsorName ?? null);
+                setSponsorName(data?.sponsor?.name || data?.sponsorName || null);
                 clearErrors('sponsorId');
             } else {
                 setSponsorValid(false);

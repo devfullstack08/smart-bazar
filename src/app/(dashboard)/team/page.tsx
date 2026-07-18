@@ -75,7 +75,7 @@ export default function TeamPage() {
                             <p className="text-xs text-[var(--muted-foreground)] mt-1">Manage, verify, and audit your downline organization sales volumes</p>
                             {teamData.sponsorId && (
                                 <p className="text-xs text-[var(--muted-foreground)] mt-1.5 font-semibold">
-                                    Direct Sponsor: <span className="font-mono text-[var(--foreground)]">{teamData.sponsorId}</span>
+                                    Sponsor: <span className="font-mono text-[var(--foreground)]">{teamData.sponsorId}</span>
                                 </p>
                             )}
                         </div>
@@ -139,7 +139,7 @@ export default function TeamPage() {
                 <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Affiliate Business Volume</h3>
                 <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                     <div>
-                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Direct referrals business volume (PV)</p>
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Direct Partners Sales Volume</p>
                         <p className="text-xl sm:text-2xl font-black text-primary mt-1.5 tabular-nums">{formatCurrency(investment.totalTeamInvestment)}</p>
                     </div>
                 </div>
@@ -148,7 +148,7 @@ export default function TeamPage() {
             {/* Direct Referrals List Table */}
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-[var(--border)]">
-                    <h3 className="text-sm font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Direct referrals list ({directReferrals.length})</h3>
+                    <h3 className="text-sm font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Direct Partners List ({directReferrals.length})</h3>
                 </div>
 
                 {directReferrals.length === 0 ? (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { userApi, walletApi, packageApi, incomeApi, teamApi, dashboardApi, projectApi } from '@/lib/api/services';
-import type { DashboardData, CappingTrackingData, Banner, Offer, ProjectPopup, DashboardMedia } from '@/types';
+import type { DashboardData, CappingTrackingData, Banner, Offer, ProjectPopup, DashboardMedia, TeamStatsData } from '@/types';
 import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import DashboardWelcomeCard from '@/components/dashboard/DashboardWelcomeCard';
 import QuickActions from '@/components/dashboard/QuickActions';
@@ -54,6 +54,7 @@ export default function DashboardPage() {
         downlineCount: 0,
         sponsorId: undefined,
     });
+    const [teamStats, setTeamStats] = useState<TeamStatsData | null>(null);
     const [cappingData, setCappingData] = useState<CappingTrackingData | null>(null);
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [loadingWallet, setLoadingWallet] = useState(true);
@@ -243,6 +244,7 @@ export default function DashboardPage() {
     const fetchTeamStats = async () => {
         try {
             const teamRes = await teamApi.getTeamStats();
+            setTeamStats(teamRes);
             setNetwork({
                 downlineCount: teamRes?.stats?.directReferrals ?? 0,
                 sponsorId: teamRes?.sponsorId,
@@ -268,6 +270,7 @@ export default function DashboardPage() {
         }
     };
 
+    const activePackageValue = packages.activePackages?.reduce((sum, pkg) => sum + (pkg.totalValue ?? 0), 0) ?? 0;
     const referralLink = `${siteOrigin}/register?ref=${dashboardUser?.userId || ''}`;
 
     return (
@@ -294,7 +297,14 @@ export default function DashboardPage() {
             </div>
 
             {/* Ledger Overview Cards Grid */}
-            <OverviewStats wallet={wallet} income={income} loading={loadingWallet || loadingIncome} />
+            <OverviewStats 
+                wallet={wallet} 
+                income={income} 
+                activePackageValue={activePackageValue}
+                directCount={teamStats?.stats?.directReferrals ?? network.downlineCount ?? 0}
+                teamCount={teamStats?.stats?.totalTeamMembers ?? 0}
+                loading={loadingWallet || loadingIncome || loadingPackages || loadingTeamStats} 
+            />
 
             {/* Main Responsive Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-w-0">
@@ -302,7 +312,7 @@ export default function DashboardPage() {
                 <div className="lg:col-span-8 space-y-6 min-w-0">
                     <DashboardIncomeOverview income={income} cappingData={cappingData} loading={loadingIncome} />
                     
-                    <DashboardCappingTracker cappingData={cappingData} loading={loadingCapping} />
+                    {/* <DashboardCappingTracker cappingData={cappingData} loading={loadingCapping} /> */}
                     
                     <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
                     

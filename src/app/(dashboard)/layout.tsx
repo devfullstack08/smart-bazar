@@ -183,7 +183,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             >
                                 <UserProfileImage
                                     src={(user as any)?.profilePicture}
-                                    alt={user?.name ?? 'User'}
+                                    alt={mounted ? (user?.name ?? 'User') : 'User'}
                                     width={32}
                                     height={32}
                                     className="rounded-full border border-[var(--border)] bg-[var(--surface-elevated)]"

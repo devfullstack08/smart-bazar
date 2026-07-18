@@ -17,7 +17,7 @@ const step1Schema = z.object({
     userId: z.string().min(1, 'User ID is required'),
     vaultKey: z
         .string()
-        .min(1, 'Vault Key is required')
+        .min(1, 'Recovery Key is required')
         .regex(/^VLT-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/i, 'Format: VLT-XXXX-XXXX-XXXX'),
 });
 const step2Schema = z
@@ -51,7 +51,7 @@ function ForgotPasswordForm() {
             setResetToken(token);
             setStep(2);
         } catch (err: unknown) {
-            const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Invalid User ID or Vault Key. Please check and try again.';
+            const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Invalid User ID or Recovery Key. Please check and try again.';
             setError(msg);
             toast.error(msg);
         } finally {
@@ -104,7 +104,7 @@ function ForgotPasswordForm() {
                         Reset Password
                     </h1>
                     <p className="text-sm text-[var(--muted-foreground)]">
-                        Use your Vault Key to recover your <AppBrand size="md" /> account
+                        Use your Recovery Key to recover your <AppBrand size="md" /> account
                     </p>
                 </div>
 
@@ -130,7 +130,7 @@ function ForgotPasswordForm() {
                             </div>
                             <div>
                                 <label htmlFor="vaultKey" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
-                                    Vault Key
+                                    Recovery Key
                                 </label>
                                 <input
                                     {...step1Form.register('vaultKey')}
@@ -162,10 +162,10 @@ function ForgotPasswordForm() {
                     {step === 2 && (
                         <form onSubmit={step2Form.handleSubmit(onStep2Submit)} className="space-y-5">
                             <button type="button" onClick={goBack} className="text-xs font-medium text-[var(--pw-primary)] hover:opacity-80 flex items-center gap-1">
-                                ← Use different User ID or Vault Key
+                                ← Use different User ID or Recovery Key
                             </button>
                             <div className="p-3 rounded-xl bg-[var(--pw-primary)]/10 border border-[var(--pw-primary)]/20 text-xs text-[var(--foreground)]">
-                                Vault verified. Set your new password below.
+                                Recovery Key verified. Set your new password below.
                             </div>
                             <div>
                                 <label htmlFor="newPassword" className="block text-sm font-medium text-[var(--foreground)] mb-1.5">

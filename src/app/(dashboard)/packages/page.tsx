@@ -136,10 +136,10 @@ export default function PackagesPage() {
                 </div>
             )}
 
-            {/* Active Nodes List */}
+            {/* Active Memberships List */}
             {activePackages.length > 0 && (
                 <div className="space-y-4">
-                    <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">My Active Staked Nodes ({activePackages.length})</h3>
+                    <h3 className="text-xs font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">My Active Memberships ({activePackages.length})</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {activePackages.map((activePkg, index) => {
                             const earnPercent = activePkg.cappingLimit > 0 
@@ -153,7 +153,7 @@ export default function PackagesPage() {
                                 >
                                     <div className="flex items-start justify-between min-w-0">
                                         <div>
-                                            <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Active Staked Node</p>
+                                            <p className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Active Membership</p>
                                             <h3 className="text-base font-black text-[var(--foreground)] mt-1">Package #{activePkg.packageNumber}</h3>
                                         </div>
                                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 uppercase tracking-wider shrink-0">

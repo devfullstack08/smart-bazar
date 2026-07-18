@@ -9,7 +9,7 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="auth-premium-shell overflow-x-hidden flex flex-col min-h-screen min-h-[100dvh] relative">
+        <div className="auth-premium-shell overflow-x-hidden flex flex-col min-h-screen min-h-[100dvh] lg:h-screen lg:h-[100dvh] lg:overflow-hidden relative">
             {/* Premium Radial Ambient Glows & Grid Mesh */}
             <div className="absolute top-0 right-0 w-[55%] h-[55%] bg-[var(--primary)]/6 rounded-full blur-[140px] pointer-events-none z-0" />
             <div className="absolute bottom-0 left-0 w-[65%] h-[65%] bg-indigo-500/[0.04] rounded-full blur-[160px] pointer-events-none z-0" />

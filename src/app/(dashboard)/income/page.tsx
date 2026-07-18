@@ -118,7 +118,7 @@ export default function IncomePage() {
                         <DollarSign size={24} strokeWidth={2} />
                     </div>
                     <div className="min-w-0">
-                        <h1 className="text-xl sm:text-2xl font-black text-[var(--foreground)] leading-tight tracking-tight">Merchant Sales Analytics</h1>
+                        <h1 className="text-xl sm:text-2xl font-black text-[var(--foreground)] leading-tight tracking-tight">Income Analytics</h1>
                         <p className="text-sm text-[var(--muted-foreground)] mt-0.5">Track, audit, and analyze all income commission flows</p>
                     </div>
                 </div>
@@ -128,7 +128,7 @@ export default function IncomePage() {
             {wallet && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden transition-all hover:shadow-lg">
-                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Merchant Ledger</p>
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)]">Income Ledger</p>
                         <h4 className="text-lg sm:text-2xl font-black text-[var(--foreground)] mt-2 tabular-nums">{formatCurrency(wallet.balance)}</h4>
                         <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] mt-2">
                             <Wallet size={12} className="text-primary" />

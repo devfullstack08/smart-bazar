@@ -85,7 +85,7 @@ export default function DashboardReferEarn({
     .filter(i => i.type.toLowerCase().includes('referral'))
     .reduce((s, i) => s + (i.totalAmount ?? 0), 0);
 
-  // Compute binary node distribution
+  // Compute binary placement distribution
   const leftCount = directReferrals.filter(d => d.placement?.position === 'left').length;
   const rightCount = directReferrals.filter(d => d.placement?.position === 'right').length;
 
@@ -129,10 +129,10 @@ export default function DashboardReferEarn({
 
         {/* Binary Node Placements Diagram */}
         <div className="border border-[var(--border)] rounded-2xl bg-[var(--surface)] p-5 space-y-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)] text-center">Referral Placements Node</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)] text-center">Referral Placements</p>
           
           <div className="flex flex-col items-center relative">
-            {/* Root Node (You) - Vibrant Blue/Indigo */}
+            {/* Root Member (You) - Vibrant Blue/Indigo */}
             <div className="w-12 h-12 rounded-full border border-blue-500/30 bg-[var(--surface-elevated)] shadow-sm shadow-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs z-10">
               YOU
             </div>

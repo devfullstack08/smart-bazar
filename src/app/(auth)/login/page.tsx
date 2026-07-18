@@ -342,7 +342,7 @@ function LoginForm() {
                         <h1 className="text-xl sm:text-2xl font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>
                             Welcome Back
                         </h1>
-                        <p className="text-xs text-[var(--muted-foreground)]">Sign in to your Smart Bazar merchant account</p>
+                        <p className="text-xs text-[var(--muted-foreground)]">Sign in to your Smart Bazar account</p>
                     </div>
 
                     {step === 1 ? (
@@ -629,7 +629,7 @@ function LoginForm() {
                                                 <p className="text-[11px] text-[var(--muted-foreground)] mt-1 max-w-[240px] mx-auto leading-relaxed">
                                                     {passkeyStatus === 'idle' && 'Tap the fingerprint sensor to log in with your hardware passkey.'}
                                                     {passkeyStatus === 'scanning' && 'Please authenticate via your device prompt.'}
-                                                    {passkeyStatus === 'success' && 'Redirecting to your merchant dashboard...'}
+                                                    {passkeyStatus === 'success' && 'Redirecting to your dashboard...'}
                                                 </p>
                                             </div>
                                         </div>
@@ -639,7 +639,7 @@ function LoginForm() {
                                             <div>
                                                 <h3 className="text-sm font-bold text-[var(--foreground)]">Passkey Not Registered</h3>
                                                 <p className="text-[11px] text-[var(--muted-foreground)] mt-2 max-w-[250px] leading-relaxed">
-                                                    No biometric passkey credentials found on this merchant profile. Please login using your password, then register your TouchID / FaceID key under your account settings.
+                                                    No biometric passkey credentials found on this profile. Please login using your password, then register your TouchID / FaceID key under your account settings.
                                                 </p>
                                             </div>
                                             <button

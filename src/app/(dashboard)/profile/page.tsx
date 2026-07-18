@@ -542,7 +542,7 @@ export default function ProfilePage() {
         try {
             const result = await authApi.revealVaultKey(vaultPassword) as { vaultUserId: string; vaultKey: string };
             setRevealedVault({ vaultUserId: result.vaultUserId, vaultKey: result.vaultKey });
-            toast.success('New Vault Key generated.');
+            toast.success('New Recovery Key generated.');
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
             toast.error(msg || 'Invalid password. Please try again.');
@@ -553,7 +553,7 @@ export default function ProfilePage() {
 
     const handleCopyVault = () => {
         if (!revealedVault) return;
-        const text = `User ID: ${revealedVault.vaultUserId}\nVault Key: ${revealedVault.vaultKey}`;
+        const text = `User ID: ${revealedVault.vaultUserId}\nRecovery Key: ${revealedVault.vaultKey}`;
         navigator.clipboard.writeText(text);
         setVaultCopied(true);
         toast.success('Copied to clipboard');
@@ -562,7 +562,7 @@ export default function ProfilePage() {
 
     const handleDownloadVault = () => {
         if (!revealedVault) return;
-        const blob = new Blob([`User ID: ${revealedVault.vaultUserId}\nVault Key: ${revealedVault.vaultKey}`], { type: 'text/plain' });
+        const blob = new Blob([`User ID: ${revealedVault.vaultUserId}\nRecovery Key: ${revealedVault.vaultKey}`], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -857,12 +857,18 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    <div className="border-t border-[var(--border)] pt-4 mt-4 flex justify-between items-center gap-4">
+                    <div className="border-t border-[var(--border)] pt-4 mt-4">
+                        <div>
+                            <h3 className="text-sm font-semibold text-[var(--foreground)]">Recovery Key Access</h3>
+                            <p className="text-[11px] text-[var(--muted-foreground)] mt-1 max-w-xs">
+                                View or regenerate your secure recovery key if you have lost it.
+                            </p>
+                        </div>
                         <button
                             onClick={() => setShowVaultModal(true)}
-                            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[var(--border)] hover:bg-[var(--surface)] text-[var(--foreground)] font-bold text-xs transition-colors shrink-0"
+                            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-[var(--border)] hover:bg-[var(--surface)] text-[var(--foreground)] font-bold text-xs transition-colors shrink-0 mt-3"
                         >
-                            <Key size={14} className="text-primary" /> Reveal / Regenerate Vault Key
+                            <Key size={14} className="text-primary" /> Reveal / Regenerate Recovery Key
                         </button>
                     </div>
                 </div>
@@ -1240,13 +1246,13 @@ export default function ProfilePage() {
                 </div>
             </Modal>
 
-            {/* Vault Key Modal */}
-            <Modal isOpen={showVaultModal} onClose={handleCloseVaultModal} title="Vault Key" size="md">
+            {/* Recovery Key Modal */}
+            <Modal isOpen={showVaultModal} onClose={handleCloseVaultModal} title="Recovery Key" size="md">
                 <div className="space-y-4">
                     {!revealedVault ? (
                         <>
                             <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                                Please input your password to view your Vault Key. Generating a new key invalidates the previous key.
+                                Please input your password to view your Recovery Key. Generating a new key invalidates the previous key.
                             </p>
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5">Account Password</label>
@@ -1267,7 +1273,7 @@ export default function ProfilePage() {
                                     <p className="text-xs font-bold text-[var(--foreground)] mt-1">{revealedVault.vaultUserId}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-[var(--muted-foreground)] font-bold uppercase tracking-widest">Vault Reference Key</p>
+                                    <p className="text-[10px] text-[var(--muted-foreground)] font-bold uppercase tracking-widest">Recovery Key</p>
                                     <p className="text-xs font-bold text-[var(--foreground)] mt-1 select-all break-all">{revealedVault.vaultKey}</p>
                                 </div>
                             </div>

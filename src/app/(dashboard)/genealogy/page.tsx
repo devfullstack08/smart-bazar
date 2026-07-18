@@ -308,7 +308,7 @@ export default function GenealogyPage() {
                             : 'Genealogy Tree'}
                     </h2>
                     <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
-                        {viewMode === 'table' ? 'Select a level above to view team members at that level' : 'Click on a node to view member details'}
+                        {viewMode === 'table' ? 'Select a level above to view team members at that level' : 'Click on a member to view details'}
                     </p>
                     {viewMode === 'table' && levelMembers.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-3">
@@ -424,7 +424,7 @@ export default function GenealogyPage() {
                 )}
             </div>
 
-            {/* Selected Node Details - PWA compact */}
+            {/* Selected Member Details - PWA compact */}
             {selectedNode && (
                 <div className="premium-card rounded-2xl p-4 sm:p-6 border border-[var(--border)] bg-[var(--surface-elevated)]">
                     <h2 className="text-lg sm:text-xl font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">

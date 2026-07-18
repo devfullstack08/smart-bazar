@@ -257,7 +257,7 @@ export default function AutoPoolPage() {
                     <div className="space-y-3">
                         <h3 className="text-xs font-extrabold text-[var(--foreground)] uppercase tracking-wider flex items-center gap-2">
                             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-black text-primary">1</span>
-                            Direct Generation Nodes (Level 1)
+                            Direct Generation Members (Level 1)
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {matrix.level1?.map((entry) => (
@@ -274,7 +274,7 @@ export default function AutoPoolPage() {
                         <div className="space-y-3 pt-2">
                             <h3 className="text-xs font-extrabold text-[var(--foreground)] uppercase tracking-wider flex items-center gap-2">
                                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-black text-primary">2</span>
-                                Secondary Generation Nodes (Level 2)
+                                Secondary Generation Members (Level 2)
                             </h3>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                                 {matrix.level2?.map((entry) => (

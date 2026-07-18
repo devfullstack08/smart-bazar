@@ -84,7 +84,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
             height={88}
             className="!w-[64px] !h-[64px] md:!w-[88px] md:!h-[88px] aspect-square rounded-full border-2 border-blue-500 dark:border-blue-400 p-0.5 bg-[var(--surface)] shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-transform duration-300 hover:scale-105"
           />
-          <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border border-[var(--surface-elevated)] flex items-center justify-center shadow" title="Active Node">
+          <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border border-[var(--surface-elevated)] flex items-center justify-center shadow" title="Active Member">
             <ShieldCheck className="text-white" size={9} strokeWidth={3} />
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--border)]" />
             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
-              Active Node
+              Active Member
             </span>
           </div>
           
@@ -119,7 +119,7 @@ export default function DashboardWelcomeCard({ user, loading = false }: Dashboar
             </span>
             <span className="w-1 h-1 rounded-full bg-[var(--border)] opacity-60" />
             <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-              Active Node
+              Active Member
             </span>
           </div>
           

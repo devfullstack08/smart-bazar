@@ -301,10 +301,10 @@ function RegisterForm() {
                         <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/5 mt-4">
                             <h4 className="text-xs font-bold text-red-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-                                Secure Recovery Vault Key Created
+                                Secure Recovery Key Created
                             </h4>
                             <p className="text-[11px] text-[var(--muted-foreground)] mb-3 leading-relaxed">
-                                A personal credentials backup key has been initialized. Copy and write this key down in a safe offline location.
+                                Your personal recovery key has been generated. Please copy and save this key in a secure location.
                             </p>
                             <div className="flex items-center gap-2 flex-wrap">
                                 <button
@@ -318,7 +318,7 @@ function RegisterForm() {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const txt = `User ID: ${creds.vaultUserId}\nVault Key: ${creds.vaultKey}\n\nSave this. We cannot recover it for you.`;
+                                        const txt = `User ID: ${creds.vaultUserId}\nRecovery Key: ${creds.vaultKey}\n\nSave this. We cannot recover it for you.`;
                                         const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
                                         const url = URL.createObjectURL(blob);
                                         const a = document.createElement('a');
@@ -353,12 +353,9 @@ function RegisterForm() {
     };
 
     return (
-        <div className="flex flex-1 flex-col lg:flex-row w-full min-h-full relative">
-            {/* Left side: Full-Bleed Logo Branding Column (Sticky on scroll) */}
-            <div 
-                className="hidden lg:flex lg:w-[45%] xl:w-[40%] relative overflow-hidden shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white sticky top-0"
-                style={{ height: 'calc(100vh - 53px)' }}
-            >
+        <div className="flex flex-1 flex-col lg:flex-row w-full min-h-full lg:h-full lg:min-h-0 lg:overflow-hidden relative">
+            {/* Left side: Full-Bleed Logo Branding Column (Fixed on desktop) */}
+            <div className="hidden lg:flex lg:w-[45%] xl:w-[40%] relative overflow-hidden shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white">
                 {/* Subtle soft gradient over the white to give it premium depth */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-zinc-100 dark:from-zinc-100 dark:to-zinc-300 z-0 pointer-events-none" />
                 <img
@@ -368,9 +365,9 @@ function RegisterForm() {
                 />
             </div>
 
-            {/* Right side: Registration Form Panel (Transparent, Scrollable) */}
-            <div className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-transparent min-h-full relative">
-                <div className="w-full max-w-3xl my-auto">
+            {/* Right side: Registration Form Panel (Transparent, Scrollable on desktop) */}
+            <div className="flex-1 flex flex-col p-4 sm:p-8 lg:p-12 bg-transparent lg:overflow-y-auto relative min-h-full">
+                <div className="w-full max-w-3xl m-auto">
                     {registrationSuccess ? (
                         renderSuccessCard()
                     ) : (
@@ -379,11 +376,6 @@ function RegisterForm() {
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8 relative z-10">
                                 {/* Header */}
                                 <div className="mb-6 sm:mb-10 text-left">
-                                    <img
-                                        src={APP_CONSTANTS.APP_LOGO_URL}
-                                        className="h-10 w-auto object-contain mb-6 lg:hidden"
-                                        alt="Smart Bazar Logo"
-                                    />
                                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-display)' }}>
                                         Create Account
                                     </h1>

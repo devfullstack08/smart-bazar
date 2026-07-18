@@ -101,7 +101,7 @@ function LoginForm() {
         setIsLoading(true);
         dispatch(loginStart());
         try {
-            const response = await authApi.login(verifiedUser.emailOrUserId, data.password);
+            const response = await authApi.login(verifiedUser.emailOrUserId, data.password.trim());
             if (typeof window !== 'undefined') {
                 if (data.rememberMe) localStorage.setItem(STORAGE_KEYS.REMEMBER_ME_KEY, verifiedUser.emailOrUserId);
                 else localStorage.removeItem(STORAGE_KEYS.REMEMBER_ME_KEY);

@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, CheckCircle2, Loader2, Copy, Check, Download, ShoppingBag, TrendingUp, Award } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle2, Loader2, Copy, Check, Download, ShoppingBag, TrendingUp, Award, ArrowLeft, ArrowRight, Shuffle } from 'lucide-react';
 import { authApi } from '@/lib/api/services';
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE, APP_CONSTANTS } from '@/constants';
 
@@ -16,7 +16,6 @@ const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     countryCode: z.string().min(1, 'Country code is required'),
     phone: z.string().min(7, 'Phone number must be at least 7 digits').max(15, 'Phone number is too long'),
-    walletAddress: z.string().optional(),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
     sponsorId: z.string().optional(),
@@ -29,6 +28,13 @@ const registerSchema = z.object({
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
+
+const getSponsorValidationPayload = (response: any) => response?.data || response || {};
+const isSponsorValidationSuccess = (response: any) => {
+    const data = getSponsorValidationPayload(response);
+    return Boolean(data?.valid ?? data?.isValid);
+};
+const getRegistrationPayload = (response: any) => response?.data || response || {};
 
 function RegisterForm() {
     const router = useRouter();
@@ -112,6 +118,30 @@ function RegisterForm() {
 
     const sponsorId = watch('sponsorId');
     const password = watch('password');
+    const sponsorHasValue = Boolean(sponsorId?.trim());
+    const placementOptions = [
+        {
+            value: null,
+            label: 'Auto',
+            helper: 'Let system place automatically',
+            icon: Shuffle,
+            tone: 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)]',
+        },
+        {
+            value: 'left' as const,
+            label: 'Left',
+            helper: 'Place inside sponsor left leg',
+            icon: ArrowLeft,
+            tone: 'border-emerald-500/35 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300',
+        },
+        {
+            value: 'right' as const,
+            label: 'Right',
+            helper: 'Place inside sponsor right leg',
+            icon: ArrowRight,
+            tone: 'border-sky-500/35 bg-sky-500/10 text-sky-600 dark:text-sky-300',
+        },
+    ];
 
     const validateSponsor = useCallback(async (id: string) => {
         if (!id) {
@@ -123,8 +153,8 @@ function RegisterForm() {
         setIsValidatingSponsor(true);
         try {
             const res = await authApi.validateSponsor(id);
-            const data = res?.data || res;
-            const isValid = data?.valid || data?.isValid || false;
+            const data = getSponsorValidationPayload(res);
+            const isValid = isSponsorValidationSuccess(res);
             
             if (isValid) {
                 setSponsorValid(true);
@@ -144,7 +174,7 @@ function RegisterForm() {
 
     useEffect(() => {
         const querySponsor = searchParams.get('ref') || searchParams.get('sponsor');
-        const querySide = searchParams.get('side');
+        const querySide = searchParams.get('side')?.toLowerCase();
         if (querySponsor) {
             setValue('sponsorId', querySponsor);
             validateSponsor(querySponsor);
@@ -157,7 +187,7 @@ function RegisterForm() {
         try {
             if (data.sponsorId) {
                 const check = await authApi.validateSponsor(data.sponsorId);
-                if (!check?.isValid) {
+                if (!isSponsorValidationSuccess(check)) {
                     setSponsorValid(false);
                     setSponsorName(null);
                     setError('sponsorId', { type: 'manual', message: 'Sponsor ID is invalid' });
@@ -166,34 +196,33 @@ function RegisterForm() {
                 }
             }
 
-            const hexChars = '0123456789abcdef';
-            let mockWalletAddress = '0x';
-            for (let i = 0; i < 40; i++) {
-                mockWalletAddress += hexChars[Math.floor(Math.random() * 16)];
-            }
-
             const response = await authApi.register({
                 name: data.fullName,
                 email: data.email,
                 phone: `${data.countryCode}${data.phone}`,
-                walletAddress: mockWalletAddress,
                 password: data.password,
                 sponsorId: data.sponsorId || undefined,
                 ...(data.sponsorId && placementSide ? { placement: { position: placementSide } } : {}),
             });
 
-            if (response?.user) {
+            const registrationData = getRegistrationPayload(response);
+            const registeredUser = registrationData?.user;
+            const vaultCredentials = registrationData?.vaultCredentials || {};
+
+            if (registeredUser) {
                 sessionStorage.removeItem('registerFormData');
                 setRegistrationSuccess({
-                    userId: response.user.userId,
-                    email: response.user.email,
-                    name: response.user.name,
+                    userId: registeredUser.userId,
+                    email: registeredUser.email,
+                    name: registeredUser.name,
                     password: data.password,
-                    walletAddress: response.user.walletAddress || undefined,
-                    vaultUserId: response.vaultUserId || undefined,
-                    vaultKey: response.vaultKey || undefined,
+                    walletAddress: registeredUser.walletAddress || undefined,
+                    vaultUserId: vaultCredentials.userId || registrationData.vaultUserId || undefined,
+                    vaultKey: vaultCredentials.vaultKey || registrationData.vaultKey || undefined,
                 });
                 toast.success('Registration successful!');
+            } else {
+                toast.error('Registration completed, but user details were not returned');
             }
         } catch (error: any) {
             toast.error(error?.response?.data?.message || 'Registration failed');
@@ -481,11 +510,58 @@ function RegisterForm() {
                                                 {sponsorName ? <>Valid sponsor: <span className="font-semibold">{sponsorName}</span></> : 'Valid sponsor ID'}
                                             </p>
                                         )}
-                                        {placementSide && (
-                                            <p className="mt-2 inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[11px] font-semibold text-[var(--muted-foreground)]">
-                                                Preferred binary side: <span className="ml-1 capitalize text-[var(--foreground)]">{placementSide}</span>
-                                            </p>
-                                        )}
+                                        <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)]/70 p-2.5 sm:p-3">
+                                            <div className="mb-2.5 flex items-start justify-between gap-3 px-1">
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold leading-tight text-[var(--foreground)]">Placement preference</p>
+                                                    <p className="mt-1 text-[11px] font-medium leading-snug text-[var(--muted-foreground)]">
+                                                        Select Auto, Left, or Right before registration.
+                                                    </p>
+                                                </div>
+                                                <span className="hidden shrink-0 rounded-full border border-[var(--border)] bg-[var(--background)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--muted-foreground)] sm:inline-flex">
+                                                    {placementSide ? placementSide : 'Auto'}
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-3">
+                                                {placementOptions.map((option) => {
+                                                    const Icon = option.icon;
+                                                    const selected = placementSide === option.value;
+                                                    return (
+                                                        <button
+                                                            key={option.label}
+                                                            type="button"
+                                                            disabled={!sponsorHasValue}
+                                                            onClick={() => setPlacementSide(option.value)}
+                                                            className={[
+                                                                'group relative flex min-h-[3.35rem] items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 min-[420px]:min-h-[4.35rem] min-[420px]:flex-col min-[420px]:items-start min-[420px]:justify-between',
+                                                                selected ? `${option.tone} shadow-[0_10px_24px_rgba(15,23,42,0.08)] ring-2 ring-current/10` : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)] hover:border-[var(--pw-primary)]/35 hover:bg-[var(--surface-elevated)]',
+                                                            ].join(' ')}
+                                                            aria-pressed={selected}
+                                                        >
+                                                            <span className="flex min-w-0 items-center gap-2.5">
+                                                                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-current/10 transition group-hover:scale-105">
+                                                                    <Icon size={17} strokeWidth={2.4} />
+                                                                </span>
+                                                                <span className="min-w-0 text-sm font-black leading-none text-[var(--foreground)]">{option.label}</span>
+                                                            </span>
+                                                            <span className="min-w-0 flex-1 text-right text-[10px] font-semibold leading-tight text-[var(--muted-foreground)] min-[420px]:text-left">
+                                                                {option.helper}
+                                                            </span>
+                                                            {selected && (
+                                                                <span className="ml-auto grid h-5 w-5 shrink-0 place-items-center rounded-full bg-current/12 min-[420px]:absolute min-[420px]:right-2 min-[420px]:top-2">
+                                                                    <Check size={12} strokeWidth={3} />
+                                                                </span>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            {!sponsorHasValue && (
+                                                <p className="mt-2 text-[11px] font-medium text-[var(--muted-foreground)]">
+                                                    Add a Sponsor ID to choose left or right placement.
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 

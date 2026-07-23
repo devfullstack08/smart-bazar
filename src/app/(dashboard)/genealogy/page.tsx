@@ -13,17 +13,20 @@ interface TreeNodeProps {
     level: number;
 }
 
-function TreeNode({ node, onNodeClick, level: _level }: TreeNodeProps) {
-    if (!node) {
-        return (
-            <div className="flex flex-col items-center">
-                <div className="w-14 h-14 sm:w-24 sm:h-24 border-2 border-dashed border-gray-300 dark:border-white/20 rounded-lg sm:rounded-xl flex items-center justify-center bg-gray-50 dark:bg-white/5">
-                    <UserX className="text-gray-400 dark:text-gray-500" size={24} />
-                </div>
-                <p className="text-xs text-[var(--muted-foreground)] mt-1 sm:mt-2">Empty</p>
+/** Empty slot shown when a binary position (left/right) has no member yet */
+function EmptySlot() {
+    return (
+        <div className="flex flex-col items-center">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl border-2 border-dashed border-amber-400/40 flex flex-col items-center justify-center bg-amber-500/5">
+                <UserX size={20} className="text-amber-400/50" />
             </div>
-        );
-    }
+            <p className="text-xs text-amber-500/60 mt-1 font-semibold">Open</p>
+        </div>
+    );
+}
+
+function TreeNode({ node, onNodeClick, level: _level }: TreeNodeProps) {
+    if (!node) return <EmptySlot />;
 
     const isActive = node.status === 'active';
     const hasPlacement = node.placement?.position === 'left' || node.placement?.position === 'right';
@@ -34,21 +37,22 @@ function TreeNode({ node, onNodeClick, level: _level }: TreeNodeProps) {
             <button
                 onClick={() => onNodeClick(node)}
                 type="button"
-                className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-[0.98] shadow-md sm:shadow-lg touch-manipulation ${isActive
-                    ? 'bg-[var(--pw-primary)] text-gray-900 border-2 border-white/20'
-                    : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-white/10'
+                className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-[0.98] shadow-md sm:shadow-lg touch-manipulation ${
+                    isActive
+                        ? 'bg-[var(--pw-primary)] text-gray-900 border-2 border-white/20'
+                        : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-white/10'
                 }`}
             >
-                <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-0.5">
+                <div className="w-7 h-7 sm:w-9 sm:h-9 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-0.5">
                     {isActive ? <UserCheck size={16} className="sm:w-5 sm:h-5" /> : <User size={16} className="sm:w-5 sm:h-5" />}
                 </div>
-                <p className="text-xs font-semibold truncate w-12 sm:w-16 md:w-20 text-center px-0.5">
+                <p className="text-xs font-semibold truncate w-12 sm:w-16 text-center px-0.5">
                     {(node.name || 'User').split(' ')[0]}
                 </p>
             </button>
-            <p className="text-xs text-[var(--muted-foreground)] mt-0.5 font-mono truncate max-w-[64px] sm:max-w-[72px] md:max-w-none">{node.userId}</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5 font-mono truncate max-w-[64px] sm:max-w-[72px]">{node.userId}</p>
             {hasPlacement && (
-                <div className="flex items-center gap-0.5 sm:gap-1 mt-0.5 text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-0.5 mt-0.5 text-gray-600 dark:text-gray-400">
                     {placementIcon}
                     <span className="text-xs">{node.placement?.position}</span>
                 </div>
@@ -57,7 +61,6 @@ function TreeNode({ node, onNodeClick, level: _level }: TreeNodeProps) {
             {(node.totalPackageValue ?? 0) > 0 && (
                 <p className="text-[10px] font-semibold text-amber-500 mt-0.5">{formatCurrency(node.totalPackageValue!)}</p>
             )}
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">{formatCurrency(node.totalEarned)}</p>
             {node.downlineCount > 0 && (
                 <div className="flex items-center gap-0.5 mt-0.5">
                     <Users size={10} className="text-gray-500 dark:text-gray-400 shrink-0" />
@@ -85,31 +88,72 @@ function getNodesAtLevel(root: GenealogyTreeNode, targetLevel: number): Genealog
     return result;
 }
 
-/** Recursive tree render - supports multi-child (all children) and binary (left/right placement) trees */
+/**
+ * Binary tree renderer.
+ * - Always shows LEFT and RIGHT slots for nodes that use placement.
+ * - Shows "Open" placeholder when a slot has no member yet.
+ * - Draws connector lines: vertical from parent → horizontal bar → vertical stubs to children.
+ */
 function renderTree(node: GenealogyTreeNode | null, onNodeClick: (n: GenealogyTreeNode) => void, level: number): React.ReactNode {
     if (!node) return null;
+
     const children = node.children ?? [];
-    const hasPlacement = children.some((c) => c.placement?.position === 'left' || c.placement?.position === 'right');
-    const childNodes: GenealogyTreeNode[] = hasPlacement
-        ? [
-            children.find((c) => c.placement?.position === 'left') ?? null,
-            children.find((c) => c.placement?.position === 'right') ?? null,
-        ].filter(Boolean) as GenealogyTreeNode[]
-        : children;
+    const isBinary = children.some((c) => c.placement?.position === 'left' || c.placement?.position === 'right');
+
+    // For non-binary / no-placement trees, render children in a simple flex row
+    if (!isBinary) {
+        return (
+            <div key={node.userId} className="flex flex-col items-center shrink-0">
+                <div className="flex justify-center mb-2 sm:mb-4">
+                    <TreeNode node={node} onNodeClick={onNodeClick} level={level} />
+                </div>
+                {children.length > 0 && (
+                    <div className="flex flex-row flex-wrap gap-3 sm:gap-6 mt-2 justify-center items-start">
+                        {children.map((child) => (
+                            <div key={child.userId} className="flex flex-col items-center shrink-0">
+                                {renderTree(child, onNodeClick, level + 1)}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // Binary mode: always show both LEFT and RIGHT slots
+    const leftChild = children.find((c) => c.placement?.position === 'left') ?? null;
+    const rightChild = children.find((c) => c.placement?.position === 'right') ?? null;
+    const hasAnyChild = leftChild !== null || rightChild !== null;
 
     return (
         <div key={node.userId} className="flex flex-col items-center shrink-0">
-            <div className="flex justify-center mb-2 sm:mb-4">
-                <TreeNode node={node} onNodeClick={onNodeClick} level={level} />
-            </div>
-            {childNodes.length > 0 && (
-                <div className="flex flex-row flex-wrap gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-10 mt-2 sm:mt-4 justify-center items-start">
-                    {childNodes.map((child) => (
-                        <div key={child.userId} className="flex flex-col items-center shrink-0">
-                            {renderTree(child, onNodeClick, level + 1)}
+            {/* Current node */}
+            <TreeNode node={node} onNodeClick={onNodeClick} level={level} />
+
+            {hasAnyChild && (
+                <>
+                    {/* Vertical line down from node to horizontal bar */}
+                    <div className="w-0.5 h-5 sm:h-7 bg-amber-400/70" />
+
+                    {/* Horizontal bar + child branches */}
+                    <div className="flex border-t-2 border-amber-400/70">
+                        {/* LEFT branch */}
+                        <div className="flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-14">
+                            <div className="w-0.5 h-5 sm:h-7 bg-amber-400/70" />
+                            {leftChild
+                                ? renderTree(leftChild, onNodeClick, level + 1)
+                                : <EmptySlot />}
                         </div>
-                    ))}
-                </div>
+
+                        {/* RIGHT branch */}
+                        <div className="flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-14">
+                            <div className="w-0.5 h-5 sm:h-7 bg-amber-400/70" />
+                            {rightChild
+                                ? renderTree(rightChild, onNodeClick, level + 1)
+                                : <EmptySlot />}
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );
@@ -327,8 +371,21 @@ export default function GenealogyPage() {
                 {!genealogyData ? (
                     <p className="text-center text-gray-500 dark:text-gray-400 text-sm sm:text-base py-8 sm:py-12">No genealogy data available</p>
                 ) : viewMode === 'tree' ? (
-                    <div className="p-2.5 sm:p-6 overflow-auto max-h-[70vh] min-w-0">
-                        <div className="flex justify-center items-start">
+                    <div className="overflow-auto max-h-[75vh] min-w-0">
+                        {/* LEFT / RIGHT Legend header */}
+                        <div className="flex items-center justify-between px-6 pt-5 pb-2">
+                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md">
+                                <ArrowLeft size={13} />
+                                Left
+                            </div>
+                            <p className="text-xs text-[var(--muted-foreground)] font-medium">Click a member to view details</p>
+                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md">
+                                Right
+                                <ArrowRight size={13} />
+                            </div>
+                        </div>
+                        {/* Tree */}
+                        <div className="p-4 sm:p-8 flex justify-center items-start">
                             {renderTree(genealogyData.tree, setSelectedNode, 0)}
                         </div>
                     </div>

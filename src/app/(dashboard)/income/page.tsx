@@ -277,10 +277,10 @@ export default function IncomePage() {
                         >
                             <option value="" className="bg-[var(--surface-elevated)]">All Types</option>
                             <optgroup label="Commissions" className="bg-[var(--surface-elevated)] font-semibold text-[var(--muted-foreground)]">
-                                <option value="referral" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Direct Referral</option>
-                                <option value="binary_placement" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Placement Spillover</option>
-                                <option value="binary_matching" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Binary Matching</option>
-                                <option value="global_autopool" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Global Auto-Pool</option>
+                                <option value="direct_referral" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Direct Referral</option>
+                                <option value="binary_placement_income" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Placement Spillover</option>
+                                <option value="binary_matching_income" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Binary Matching</option>
+                                <option value="global_auto_pool" className="bg-[var(--surface-elevated)] font-normal text-[var(--foreground)]">Global Auto-Pool</option>
                             </optgroup>
                         </select>
 

@@ -350,7 +350,7 @@ export default function PackagesPage() {
                                     className="w-14 h-14 object-cover rounded-lg border border-[var(--border)]"
                                 />
                                 <div>
-                                    <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary">Membership Node Tier</span>
+                                    <span className="text-[9px] font-extrabold uppercase tracking-wider text-primary">Premium Membership</span>
                                     <h4 className="text-xs sm:text-sm font-black text-[var(--foreground)] mt-0.5">{checkoutPkg.name}</h4>
                                     <p className="text-xs font-black text-primary font-mono mt-1 tabular-nums">{formatCurrency(checkoutPkg.totalValue)}</p>
                                 </div>
@@ -376,21 +376,20 @@ export default function PackagesPage() {
                                 </div>
                             </div>
 
-                            {/* Unlock node privileges details */}
                             <div className="space-y-2.5 text-xs">
-                                <p className="font-extrabold uppercase tracking-wider text-[var(--muted-foreground)] text-[9px]">Authorization Privileges Unlocked</p>
+                                <p className="font-extrabold uppercase tracking-wider text-[var(--muted-foreground)] text-[9px]">What You Unlock</p>
                                 <div className="grid grid-cols-1 gap-2 pt-1 font-semibold">
                                     <div className="flex items-center gap-2 text-[var(--foreground)]">
                                         <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
-                                        <span>200% capping limits yield payout eligibility</span>
+                                        <span>200% earnings cap on total payout eligibility</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-[var(--foreground)]">
                                         <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
-                                        <span>Authorize binary placements hierarchy matching</span>
+                                        <span>Binary team matching income activated</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-[var(--foreground)]">
                                         <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
-                                        <span>Enables global pool matching shared payouts</span>
+                                        <span>Global auto-pool cycle payouts enabled</span>
                                     </div>
                                 </div>
                             </div>

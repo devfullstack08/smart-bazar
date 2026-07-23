@@ -207,22 +207,25 @@ export default function GenealogyPage() {
         setViewMode(viewFromQuery);
     }, [viewFromQuery]);
 
-    /** Generations to load from API (must be ≥ selected level). */
+    const [focusedPath, setFocusedPath] = useState<{ userId: string; name: string }[]>([]);
+    const focusedRootUserId = focusedPath.length > 0 ? focusedPath[focusedPath.length - 1].userId : null;
+
+    /** Generations to load from API (5 generations for tree mode to show 4 full downline levels, or selectedLevel for table mode). */
     const genealogyLoadDepth = useMemo(
-        () => Math.min(MAX_DEPTH, Math.max(1, selectedLevel)),
-        [selectedLevel],
+        () => (viewMode === 'tree' ? 5 : Math.min(MAX_DEPTH, Math.max(1, selectedLevel))),
+        [selectedLevel, viewMode],
     );
 
     const fetchGenealogyData = useCallback(async () => {
         try {
-            const data = await teamApi.getGenealogy(genealogyLoadDepth);
+            const data = await teamApi.getGenealogy(genealogyLoadDepth, focusedRootUserId || undefined);
             setGenealogyData({ tree: data.tree, depth: data.depth });
         } catch (error) {
             console.error('Failed to fetch genealogy data:', error);
         } finally {
             setLoading(false);
         }
-    }, [genealogyLoadDepth]);
+    }, [genealogyLoadDepth, focusedRootUserId]);
 
     useEffect(() => {
         if (!queryInitialized) return;
@@ -372,13 +375,47 @@ export default function GenealogyPage() {
                     <p className="text-center text-gray-500 dark:text-gray-400 text-sm sm:text-base py-8 sm:py-12">No genealogy data available</p>
                 ) : viewMode === 'tree' ? (
                     <div className="overflow-auto max-h-[75vh] min-w-0">
+                        {/* Tree Navigation Breadcrumbs */}
+                        {focusedPath.length > 0 && (
+                            <div className="flex flex-wrap items-center justify-between gap-2 px-6 pt-4 pb-2 border-b border-[var(--border)]/50 bg-[var(--surface)]/50">
+                                <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] overflow-x-auto">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFocusedPath([])}
+                                        className="font-semibold hover:text-[var(--pw-primary)] transition-colors"
+                                    >
+                                        My Root
+                                    </button>
+                                    {focusedPath.map((item, idx) => (
+                                        <span key={item.userId} className="flex items-center gap-1.5">
+                                            <span className="opacity-40">/</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFocusedPath(focusedPath.slice(0, idx + 1))}
+                                                className={`font-semibold ${idx === focusedPath.length - 1 ? 'text-[var(--pw-primary)]' : 'hover:text-[var(--pw-primary)]'} transition-colors`}
+                                            >
+                                                {item.name} ({item.userId})
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setFocusedPath([])}
+                                    className="px-2.5 py-1 text-[11px] font-bold text-[var(--pw-primary)] bg-[var(--pw-primary)]/10 hover:bg-[var(--pw-primary)]/20 rounded-lg transition-colors"
+                                >
+                                    Reset to My Tree
+                                </button>
+                            </div>
+                        )}
+
                         {/* LEFT / RIGHT Legend header */}
-                        <div className="flex items-center justify-between px-6 pt-5 pb-2">
+                        <div className="flex items-center justify-between px-6 pt-4 pb-2">
                             <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md">
                                 <ArrowLeft size={13} />
                                 Left
                             </div>
-                            <p className="text-xs text-[var(--muted-foreground)] font-medium">Click a member to view details</p>
+                            <p className="text-xs text-[var(--muted-foreground)] font-medium">Click a member to inspect or expand subtree</p>
                             <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md">
                                 Right
                                 <ArrowRight size={13} />
@@ -550,6 +587,27 @@ export default function GenealogyPage() {
                                 )}
                             </div>
                         ))}
+                    </div>
+
+                    {/* Action Bar inside Member Details */}
+                    <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
+                        <div className="text-xs text-[var(--muted-foreground)]">
+                            User ID: <span className="font-mono font-bold text-[var(--foreground)]">{selectedNode.userId}</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setViewMode('tree');
+                                setFocusedPath((prev) => {
+                                    if (prev.some((p) => p.userId === selectedNode.userId)) return prev;
+                                    return [...prev, { userId: selectedNode.userId, name: selectedNode.name }];
+                                });
+                            }}
+                            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-gray-900 bg-[var(--pw-primary)] hover:bg-[var(--pw-primary)]/90 rounded-xl transition-all shadow-md active:scale-[0.98]"
+                        >
+                            <LayoutGrid size={14} />
+                            Focus / Expand Tree From Here
+                        </button>
                     </div>
                 </div>
             )}

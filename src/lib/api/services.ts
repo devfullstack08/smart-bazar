@@ -564,13 +564,14 @@ export const teamApi = {
         return response.data.data;
     },
 
-    // Get Genealogy (new endpoint - uses authenticated user)
-    getGenealogy: async (depth: number = 3) => {
+    // Get Genealogy (uses authenticated user or optional sub-root userId)
+    getGenealogy: async (depth: number = 5, userId?: string) => {
+        const url = userId ? `/users/genealogy?depth=${depth}&userId=${userId}` : `/users/genealogy?depth=${depth}`;
         const response = await apiClient.get<{
             success: boolean;
             message: string;
             data: GenealogyData;
-        }>(`/users/genealogy?depth=${depth}`, withProjectId());
+        }>(url, withProjectId());
         return response.data.data;
     },
 

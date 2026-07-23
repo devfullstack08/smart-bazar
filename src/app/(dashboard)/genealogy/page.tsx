@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { GenealogyTreeNode } from '@/types';
 import { teamApi } from '@/lib/api/services';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { User, ArrowLeft, ArrowRight, Users, UserCheck, UserX, LayoutGrid, Table, Package } from 'lucide-react';
+import { User, ArrowLeft, ArrowRight, Users, UserCheck, UserX, LayoutGrid, Table, Package, ZoomIn, ZoomOut, RotateCcw, Maximize2 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils/cn';
 
 interface TreeNodeProps {
@@ -25,46 +25,62 @@ function EmptySlot() {
     );
 }
 
-function TreeNode({ node, onNodeClick, level: _level }: TreeNodeProps) {
+function TreeNode({ node, onNodeClick, level }: TreeNodeProps) {
     if (!node) return <EmptySlot />;
 
     const isActive = node.status === 'active';
     const hasPlacement = node.placement?.position === 'left' || node.placement?.position === 'right';
-    const placementIcon = node.placement?.position === 'left' ? <ArrowLeft size={12} /> : node.placement?.position === 'right' ? <ArrowRight size={12} /> : null;
+    const placementIcon = node.placement?.position === 'left' ? <ArrowLeft size={11} /> : node.placement?.position === 'right' ? <ArrowRight size={11} /> : null;
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center relative group">
+            {/* Level Badge Pill */}
+            <span className="mb-1 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-[9px] font-black text-amber-500 tracking-wider">
+                L{level}
+            </span>
+
             <button
                 onClick={() => onNodeClick(node)}
                 type="button"
-                className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-[0.98] shadow-md sm:shadow-lg touch-manipulation ${
+                className={`w-14 h-14 sm:w-20 sm:h-20 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105 active:scale-[0.98] shadow-md sm:shadow-lg touch-manipulation relative ${
                     isActive
-                        ? 'bg-[var(--pw-primary)] text-gray-900 border-2 border-white/20'
+                        ? 'bg-[var(--pw-primary)] text-gray-900 border-2 border-white/30 shadow-[0_4px_20px_rgba(245,158,11,0.25)]'
                         : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-white/10'
                 }`}
             >
                 <div className="w-7 h-7 sm:w-9 sm:h-9 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-0.5">
                     {isActive ? <UserCheck size={16} className="sm:w-5 sm:h-5" /> : <User size={16} className="sm:w-5 sm:h-5" />}
                 </div>
-                <p className="text-xs font-semibold truncate w-12 sm:w-16 text-center px-0.5">
+                <p className="text-xs font-black truncate w-12 sm:w-16 text-center px-0.5">
                     {(node.name || 'User').split(' ')[0]}
                 </p>
             </button>
-            <p className="text-xs text-[var(--muted-foreground)] mt-0.5 font-mono truncate max-w-[64px] sm:max-w-[72px]">{node.userId}</p>
+
+            <p className="text-[11px] font-mono font-semibold text-[var(--foreground)] mt-1 truncate max-w-[64px] sm:max-w-[80px]">{node.userId}</p>
+
             {hasPlacement && (
-                <div className="flex items-center gap-0.5 mt-0.5 text-gray-600 dark:text-gray-400">
+                <span
+                    className={`inline-flex items-center gap-0.5 mt-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                        node.placement?.position === 'left'
+                            ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                            : 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+                    }`}
+                >
                     {placementIcon}
-                    <span className="text-xs">{node.placement?.position}</span>
-                </div>
+                    {node.placement?.position}
+                </span>
             )}
-            <p className="text-xs text-[var(--pw-primary)] font-semibold mt-0.5">{node.rank}</p>
+
+            <p className="text-[10px] text-[var(--pw-primary)] font-bold mt-0.5">{node.rank}</p>
+
             {(node.totalPackageValue ?? 0) > 0 && (
-                <p className="text-[10px] font-semibold text-amber-500 mt-0.5">{formatCurrency(node.totalPackageValue!)}</p>
+                <p className="text-[10px] font-bold text-amber-500 mt-0.5">{formatCurrency(node.totalPackageValue!)}</p>
             )}
+
             {node.downlineCount > 0 && (
-                <div className="flex items-center gap-0.5 mt-0.5">
-                    <Users size={10} className="text-gray-500 dark:text-gray-400 shrink-0" />
-                    <span className="text-xs text-[var(--muted-foreground)]">{node.downlineCount}</span>
+                <div className="flex items-center gap-0.5 mt-0.5 bg-black/10 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                    <Users size={10} className="text-[var(--muted-foreground)] shrink-0" />
+                    <span className="text-[10px] font-bold text-[var(--muted-foreground)]">{node.downlineCount}</span>
                 </div>
             )}
         </div>
@@ -89,10 +105,7 @@ function getNodesAtLevel(root: GenealogyTreeNode, targetLevel: number): Genealog
 }
 
 /**
- * Binary tree renderer.
- * - Always shows LEFT and RIGHT slots for nodes that use placement.
- * - Shows "Open" placeholder when a slot has no member yet.
- * - Draws connector lines: vertical from parent → horizontal bar → vertical stubs to children.
+ * Binary tree renderer with level-proportional branch spacing.
  */
 function renderTree(node: GenealogyTreeNode | null, onNodeClick: (n: GenealogyTreeNode) => void, level: number): React.ReactNode {
     if (!node) return null;
@@ -100,7 +113,6 @@ function renderTree(node: GenealogyTreeNode | null, onNodeClick: (n: GenealogyTr
     const children = node.children ?? [];
     const isBinary = children.some((c) => c.placement?.position === 'left' || c.placement?.position === 'right');
 
-    // For non-binary / no-placement trees, render children in a simple flex row
     if (!isBinary) {
         return (
             <div key={node.userId} className="flex flex-col items-center shrink-0">
@@ -120,10 +132,18 @@ function renderTree(node: GenealogyTreeNode | null, onNodeClick: (n: GenealogyTr
         );
     }
 
-    // Binary mode: always show both LEFT and RIGHT slots
     const leftChild = children.find((c) => c.placement?.position === 'left') ?? null;
     const rightChild = children.find((c) => c.placement?.position === 'right') ?? null;
     const hasAnyChild = leftChild !== null || rightChild !== null;
+
+    // Proportional horizontal branch padding based on level depth
+    const paddingByLevel: Record<number, string> = {
+        0: 'px-4 sm:px-8 md:px-12 lg:px-16',
+        1: 'px-2 sm:px-4 md:px-6 lg:px-8',
+        2: 'px-1 sm:px-2 md:px-3',
+        3: 'px-0.5 sm:px-1',
+    };
+    const branchPadding = paddingByLevel[Math.min(level, 3)] || 'px-0.5';
 
     return (
         <div key={node.userId} className="flex flex-col items-center shrink-0">
@@ -132,22 +152,22 @@ function renderTree(node: GenealogyTreeNode | null, onNodeClick: (n: GenealogyTr
 
             {hasAnyChild && (
                 <>
-                    {/* Vertical line down from node to horizontal bar */}
-                    <div className="w-0.5 h-5 sm:h-7 bg-amber-400/70" />
+                    {/* Vertical line down from parent */}
+                    <div className="w-0.5 h-4 sm:h-6 bg-amber-400/80" />
 
-                    {/* Horizontal bar + child branches */}
-                    <div className="flex border-t-2 border-amber-400/70">
+                    {/* Horizontal connector bar + child branches */}
+                    <div className="flex border-t-2 border-amber-400/80">
                         {/* LEFT branch */}
-                        <div className="flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-14">
-                            <div className="w-0.5 h-5 sm:h-7 bg-amber-400/70" />
+                        <div className={`flex flex-col items-center ${branchPadding}`}>
+                            <div className="w-0.5 h-4 sm:h-6 bg-amber-400/80" />
                             {leftChild
                                 ? renderTree(leftChild, onNodeClick, level + 1)
                                 : <EmptySlot />}
                         </div>
 
                         {/* RIGHT branch */}
-                        <div className="flex flex-col items-center px-3 sm:px-6 md:px-10 lg:px-14">
-                            <div className="w-0.5 h-5 sm:h-7 bg-amber-400/70" />
+                        <div className={`flex flex-col items-center ${branchPadding}`}>
+                            <div className="w-0.5 h-4 sm:h-6 bg-amber-400/80" />
                             {rightChild
                                 ? renderTree(rightChild, onNodeClick, level + 1)
                                 : <EmptySlot />}
@@ -209,6 +229,27 @@ export default function GenealogyPage() {
 
     const [focusedPath, setFocusedPath] = useState<{ userId: string; name: string }[]>([]);
     const focusedRootUserId = focusedPath.length > 0 ? focusedPath[focusedPath.length - 1].userId : null;
+    const [zoomScale, setZoomScale] = useState(1.0);
+    const treeContainerRef = useRef<HTMLDivElement | null>(null);
+
+    // Mac Trackpad Pinch-to-Zoom handler (two fingers pinch / spread)
+    useEffect(() => {
+        const elem = treeContainerRef.current;
+        if (!elem) return;
+
+        const handleWheel = (e: WheelEvent) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const zoomFactor = e.deltaY > 0 ? -0.06 : 0.06;
+                setZoomScale((prev) => Math.min(1.8, Math.max(0.35, Number((prev + zoomFactor).toFixed(2)))));
+            }
+        };
+
+        elem.addEventListener('wheel', handleWheel, { passive: false });
+        return () => {
+            elem.removeEventListener('wheel', handleWheel);
+        };
+    }, []);
 
     /** Generations to load from API (5 generations for tree mode to show 4 full downline levels, or selectedLevel for table mode). */
     const genealogyLoadDepth = useMemo(
@@ -374,10 +415,70 @@ export default function GenealogyPage() {
                 {!genealogyData ? (
                     <p className="text-center text-gray-500 dark:text-gray-400 text-sm sm:text-base py-8 sm:py-12">No genealogy data available</p>
                 ) : viewMode === 'tree' ? (
-                    <div className="overflow-auto max-h-[75vh] min-w-0">
+                    <div className="relative overflow-hidden flex flex-col bg-[var(--surface-elevated)]">
+                        {/* Zoom Controls & Legend Toolbar */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 pt-4 pb-3 border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-sm z-20">
+                            {/* LEFT Badge */}
+                            <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md shrink-0">
+                                <ArrowLeft size={13} />
+                                Left
+                            </div>
+
+                            {/* Interactive Zoom Toolbar */}
+                            <div className="flex items-center gap-1 sm:gap-2 bg-[var(--surface-elevated)] border border-[var(--border)] p-1 rounded-xl shadow-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => setZoomScale((z) => Math.max(0.4, Number((z - 0.15).toFixed(2))))}
+                                    className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-white/10 transition-colors"
+                                    title="Zoom Out (-)"
+                                >
+                                    <ZoomOut size={15} />
+                                </button>
+
+                                <span className="px-2 text-xs font-mono font-bold text-[var(--pw-primary)] min-w-[42px] text-center">
+                                    {Math.round(zoomScale * 100)}%
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setZoomScale((z) => Math.min(1.6, Number((z + 0.15).toFixed(2))))}
+                                    className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-white/10 transition-colors"
+                                    title="Zoom In (+)"
+                                >
+                                    <ZoomIn size={15} />
+                                </button>
+
+                                <div className="h-4 w-px bg-[var(--border)] mx-0.5" />
+
+                                <button
+                                    type="button"
+                                    onClick={() => setZoomScale(0.6)}
+                                    className={`px-2 py-1 text-[10px] font-extrabold rounded-md transition-colors ${zoomScale === 0.6 ? 'bg-[var(--pw-primary)] text-gray-900' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`}
+                                    title="Full Tree Overview"
+                                >
+                                    Fit
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setZoomScale(1.0)}
+                                    className={`px-2 py-1 text-[10px] font-extrabold rounded-md transition-colors ${zoomScale === 1.0 ? 'bg-[var(--pw-primary)] text-gray-900' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`}
+                                    title="100% Reset"
+                                >
+                                    100%
+                                </button>
+                            </div>
+
+                            {/* RIGHT Badge */}
+                            <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md shrink-0">
+                                Right
+                                <ArrowRight size={13} />
+                            </div>
+                        </div>
+
                         {/* Tree Navigation Breadcrumbs */}
                         {focusedPath.length > 0 && (
-                            <div className="flex flex-wrap items-center justify-between gap-2 px-6 pt-4 pb-2 border-b border-[var(--border)]/50 bg-[var(--surface)]/50">
+                            <div className="flex flex-wrap items-center justify-between gap-2 px-6 py-2.5 border-b border-[var(--border)]/50 bg-amber-500/5 z-20">
                                 <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] overflow-x-auto">
                                     <button
                                         type="button"
@@ -392,7 +493,7 @@ export default function GenealogyPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setFocusedPath(focusedPath.slice(0, idx + 1))}
-                                                className={`font-semibold ${idx === focusedPath.length - 1 ? 'text-[var(--pw-primary)]' : 'hover:text-[var(--pw-primary)]'} transition-colors`}
+                                                className={`font-semibold ${idx === focusedPath.length - 1 ? 'text-[var(--pw-primary)] font-bold' : 'hover:text-[var(--pw-primary)]'} transition-colors`}
                                             >
                                                 {item.name} ({item.userId})
                                             </button>
@@ -402,28 +503,30 @@ export default function GenealogyPage() {
                                 <button
                                     type="button"
                                     onClick={() => setFocusedPath([])}
-                                    className="px-2.5 py-1 text-[11px] font-bold text-[var(--pw-primary)] bg-[var(--pw-primary)]/10 hover:bg-[var(--pw-primary)]/20 rounded-lg transition-colors"
+                                    className="px-2.5 py-1 text-[11px] font-bold text-[var(--pw-primary)] bg-[var(--pw-primary)]/10 hover:bg-[var(--pw-primary)]/20 rounded-lg transition-colors shrink-0"
                                 >
                                     Reset to My Tree
                                 </button>
                             </div>
                         )}
 
-                        {/* LEFT / RIGHT Legend header */}
-                        <div className="flex items-center justify-between px-6 pt-4 pb-2">
-                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md">
-                                <ArrowLeft size={13} />
-                                Left
+                        {/* Scalable Zoomable Tree View Canvas */}
+                        <div
+                            ref={treeContainerRef}
+                            className="overflow-auto max-h-[75vh] min-h-[500px] p-6 sm:p-10 touch-pan-x touch-pan-y cursor-grab active:cursor-grabbing relative select-none"
+                        >
+                            <div
+                                style={{
+                                    transform: `scale(${zoomScale})`,
+                                    transformOrigin: 'top center',
+                                    transition: 'transform 0.12s ease-out',
+                                }}
+                                className="inline-block min-w-full text-center"
+                            >
+                                <div className="inline-flex justify-center items-start pt-2 pb-16">
+                                    {renderTree(genealogyData.tree, setSelectedNode, 0)}
+                                </div>
                             </div>
-                            <p className="text-xs text-[var(--muted-foreground)] font-medium">Click a member to inspect or expand subtree</p>
-                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-black uppercase tracking-widest shadow-md">
-                                Right
-                                <ArrowRight size={13} />
-                            </div>
-                        </div>
-                        {/* Tree */}
-                        <div className="p-4 sm:p-8 flex justify-center items-start">
-                            {renderTree(genealogyData.tree, setSelectedNode, 0)}
                         </div>
                     </div>
                 ) : membersAtLevel.length === 0 ? (

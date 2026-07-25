@@ -92,79 +92,93 @@ export default function OverviewStats({
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 min-w-0">
-      {/* 1. Hero Available Balance Card - Blue/Indigo Accent */}
+    <div className="space-y-4 min-w-0">
+      {/* 1. Hero Available Balance Banner Card */}
       <div 
-        className="col-span-2 sm:col-span-4 lg:col-span-1 rounded-2xl border p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 group bg-gradient-to-br from-blue-500/5 via-[var(--surface-elevated)] to-[var(--surface-elevated)]"
+        className="rounded-2xl border p-5 sm:p-6 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5 transition-all duration-300 hover:shadow-xl bg-gradient-to-r from-blue-600/10 via-[var(--surface-elevated)] to-indigo-600/10"
         style={{ 
-          borderColor: 'rgba(37, 99, 235, 0.22)'
+          borderColor: 'rgba(37, 99, 235, 0.25)'
         }}
       >
-        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-        <div className="flex items-center justify-between">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-blue-500/20 bg-blue-500/10">
-            <Wallet size={16} className="text-blue-600 dark:text-blue-400" />
-          </div>
-          <Link
-            href="/wallet"
-            className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-all shadow-sm"
-          >
-            Wallet <ArrowRight size={10} />
-          </Link>
-        </div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         
-        <div className="mt-2 min-w-0">
-          <p className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">
-            Available Balance
-          </p>
-          <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 truncate mt-0.5 tabular-nums">
-            {formatCurrency(available)}
-          </p>
-          {locked > 0 ? (
-            <p className="text-[8px] font-medium text-amber-600 dark:text-amber-500 mt-0.5 truncate flex items-center gap-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-              Locked: {formatCurrency(locked)}
+        <div className="flex items-center gap-4 min-w-0 z-10">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center border border-blue-500/30 bg-blue-500/15 text-blue-600 dark:text-blue-400 shrink-0 shadow-inner">
+            <Wallet size={24} />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">
+                Available Wallet Balance
+              </span>
+              {locked > 0 ? (
+                <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                  Locked: {formatCurrency(locked)}
+                </span>
+              ) : (
+                <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  Fully Available
+                </span>
+              )}
+            </div>
+            <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 truncate mt-0.5 tabular-nums">
+              {formatCurrency(available)}
             </p>
-          ) : (
-            <p className="text-[8px] font-medium text-emerald-600 dark:text-emerald-500 mt-0.5 truncate flex items-center gap-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Fully Unlocked
-            </p>
-          )}
+          </div>
+        </div>
+
+        {/* Action Buttons inside Balance Hero Card */}
+        <div className="flex items-center gap-2.5 sm:gap-3 z-10 shrink-0">
+          <Link
+            href="/wallet?tab=deposit"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-all active:scale-[0.98] min-h-[40px]"
+          >
+            Deposit Funds <ArrowRight size={13} />
+          </Link>
+          <Link
+            href="/wallet?tab=withdraw"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-xs border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--foreground)] transition-all min-h-[40px]"
+          >
+            Withdraw
+          </Link>
         </div>
       </div>
 
-      {/* 2. Map other MLM core stats */}
-      {statItems.map((item) => {
-        const Icon = item.icon;
-        return (
-          <Link
-            href={item.href}
-            key={item.label}
-            className={`col-span-1 rounded-2xl border p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 bg-gradient-to-br ${item.bgTheme} via-[var(--surface-elevated)] to-[var(--surface-elevated)]`}
-            style={{ 
-              borderColor: item.borderColor
-            }}
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-black/[0.01] rounded-full blur-2xl pointer-events-none" />
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface)] shadow-sm">
-              <Icon size={16} className={item.textColor} />
-            </div>
-            
-            <div className="min-w-0 mt-2">
-              <p className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold">
-                {item.label}
-              </p>
-              <p className={`text-xl font-black ${item.textColor} truncate mt-0.5 tabular-nums`}>
-                {item.value}
-              </p>
-              <p className="text-[8px] font-medium text-[var(--muted-foreground)] mt-0.5 truncate">
-                {item.subtext}
-              </p>
-            </div>
-          </Link>
-        );
-      })}
+      {/* 2. 4-Grid Core MLM Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 min-w-0">
+        {statItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              href={item.href}
+              key={item.label}
+              className={`rounded-2xl border p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between h-32 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 bg-gradient-to-br ${item.bgTheme} via-[var(--surface-elevated)] to-[var(--surface-elevated)] group`}
+              style={{ 
+                borderColor: item.borderColor
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface)] shadow-sm">
+                  <Icon size={16} className={item.textColor} />
+                </div>
+                <ArrowRight size={12} className="text-[var(--muted-foreground)] opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </div>
+              
+              <div className="min-w-0 mt-2">
+                <p className="text-[9px] uppercase tracking-widest text-[var(--muted-foreground)] font-extrabold truncate">
+                  {item.label}
+                </p>
+                <p className={`text-lg sm:text-2xl font-black ${item.textColor} truncate mt-0.5 tabular-nums`}>
+                  {item.value}
+                </p>
+                <p className="text-[9px] font-medium text-[var(--muted-foreground)] mt-0.5 truncate">
+                  {item.subtext}
+                </p>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

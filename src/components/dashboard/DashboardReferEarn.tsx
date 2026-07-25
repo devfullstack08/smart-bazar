@@ -146,29 +146,31 @@ export default function DashboardReferEarn({
             </div>
             
             {/* Placements Leaves Grid */}
-            <div className="grid grid-cols-2 gap-8 w-full mt-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 w-full mt-4">
               {/* Left Leaf Card - Vibrant Emerald */}
-              <div className="flex flex-col items-center p-3.5 rounded-xl border border-emerald-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-emerald-500/30 transition-colors">
-                <p className="text-[9px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-extrabold">Left Placements</p>
-                <p className="text-sm font-black text-emerald-600 dark:text-emerald-400 tabular-nums mt-1">{leftCount} Directs</p>
+              <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl border border-emerald-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-emerald-500/30 transition-colors min-w-0">
+                <p className="text-[9px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-extrabold truncate w-full">Left Placements</p>
+                <p className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400 tabular-nums mt-1">{leftCount} Directs</p>
                 <button
+                  type="button"
                   onClick={() => copyReferralLink(leftReferralLink, 'left')}
-                  className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15 transition-colors"
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 sm:px-3 py-1.5 text-[10px] font-black text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15 transition-colors w-full"
                 >
                   {copied === 'left' ? <Check size={11} /> : <Copy size={11} />}
-                  {copied === 'left' ? 'Copied' : 'Copy Left Link'}
+                  {copied === 'left' ? 'Copied' : 'Copy Left'}
                 </button>
               </div>
               {/* Right Leaf Card - Vibrant Rose/Red */}
-              <div className="flex flex-col items-center p-3.5 rounded-xl border border-rose-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-rose-500/30 transition-colors">
-                <p className="text-[9px] text-rose-600 dark:text-rose-400 uppercase tracking-wider font-extrabold">Right Placements</p>
-                <p className="text-sm font-black text-rose-600 dark:text-rose-400 tabular-nums mt-1">{rightCount} Directs</p>
+              <div className="flex flex-col items-center p-3 sm:p-4 rounded-xl border border-rose-500/15 bg-[var(--surface-elevated)] text-center shadow-inner hover:border-rose-500/30 transition-colors min-w-0">
+                <p className="text-[9px] text-rose-600 dark:text-rose-400 uppercase tracking-wider font-extrabold truncate w-full">Right Placements</p>
+                <p className="text-xs sm:text-sm font-black text-rose-600 dark:text-rose-400 tabular-nums mt-1">{rightCount} Directs</p>
                 <button
+                  type="button"
                   onClick={() => copyReferralLink(rightReferralLink, 'right')}
-                  className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-[10px] font-black text-rose-700 dark:text-rose-300 hover:bg-rose-500/15 transition-colors"
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-2.5 sm:px-3 py-1.5 text-[10px] font-black text-rose-700 dark:text-rose-300 hover:bg-rose-500/15 transition-colors w-full"
                 >
                   {copied === 'right' ? <Check size={11} /> : <Copy size={11} />}
-                  {copied === 'right' ? 'Copied' : 'Copy Right Link'}
+                  {copied === 'right' ? 'Copied' : 'Copy Right'}
                 </button>
               </div>
             </div>
@@ -179,38 +181,39 @@ export default function DashboardReferEarn({
         {referralIncome > 0 && (
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-blue-500/20"
             style={{ backgroundColor: 'rgba(37,99,235,0.06)' }}>
-            <TrendingUp size={16} className="text-blue-600 dark:text-blue-400" />
-            <p className="text-xs text-[var(--foreground)] opacity-70">Referral Commissions</p>
-            <p className="ml-auto text-sm font-black tabular-nums text-blue-600 dark:text-blue-400">
+            <TrendingUp size={16} className="text-blue-600 dark:text-blue-400 shrink-0" />
+            <p className="text-xs text-[var(--foreground)] opacity-70 truncate">Referral Commissions</p>
+            <p className="ml-auto text-sm font-black tabular-nums text-blue-600 dark:text-blue-400 shrink-0">
               {formatCurrency(referralIncome)}
             </p>
           </div>
         )}
 
         {/* ── QR + link row ─────────────────────────────────────── */}
-        <div className="flex gap-4 items-start">
+        <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start min-w-0">
 
           {/* QR code */}
           <div className="shrink-0 flex flex-col items-center gap-1.5">
             <div className="p-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] shadow-inner">
-              <ReferralQRCode value={referralLink} size={80} className="border-0 bg-transparent p-0" />
+              <ReferralQRCode value={referralLink} size={84} className="border-0 bg-transparent p-0" />
             </div>
             <p className="text-[9px] text-[var(--muted-foreground)] font-bold">Scan to register</p>
           </div>
 
           {/* Link + buttons */}
-          <div className="flex-1 min-w-0 flex flex-col gap-2.5">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-2.5">
             {/* Link input */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--border)] bg-black/5 dark:bg-black/15">
-              <p className="text-xs text-[var(--foreground)] opacity-50 truncate flex-1 min-w-0 font-mono">
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[var(--border)] bg-black/5 dark:bg-black/15 min-w-0">
+              <p className="text-xs text-[var(--foreground)] opacity-75 truncate flex-1 min-w-0 font-mono">
                 {referralLink}
               </p>
             </div>
 
             {/* Copy button */}
             <button
+              type="button"
               onClick={() => copyReferralLink(referralLink, 'default')}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-sm active:scale-[0.98] min-h-[42px]"
             >
               {copied === 'default' ? <><Check size={14} /> Link Copied!</> : <><Copy size={14} /> Copy Sponsor Link</>}
             </button>
@@ -218,14 +221,15 @@ export default function DashboardReferEarn({
             {/* Share + Team */}
             <div className="grid grid-cols-2 gap-2">
               <button
+                type="button"
                 onClick={() => shareReferralLink(referralLink)}
-                className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/80 text-[var(--foreground)] transition-colors"
+                className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface)]/80 text-[var(--foreground)] transition-colors min-h-[38px]"
               >
                 <Share2 size={12} /> Share
               </button>
               <Link
                 href="/team"
-                className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] font-bold border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)] transition-colors"
+                className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)] transition-colors min-h-[38px]"
               >
                 <Users size={12} /> Directs List
               </Link>

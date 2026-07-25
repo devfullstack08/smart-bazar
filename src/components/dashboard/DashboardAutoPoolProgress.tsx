@@ -154,6 +154,39 @@ export default function DashboardAutoPoolProgress({ income, incomeConfig, loadin
         </div>
       </div>
 
+      {/* Visual Roadmap Stepper */}
+      <div className="px-4 sm:px-6 pt-5 pb-3 border-b border-[var(--border)] bg-[var(--surface)]/30">
+        <span className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] block mb-3">
+          Matrix Progress Roadmap
+        </span>
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 no-scrollbar snap-x min-w-0">
+          {autoPoolLevels.map((lvl, index) => {
+            const statusInfo = levelStatuses[index];
+            const isCompleted = statusInfo.status === 'completed';
+            const isInProgress = statusInfo.status === 'in_progress';
+            return (
+              <div key={lvl.level} className="flex items-center gap-1.5 shrink-0 snap-start">
+                <div
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+                    isCompleted
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                      : isInProgress
+                      ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/40 ring-2 ring-blue-500/20 animate-pulse'
+                      : 'bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)] opacity-60'
+                  }`}
+                >
+                  {isCompleted ? <CheckCircle2 size={12} /> : isInProgress ? <Zap size={12} /> : <Lock size={12} />}
+                  <span>L{lvl.level}</span>
+                </div>
+                {index < autoPoolLevels.length - 1 && (
+                  <span className={`w-3 h-0.5 rounded-full ${isCompleted ? 'bg-emerald-500/40' : 'bg-[var(--border)]'}`} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* 10-Level Progress List */}
       <div className="p-4 sm:p-6 space-y-3">
         {visibleLevels.map((lvl, index) => {
@@ -187,27 +220,27 @@ export default function DashboardAutoPoolProgress({ income, incomeConfig, loadin
                     L{lvl.level}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">
                         Level {lvl.level} Matrix ({lvl.members} Members)
                       </span>
                       {isCompleted && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full shrink-0">
                           <CheckCircle2 size={10} /> Completed
                         </span>
                       )}
                       {isInProgress && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-500/15 px-2 py-0.5 rounded-full animate-pulse">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-500/15 px-2 py-0.5 rounded-full animate-pulse shrink-0">
                           <Zap size={10} /> In Progress
                         </span>
                       )}
                       {isLocked && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[var(--muted-foreground)] bg-gray-500/10 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[var(--muted-foreground)] bg-gray-500/10 px-2 py-0.5 rounded-full shrink-0">
                           <Lock size={10} /> Locked
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-[var(--muted-foreground)] block mt-0.5">
+                    <span className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] block mt-0.5">
                       {lvl.members} members × {formatCurrency(lvl.incomePerMember)} = max {formatCurrency(lvl.totalIncome)}
                     </span>
                   </div>

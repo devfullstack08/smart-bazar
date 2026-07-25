@@ -7,6 +7,8 @@ import { BannerCarousel } from '@/components/ui/BannerCarousel';
 import DashboardWelcomeCard from '@/components/dashboard/DashboardWelcomeCard';
 import QuickActions from '@/components/dashboard/QuickActions';
 import DashboardIncomeOverview from '@/components/dashboard/DashboardIncomeOverview';
+import DashboardAutoPoolProgress from '@/components/dashboard/DashboardAutoPoolProgress';
+import DashboardMatchingPairsTracker from '@/components/dashboard/DashboardMatchingPairsTracker';
 import DashboardPoolStatus from '@/components/dashboard/DashboardPoolStatus';
 import OverviewStats from '@/components/dashboard/OverviewStats';
 import DashboardCappingTracker from '@/components/dashboard/DashboardCappingTracker';
@@ -312,8 +314,10 @@ export default function DashboardPage() {
                 <div className="lg:col-span-8 space-y-6 min-w-0">
                     <DashboardIncomeOverview income={income} cappingData={cappingData} loading={loadingIncome} />
                     
-                    {/* <DashboardCappingTracker cappingData={cappingData} loading={loadingCapping} /> */}
-                    
+                    <DashboardAutoPoolProgress income={income} incomeConfig={incomeConfig} loading={loadingIncome} />
+
+                    <DashboardMatchingPairsTracker income={income} incomeConfig={incomeConfig} teamStats={teamStats} loading={loadingIncome || loadingTeamStats} />
+
                     <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
                     
                     <DashboardPoolStatus poolStatus={poolStatus} loading={loadingPoolStatus} incomeConfig={incomeConfig} />

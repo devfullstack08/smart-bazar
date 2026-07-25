@@ -9,6 +9,50 @@ import { formatCurrency, formatDateTime, formatDate } from '@/lib/utils/cn';
 import { DollarSign, TrendingUp, Users, Target, Zap, Clock, CheckCircle, XCircle, Wallet, ArrowUp, ArrowDown, Receipt, X, Copy, Check, Info, Calendar, FileText } from 'lucide-react';
 import { APP_NAME } from '@/constants/env';
 import toast from 'react-hot-toast';
+function getTransactionDetailBreakdown(tx: IncomeTransaction): { label: string; tag?: string } {
+    const typeCode = tx.incomeType;
+    const calc = tx.calculationDetails as any;
+
+    if (typeCode === 'binary_matching_income' || typeCode === 'binary_matching') {
+        const rule = calc?.matchingRule;
+        if (rule) {
+            return {
+                label: `Pair Match (${rule.left || 1}:${rule.right || 1} ratio)`,
+                tag: '25% Weak Leg',
+            };
+        }
+        return { label: 'Binary Pair Match', tag: '25% Weak Leg' };
+    }
+
+    if (typeCode === 'direct_referral') {
+        const fromUser = tx.fromUserId || tx.sourceUserId;
+        return {
+            label: fromUser ? `Direct referral from ${fromUser}` : 'Direct Partner Commission',
+            tag: '20% Rate',
+        };
+    }
+
+    if (typeCode === 'binary_placement_income') {
+        const fromUser = tx.fromUserId || tx.sourceUserId;
+        return {
+            label: fromUser ? `Placement spillover from ${fromUser}` : 'Placement Spillover',
+            tag: '5% Rate',
+        };
+    }
+
+    if (typeCode === 'global_auto_pool' || typeCode === 'global_autopool') {
+        return {
+            label: 'Global Auto-Pool Matrix Payout',
+            tag: '$50 / Member',
+        };
+    }
+
+    if (calc?.formula) {
+        return { label: calc.formula };
+    }
+
+    return { label: 'Commission Credit' };
+}
 
 export default function IncomePage() {
     const [overview, setOverview] = useState<IncomeOverview | null>(null);
@@ -322,70 +366,74 @@ export default function IncomePage() {
                             <table className="w-full min-w-[520px] sm:min-w-0">
                                 <thead className="bg-[var(--surface)] border-b border-[var(--border)]">
                                     <tr>
-                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-                                            Type
-                                        </th>
-                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-                                            Income Type
-                                        </th>
-                                        <th className="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-                                            Amount
-                                        </th>
-                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-                                            Status
-                                        </th>
-                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-                                            Date
-                                        </th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Type</th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Income Type</th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider hidden md:table-cell">Breakdown</th>
+                                        <th className="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Amount</th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Status</th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[var(--border)] bg-white dark:bg-transparent">
                                     {transactions.length > 0 ? (
-                                        transactions.map((transaction) => (
-                                            <tr 
-                                                key={transaction.id} 
-                                                onClick={() => setSelectedTx(transaction)}
-                                                className="hover:bg-[var(--surface)] cursor-pointer transition-colors border-b border-[var(--border)] last:border-0 group"
-                                            >
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                                                    <span className={`px-2.5 py-0.5 inline-flex text-[9px] font-bold rounded-full uppercase tracking-wider ${
-                                                        transaction.type === 'commission' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
-                                                    }`}>
-                                                        {transaction.type}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap min-w-0">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-7 h-7 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] flex items-center justify-center shrink-0">
-                                                            <Receipt size={14} className="text-primary" />
-                                                        </div>
-                                                        <span className="text-xs sm:text-sm font-semibold text-[var(--foreground)] group-hover:text-primary transition-colors">
-                                                            {getIncomeRowDisplayLabel(transaction, incomeRegistry)}
+                                        transactions.map((transaction) => {
+                                            const detail = getTransactionDetailBreakdown(transaction);
+                                            return (
+                                                <tr 
+                                                    key={transaction.id} 
+                                                    onClick={() => setSelectedTx(transaction)}
+                                                    className="hover:bg-[var(--surface)] cursor-pointer transition-colors border-b border-[var(--border)] last:border-0 group"
+                                                >
+                                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                                        <span className={`px-2.5 py-0.5 inline-flex text-[9px] font-bold rounded-full uppercase tracking-wider ${
+                                                            transaction.type === 'commission' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                                                        }`}>
+                                                            {transaction.type}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right font-black text-sm text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
-                                                    +{formatCurrency(transaction.amount)}
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                                                    <span className={`px-2.5 py-0.5 inline-flex text-[9px] font-bold rounded-full uppercase tracking-wider ${
-                                                        transaction.status.toLowerCase() === 'paid' || transaction.status.toLowerCase() === 'processed'
-                                                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                                                            : transaction.status.toLowerCase() === 'approved'
-                                                                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
-                                                                : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20'
-                                                    }`}>
-                                                        {transaction.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs text-[var(--muted-foreground)] tabular-nums">
-                                                    {formatDateTime(transaction.createdAt)}
-                                                </td>
-                                            </tr>
-                                        ))
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap min-w-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-7 h-7 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] flex items-center justify-center shrink-0">
+                                                                <Receipt size={14} className="text-primary" />
+                                                            </div>
+                                                            <span className="text-xs sm:text-sm font-semibold text-[var(--foreground)] group-hover:text-primary transition-colors">
+                                                                {getIncomeRowDisplayLabel(transaction, incomeRegistry)}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs text-[var(--muted-foreground)] hidden md:table-cell">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="font-medium text-[var(--foreground)]">{detail.label}</span>
+                                                            {detail.tag && (
+                                                                <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                                                    {detail.tag}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right font-black text-sm text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
+                                                        +{formatCurrency(transaction.amount)}
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                                        <span className={`px-2.5 py-0.5 inline-flex text-[9px] font-bold rounded-full uppercase tracking-wider ${
+                                                            transaction.status.toLowerCase() === 'paid' || transaction.status.toLowerCase() === 'processed'
+                                                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                                                                : transaction.status.toLowerCase() === 'approved'
+                                                                    ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                                                                    : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20'
+                                                        }`}>
+                                                            {transaction.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs text-[var(--muted-foreground)] tabular-nums">
+                                                        {formatDateTime(transaction.createdAt)}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-[var(--muted-foreground)] text-sm">
+                                            <td colSpan={6} className="px-4 sm:px-6 py-8 sm:py-12 text-center text-[var(--muted-foreground)] text-sm">
                                                 No transactions found
                                             </td>
                                         </tr>

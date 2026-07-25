@@ -161,24 +161,30 @@ export default function TermsPage() {
                         </p>
                     </section>
 
-                    {/* 11. Governing Law */}
+                    {/* 11. Governing Law & Indian Statutory Compliance */}
                     <section>
-                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">11. Governing Law</h2>
+                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">11. Governing Law & Statutory Compliance</h2>
                         <p>
-                            These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which
-                            {APP_NAME} is registered, without regard to its conflict of law provisions.
+                            These Terms shall be governed by and construed in accordance with the laws of India and applicable local jurisdiction.
+                            Users explicitly agree to comply with:
                         </p>
+                        <ul className="list-disc pl-6 space-y-2 mt-2">
+                            <li><strong>Consumer Protection (Direct Selling) Rules, 2021:</strong> Ensuring fair trade practices and prohibition of money circulation schemes.</li>
+                            <li><strong>Information Technology Act, 2000 & IT Rules 2021:</strong> Regulating digital platform intermediary standards and data security.</li>
+                            <li><strong>Income Tax Act, 1961 (Section 194S & 115BBH):</strong> Compliance with Virtual Digital Assets (VDA) taxation and user tax reporting obligations.</li>
+                        </ul>
                     </section>
 
-                    {/* 12. Contact Information */}
+                    {/* 12. Contact Information & Grievance Redressal */}
                     <section>
-                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">12. Contact Information</h2>
+                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">12. Contact Information & Grievance Redressal</h2>
                         <p>
-                            For questions about these Terms, please contact us at:
+                            For questions about these Terms or to file a grievance under Rule 3(2) of IT Rules 2021, please contact our designated team:
                         </p>
-                        <div className="bg-[var(--surface)] border border-[var(--border)] p-4 rounded-lg mt-3">
-                            <p><strong className="text-[var(--foreground)]">Email:</strong> support@{APP_NAME}.com</p>
-                            <p><strong>Support Portal:</strong> Available in your dashboard</p>
+                        <div className="bg-[var(--surface)] border border-[var(--border)] p-4 rounded-xl mt-3 space-y-1">
+                            <p><strong className="text-[var(--foreground)]">Support Email:</strong> support@{APP_NAME.toLowerCase().replace(/\s+/g, '')}.com</p>
+                            <p><strong className="text-[var(--foreground)]">Grievance Officer:</strong> grievance@{APP_NAME.toLowerCase().replace(/\s+/g, '')}.com</p>
+                            <p><strong>Response SLA:</strong> Acknowledgment within 48 Hours | Resolution within 15 Days</p>
                         </div>
                     </section>
 

@@ -141,14 +141,14 @@ export default function PrivacyPage() {
 
                     {/* 5. Your Rights */}
                     <section>
-                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">5. Your Privacy Rights</h2>
-                        <p>You have the following rights regarding your personal information:</p>
+                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">5. Your Privacy Rights & DPDP Act (India) Compliance</h2>
+                        <p>Under the Digital Personal Data Protection (DPDP) Act, 2023 (India) and international privacy laws, you have the following rights regarding your personal information:</p>
 
                         <h3 className="text-lg font-semibold text-[var(--foreground)] mt-4">5.1 Access and Portability</h3>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li>Request a copy of your personal data</li>
+                            <li>Request a summary of your personal data processed by our platform</li>
                             <li>Download your account information and transaction history</li>
-                            <li>Access your data through your dashboard</li>
+                            <li>Access your data through your user profile dashboard</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold text-[var(--foreground)] mt-4">5.2 Correction and Update</h3>
@@ -158,11 +158,11 @@ export default function PrivacyPage() {
                             <li>Update your payment and withdrawal preferences</li>
                         </ul>
 
-                        <h3 className="text-lg font-semibold text-[var(--foreground)] mt-4">5.3 Deletion</h3>
+                        <h3 className="text-lg font-semibold text-[var(--foreground)] mt-4">5.3 Data Erasure & Withdrawal of Consent</h3>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li>Request deletion of your account (subject to legal requirements)</li>
-                            <li>Note: Some information may be retained for compliance and record-keeping</li>
-                            <li>Deletion may affect your downline structure and earnings</li>
+                            <li>Request erasure of personal data when no longer needed for processing</li>
+                            <li>Withdraw consent previously granted for optional data processing</li>
+                            <li>Note: Necessary financial data and KYC records may be retained as mandated by Prevention of Money Laundering Act (PMLA) regulations</li>
                         </ul>
 
                         <h3 className="text-lg font-semibold text-[var(--foreground)] mt-4">5.4 Opt-Out</h3>
@@ -230,16 +230,16 @@ export default function PrivacyPage() {
                         </p>
                     </section>
 
-                    {/* 11. Contact Us */}
+                    {/* 11. Contact Us & Grievance Redressal (India) */}
                     <section>
-                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">11. Contact Us</h2>
+                        <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-3">11. Contact Us & Grievance Redressal Officer</h2>
                         <p>
-                            If you have questions about this Privacy Policy or wish to exercise your privacy rights, please contact us:
+                            If you have questions about this Privacy Policy or wish to exercise your privacy rights under DPDP Act 2023 or IT Rules 2021, please contact our Grievance Redressal Mechanism:
                         </p>
-                        <div className="bg-[var(--surface)] border border-[var(--border)] p-4 rounded-lg mt-3">
-                            <p><strong className="text-[var(--foreground)]">Email:</strong> privacy@{APP_NAME}.com</p>
-                            <p><strong>Support:</strong> support@{APP_NAME}.com</p>
-                            <p><strong>Data Protection Officer:</strong> dpo@{APP_NAME}.com</p>
+                        <div className="bg-[var(--surface)] border border-[var(--border)] p-4 rounded-xl mt-3 space-y-1">
+                            <p><strong className="text-[var(--foreground)]">Email:</strong> privacy@{APP_NAME.toLowerCase().replace(/\s+/g, '')}.com</p>
+                            <p><strong className="text-[var(--foreground)]">Grievance Officer:</strong> grievance@{APP_NAME.toLowerCase().replace(/\s+/g, '')}.com</p>
+                            <p><strong>Response Timeline:</strong> Acknowledgment within 48 hours, Resolution within 15 days as mandated by IT Rules 2021.</p>
                         </div>
                     </section>
 

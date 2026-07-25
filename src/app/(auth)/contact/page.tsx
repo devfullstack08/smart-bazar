@@ -57,6 +57,18 @@ export default function ContactPage() {
           </Link>
         </section>
 
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)]/80 p-6 space-y-2">
+          <h2 className="text-lg font-bold text-[var(--foreground)]">Grievance Redressal Officer (India IT Rules 2021)</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            In accordance with the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules 2021, users in India can reach our designated Grievance Officer:
+          </p>
+          <div className="pt-2 text-sm text-[var(--foreground)] space-y-1 font-mono">
+            <p><strong>Officer:</strong> Legal & Grievance Department</p>
+            <p><strong>Email:</strong> {supportEmail('grievance')}</p>
+            <p className="text-xs font-sans text-[var(--muted-foreground)]">Acknowledgment within 48 hours | Resolution within 15 days.</p>
+          </div>
+        </section>
+
         <p className="text-sm text-[var(--muted-foreground)]">
           Typical response time is a few business days. Do not share passwords or wallet seed phrases by email.
         </p>

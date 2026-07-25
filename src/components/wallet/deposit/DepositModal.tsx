@@ -10,7 +10,7 @@ import { UPIDeposit } from './UPIDeposit';
 import { Web3Deposit } from './Web3Deposit';
 import { DepositAddressDeposit } from './DepositAddressDeposit';
 import { paymentApi } from '@/lib/api/services';
-import { getEffectiveWeb3Config, isWeb3ConfigComplete, isWeb3EOADepositReady, isWeb3ContractDepositReady } from '@/lib/utils/web3Helpers';
+import { formatConversionRateBadge, getEffectiveWeb3Config, isWeb3ConfigComplete, isWeb3EOADepositReady, isWeb3ContractDepositReady } from '@/lib/utils/web3Helpers';
 import toast from 'react-hot-toast';
 import { getErrorMessage } from '@/lib/utils/error';
 
@@ -159,7 +159,7 @@ export function DepositModal({
                                     <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between">
                                         <span className="font-semibold text-amber-400">⚡ Live Exchange Rate</span>
                                         <span className="font-bold text-amber-300 font-mono">
-                                            1 {conversionSummary.fromCurrency} = ₹{conversionSummary.rate} {conversionSummary.toCurrency}
+                                            {formatConversionRateBadge(conversionSummary)}
                                         </span>
                                     </div>
                                 )}
@@ -245,7 +245,7 @@ export function DepositModal({
                                             </p>
                                             {conversionSummary && (
                                                 <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
-                                                    1 USDT = ₹{conversionSummary.rate} INR
+                                                    {formatConversionRateBadge(conversionSummary)}
                                                 </span>
                                             )}
                                         </div>

@@ -11,7 +11,7 @@ import { Web3Withdrawal } from './Web3Withdrawal';
 import { WithdrawalRequestForm } from './WithdrawalRequestForm';
 import { WalletAddressWithdrawal } from './WalletAddressWithdrawal';
 import { walletApi } from '@/lib/api/services';
-import { getEffectiveWeb3Config, isWeb3ConfigComplete } from '@/lib/utils/web3Helpers';
+import { formatConversionRateBadge, getEffectiveWeb3Config, isWeb3ConfigComplete } from '@/lib/utils/web3Helpers';
 import { getErrorMessage } from '@/lib/utils/error';
 import { TwoFactorVerificationModal } from '@/components/auth/TwoFactorVerificationModal';
 import toast from 'react-hot-toast';
@@ -297,7 +297,7 @@ export function WithdrawalModal({
                                     <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between">
                                         <span className="font-semibold text-amber-400">⚡ Live Conversion Rate</span>
                                         <span className="font-bold text-amber-300 font-mono">
-                                            1 USDT = ₹{conversionSummary.rate} INR
+                                            {formatConversionRateBadge(conversionSummary)}
                                         </span>
                                     </div>
                                 )}
@@ -399,7 +399,7 @@ export function WithdrawalModal({
                                             </p>
                                             {conversionSummary && (
                                                 <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
-                                                    1 USDT = ₹{conversionSummary.rate} INR
+                                                    {formatConversionRateBadge(conversionSummary)}
                                                 </span>
                                             )}
                                         </div>

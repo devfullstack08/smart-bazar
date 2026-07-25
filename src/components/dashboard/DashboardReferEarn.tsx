@@ -90,7 +90,7 @@ export default function DashboardReferEarn({
   const rightCount = directReferrals.filter(d => d.placement?.position === 'right').length;
 
   return (
-    <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+    <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl">
 
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-[var(--border)]">

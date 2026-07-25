@@ -121,7 +121,7 @@ export default function DashboardRoyaltyTracker({
   const isDaily = rewardType === 'daily';
 
   return (
-    <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+    <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl">
       {/* Header — matches DashboardCappingTracker */}
       <div className="flex flex-col gap-4 border-b border-[var(--border)] px-5 pt-5 pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3 min-w-0">

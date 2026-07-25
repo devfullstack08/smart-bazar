@@ -36,9 +36,9 @@ export default function AppBrand({
     <img
       src={logoUrl}
       alt={APP_NAME}
-      className="h-10 sm:h-12 w-auto object-contain"
-      width={48}
-      height={48}
+      className="h-14 sm:h-16 w-auto max-w-[180px] object-contain drop-shadow-sm"
+      width={64}
+      height={64}
     />
   ) : (
     <span style={style}>{APP_NAME}</span>

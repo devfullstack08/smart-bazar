@@ -80,7 +80,7 @@ export default function DashboardAutoPoolProgress({ income, incomeConfig, loadin
   const visibleLevels = expanded ? autoPoolLevels : autoPoolLevels.slice(0, 4);
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-sm transition-all">
+    <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl">
       {/* Card Header */}
       <div className="p-5 sm:p-6 border-b border-[var(--border)] bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-transparent flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">

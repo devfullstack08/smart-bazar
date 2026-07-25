@@ -120,7 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <img
                             src={APP_CONSTANTS.APP_LOGO_URL}
                             alt={APP_NAME}
-                            className="h-11 sm:h-14 w-auto object-contain"
+                            className="h-14 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[220px] object-contain py-1 drop-shadow-sm transition-all"
                         />
                     </Link>
 
@@ -244,7 +244,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     />
                     <div className="fixed bottom-0 top-0 left-0 flex w-full max-w-xs flex-col bg-[var(--surface-elevated)] shadow-2xl animate-slide-in">
                         <div className="flex h-16 items-center justify-between px-6 border-b border-[var(--border)]">
-                            <span className="text-lg font-black text-primary tracking-tight">{APP_NAME}</span>
+                            <img src={APP_CONSTANTS.APP_LOGO_URL} alt={APP_NAME} className="h-12 w-auto object-contain" />
                             <button
                                 type="button"
                                 onClick={() => setMobileMenuOpen(false)}

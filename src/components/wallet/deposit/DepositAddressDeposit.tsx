@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { paymentApi, userApi } from '@/lib/api/services';
 import { useAppSelector } from '@/lib/store/hooks';
 import { IPaymentConfig } from '@/types/paymentConfig';
-import { getEffectiveWeb3Config, getErc20AbiFromConfig, getNativeSymbol } from '@/lib/utils/web3Helpers';
+import { calculateConvertedAmount, formatConversionRateBadge, getEffectiveWeb3Config, getErc20AbiFromConfig, getNativeSymbol } from '@/lib/utils/web3Helpers';
 import { getErrorMessage } from '@/lib/utils/error';
 import { ConnectWalletButton } from '@/components/wallet/ConnectWalletButton';
 
@@ -318,6 +318,35 @@ export function DepositAddressDeposit({
                         ⚠️ This sends tokens directly to the configured wallet address, not to the smart contract. Contract liquidity for withdrawals must be managed separately.
                     </p>
                 </div>
+
+                {/* Conversion Rate Info */}
+                {(() => {
+                    const conv = (paymentMethods?.deposit?.depositAddress as any)?.conversionSummary || (paymentMethods?.deposit?.web3 as any)?.conversionSummary;
+                    if (!conv) return null;
+                    const parsedAmount = parseFloat(amount) || 0;
+                    const inputCurrency = conv.fromCurrency || 'USDT';
+                    const convertedInfo = calculateConvertedAmount(conv, parsedAmount, inputCurrency);
+                    return (
+                        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                                    <span>⚡</span> Exchange Rate
+                                </span>
+                                <span className="font-extrabold text-amber-300 font-mono text-sm">
+                                    {formatConversionRateBadge(conv)}
+                                </span>
+                            </div>
+                            {parsedAmount > 0 && convertedInfo && (
+                                <div className="flex items-center justify-between pt-2 border-t border-amber-500/15 font-semibold text-emerald-400">
+                                    <span>Estimated Balance Credit:</span>
+                                    <span className="font-extrabold font-mono text-sm">
+                                        {convertedInfo.outputCurrency === 'INR' ? '₹' : ''}{convertedInfo.outputAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {convertedInfo.outputCurrency}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })()}
 
                 {/* Amount */}
                 <div>

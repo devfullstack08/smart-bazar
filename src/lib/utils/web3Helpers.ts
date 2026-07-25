@@ -124,3 +124,69 @@ export function isWeb3ContractDepositReady(
     const tokenAddress = depositWeb3.details?.tokenAddress ?? web3Config?.tokenAddress;
     return !!(contractAddress && tokenAddress);
 }
+
+export interface ConversionSummaryInfo {
+    fromCurrency?: string;
+    toCurrency?: string;
+    rate?: number;
+    rateMode?: string;
+    expirySeconds?: number;
+}
+
+/**
+ * Returns formatted rate string for UI badge (e.g. "1 USDT = ₹98 INR" or "1 INR = 0.01 USDT").
+ */
+export function formatConversionRateBadge(summary: ConversionSummaryInfo | null | undefined): string {
+    if (!summary || !summary.fromCurrency || !summary.toCurrency || summary.rate == null) return '';
+    const from = summary.fromCurrency;
+    const to = summary.toCurrency;
+    const rate = summary.rate;
+    const prefix = to === 'INR' ? '₹' : '';
+    return `1 ${from} = ${prefix}${rate} ${to}`;
+}
+
+/**
+ * Dynamically calculates the converted output amount based on fromCurrency, toCurrency, rate, and inputAmount.
+ * - If inputCurrency matches fromCurrency: output = inputAmount * rate
+ * - If inputCurrency matches toCurrency: output = inputAmount / rate
+ */
+export function calculateConvertedAmount(
+    summary: ConversionSummaryInfo | null | undefined,
+    inputAmount: number,
+    inputCurrency: string = 'INR'
+): { outputAmount: number; outputCurrency: string } | null {
+    if (!summary || !summary.fromCurrency || !summary.toCurrency || !summary.rate || inputAmount <= 0) {
+        return null;
+    }
+    const { fromCurrency, toCurrency, rate } = summary;
+    const normalizedInput = inputCurrency.trim().toUpperCase();
+    const normalizedFrom = fromCurrency.trim().toUpperCase();
+    const normalizedTo = toCurrency.trim().toUpperCase();
+
+    if (normalizedInput === normalizedFrom) {
+        return {
+            outputAmount: inputAmount * rate,
+            outputCurrency: toCurrency,
+        };
+    }
+
+    if (normalizedInput === normalizedTo) {
+        return {
+            outputAmount: inputAmount / rate,
+            outputCurrency: fromCurrency,
+        };
+    }
+
+    // Default fallback if inputCurrency doesn't match either directly
+    if (normalizedTo === 'USDT' || normalizedTo === 'USDC') {
+        return {
+            outputAmount: inputAmount * rate,
+            outputCurrency: toCurrency,
+        };
+    }
+    return {
+        outputAmount: inputAmount / rate,
+        outputCurrency: fromCurrency,
+    };
+}
+

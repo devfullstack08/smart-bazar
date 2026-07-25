@@ -7,7 +7,7 @@ import { IPaymentConfig } from '@/types/paymentConfig';
 import { useState } from 'react';
 
 const bankTransferDepositSchema = z.object({
-    amount: z.number().min(1, 'Amount is required').min(1, 'Amount must be at least 1'),
+    amount: z.number({ message: 'Amount is required' }).min(1, 'Amount must be at least 1'),
     proof: z.instanceof(File, {
         message: 'Please upload a payment proof image',
     }).refine((file) => file.size <= 5 * 1024 * 1024, 'File size must be less than 5MB'),

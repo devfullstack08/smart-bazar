@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { IPaymentConfig } from '@/types/paymentConfig';
 
 const bankTransferWithdrawalSchema = z.object({
-    amount: z.number().min(1, 'Amount is required'),
+    amount: z.number({ message: 'Amount is required' }).min(1, 'Amount is required'),
     bankAccount: z.string().min(1, 'Bank account details are required'),
     description: z.string().optional(),
 });
@@ -19,7 +19,6 @@ interface BankTransferWithdrawalProps {
     onCancel: () => void;
     submitting?: boolean;
     availableBalance: number;
-    withdrawalAllowance?: number;
 }
 
 export function BankTransferWithdrawal({
@@ -28,7 +27,6 @@ export function BankTransferWithdrawal({
     onCancel,
     submitting = false,
     availableBalance,
-    withdrawalAllowance = 0,
 }: BankTransferWithdrawalProps) {
     const {
         register,
@@ -69,11 +67,6 @@ export function BankTransferWithdrawal({
                     <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">Available: {availableBalance.toLocaleString()}</p>
-                {watchedAmount > withdrawalAllowance && (
-                    <p className="mt-1 text-xs text-amber-600 dark:text-amber-300">
-                        Refresh allowance before withdrawing this amount. Current allowance: {withdrawalAllowance.toFixed(6)}
-                    </p>
-                )}
             </div>
 
             <div>

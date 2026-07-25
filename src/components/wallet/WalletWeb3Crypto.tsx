@@ -11,7 +11,7 @@ import type { WalletState } from '@/types';
 import { TokenFaucet } from './TokenFaucet';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import { useAppSelector } from '@/lib/store/hooks';
-import { getChainFromWeb3Config, getContractAbiFromConfig, getEffectiveWeb3Config, getErc20AbiFromConfig, getNativeSymbol, isWeb3ConfigComplete } from '@/lib/utils/web3Helpers';
+import { calculateConvertedAmount, formatConversionRateBadge, getChainFromWeb3Config, getContractAbiFromConfig, getEffectiveWeb3Config, getErc20AbiFromConfig, getNativeSymbol, isWeb3ConfigComplete } from '@/lib/utils/web3Helpers';
 import { getPurposeWallet, getWalletLabel } from '@/lib/wallets';
 import { HelpCircle, RefreshCw } from 'lucide-react';
 import { WithdrawalAllowanceHelpDialog } from './withdrawal/WithdrawalAllowanceHelpDialog';
@@ -1096,8 +1096,14 @@ export function WalletWeb3Crypto({
             toast.error(`Insufficient ${withdrawalWalletName} balance. You can withdraw up to ${withdrawalWalletBalance.toLocaleString()}.`);
             return;
         }
-        if (num > parseFloat(onChainWithdrawable)) {
-            toast.error(`Insufficient withdrawable balance. Available on-chain: ${onChainWithdrawable}`);
+
+        // Calculate on-chain crypto token amount via conversionSummary if present
+        const withdrawConv = (paymentMethods?.withdrawal as any)?.web3?.conversionSummary || (paymentMethods?.withdrawal as any)?.web3Contract?.conversionSummary;
+        const convertedInfo = calculateConvertedAmount(withdrawConv, num, 'INR');
+        const cryptoAmount = convertedInfo ? convertedInfo.outputAmount : num;
+
+        if (cryptoAmount > parseFloat(onChainWithdrawable)) {
+            toast.error(`Insufficient withdrawable balance. Available on-chain: ${parseFloat(onChainWithdrawable).toFixed(6)} tokens. Required: ${cryptoAmount.toFixed(6)} tokens`);
             return;
         }
         const isValidNetwork = await validateNetwork();
@@ -1109,7 +1115,7 @@ export function WalletWeb3Crypto({
         }
         setWithdrawing(true);
         try {
-            const amountInWei = parseEther(amount);
+            const amountInWei = parseEther(cryptoAmount.toString());
             const customPublicClient = chainConfig
                 ? createPublicClient({
                     chain: chainConfig,
@@ -1386,91 +1392,7 @@ export function WalletWeb3Crypto({
                         </div>
                     )}
 
-                    {mode === 'withdraw' && (
-                        <div className="rounded-xl border border-white/10 bg-white/5 glass-panel overflow-hidden">
-                            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/10">
-                                <div className="p-3.5 min-w-0">
-                                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">Withdrawal Wallet</p>
-                                    <p className="mt-1.5 text-sm font-semibold text-foreground truncate">{withdrawalWalletName}</p>
-                                    <p className="mt-2 text-2xl font-bold leading-tight text-foreground">{withdrawalWalletBalance.toLocaleString()}</p>
-                                    <p className="mt-0.5 text-xs text-text-muted">Available balance</p>
-                                </div>
-                                <div className="p-3.5 min-w-0">
-                                    <div className="flex h-full flex-col gap-2">
-                                        <div className="flex items-center gap-1.5">
-                                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">Withdrawal Allowance</p>
-                                            <span className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${allowanceBadgeClass[allowanceDisplayStatus]}`}>
-                                                {allowanceBadgeLabel[allowanceDisplayStatus]}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowAllowanceHelp(true)}
-                                                className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--color-primary)]/40 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10"
-                                                title="What is withdrawal allowance?"
-                                            >
-                                                <HelpCircle className="h-3.5 w-3.5" />
-                                            </button>
-                                        </div>
-                                        <div className="flex items-end justify-between gap-3">
-                                            <div className="min-w-0">
-                                                <p className="text-2xl font-bold leading-tight text-foreground">{(parseFloat(onChainWithdrawable) || 0).toFixed(6)}</p>
-                                                <p className="mt-0.5 text-xs text-text-muted">Current allowance</p>
-                                                <p className="mt-0.5 text-[11px] text-text-muted">Last refreshed: {formatRelativeTime(allowanceStatus?.lastRefreshedAt)}</p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={handleRefreshWithdrawalAllowance}
-                                                disabled={
-                                                    refreshingAllowance ||
-                                                    allowanceCooldownSeconds > 0 ||
-                                                    !primaryWallet ||
-                                                    !connectedWalletMatchesPrimary
-                                                }
-                                                className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full border border-[var(--color-primary)]/40 bg-[var(--color-primary)]/10 px-2.5 text-xs font-bold text-[var(--color-primary)] hover:bg-[var(--color-primary)]/15 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                title="Refresh withdrawal allowance"
-                                            >
-                                                <RefreshCw className={`h-3.5 w-3.5 ${refreshingAllowance ? 'animate-spin' : ''}`} />
-                                                <span>
-                                                    {refreshingAllowance
-                                                        ? 'Refreshing'
-                                                        : allowanceCooldownSeconds > 0
-                                                            ? `${allowanceCooldownSeconds}s`
-                                                            : 'Refresh'}
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {(allowanceRefreshStatus || web3Config?.contractType === 'bloomx' || (withdrawalWalletBalance > 0 && (parseFloat(onChainWithdrawable) || 0) <= 0)) && (
-                                <div className="border-t border-white/10 px-4 py-3 space-y-1.5">
-                                    {allowanceRefreshStatus && (
-                                        <p
-                                            className={`text-xs ${
-                                                allowanceRefreshStatus.type === 'success'
-                                                    ? 'text-emerald-300'
-                                                    : allowanceRefreshStatus.type === 'error'
-                                                        ? 'text-red-300'
-                                                        : 'text-text-muted'
-                                            }`}
-                                        >
-                                            {allowanceRefreshStatus.message}
-                                        </p>
-                                    )}
-                                    {web3Config?.contractType === 'bloomx' && (
-                                        <p className="text-xs text-text-muted">
-                                            Payout: USDT + {web3Config?.details?.customTokenSymbol ?? 'BLMX'} split by contract ratio.
-                                        </p>
-                                    )}
-                                    {withdrawalWalletBalance > 0 && (parseFloat(onChainWithdrawable) || 0) <= 0 && (
-                                        <p className="text-xs text-amber-300">
-                                            Your wallet has balance, but current allowance is 0. Refresh allowance before self-withdrawal.
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    )}
+
 
                     {mode === 'withdraw' && lastWithdrawalTxHash && (
                         <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
@@ -1507,9 +1429,42 @@ export function WalletWeb3Crypto({
                         </div>
                     )}
 
+                    {/* Conversion Rate Info in Deposit or Withdraw Mode */}
+                    {(() => {
+                        const depositConv = (paymentMethods?.deposit?.web3 as any)?.conversionSummary || (paymentMethods?.deposit?.depositAddress as any)?.conversionSummary;
+                        const withdrawConv = (paymentMethods?.withdrawal as any)?.web3?.conversionSummary || (paymentMethods?.withdrawal as any)?.web3Contract?.conversionSummary || (paymentMethods?.withdrawal as any)?.walletAddressWithdrawal?.conversionSummary || (paymentMethods?.withdrawal as any)?.withdrawalRequest?.conversionSummary;
+                        const conv = mode === 'deposit' ? depositConv : withdrawConv;
+                        if (!conv) return null;
+                        const parsedAmount = parseFloat(amount) || 0;
+                        const inputCurrency = mode === 'deposit' ? (conv.fromCurrency || 'USDT') : 'INR';
+                        const convertedInfo = calculateConvertedAmount(conv, parsedAmount, inputCurrency);
+                        return (
+                            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                                        <span>⚡</span> {mode === 'deposit' ? 'Exchange Rate' : 'Live Conversion Rate'}
+                                    </span>
+                                    <span className="font-extrabold text-amber-300 font-mono text-sm">
+                                        {formatConversionRateBadge(conv)}
+                                    </span>
+                                </div>
+                                {parsedAmount > 0 && convertedInfo && (
+                                    <div className="flex items-center justify-between pt-2 border-t border-amber-500/15 font-semibold text-emerald-400">
+                                        <span>{mode === 'deposit' ? 'Estimated Balance Credit:' : 'Estimated Wallet Debit:'}</span>
+                                        <span className="font-extrabold font-mono text-sm">
+                                            {mode === 'deposit'
+                                                ? `${convertedInfo.outputCurrency === 'INR' ? '₹' : ''}${convertedInfo.outputAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${convertedInfo.outputCurrency}`
+                                                : `${convertedInfo.outputAmount.toFixed(6)} ${convertedInfo.outputCurrency} (Debit: ₹${parsedAmount.toLocaleString()} INR)`}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })()}
+
                     {/* Amount */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
                         <div className="flex gap-2">
                             <input
                                 type="number"
@@ -1522,7 +1477,7 @@ export function WalletWeb3Crypto({
                             <button
                                 type="button"
                                 onClick={setMax}
-                                className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200"
+                                className="px-4 py-3 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-white/20"
                             >
                                 MAX
                             </button>

@@ -7,7 +7,7 @@ import { IPaymentConfig } from '@/types/paymentConfig';
 import { isAddress } from 'viem';
 
 const web3RequestWithdrawalSchema = z.object({
-    amount: z.number().min(0.000001, 'Amount is required'),
+    amount: z.number({ message: 'Amount is required' }).min(0.000001, 'Amount is required'),
     walletAddress: z
         .string()
         .min(1, 'Wallet address is required')

@@ -44,22 +44,46 @@ export interface IWeb3Config {
     // Standard ERC20 ABI (optional, can use default)
     erc20Abi?: any[] | null;
 }
+export interface IConversionSummary {
+    fromCurrency: string;
+    toCurrency: string;
+    rate: number;
+    rateMode: string;
+    expirySeconds: number;
+    symbol?: string;
+}
+
 export interface IPaymentConfig {
     deposit: {
         bankTransfer: { enabled: boolean; details: IBankTransferDetails };
         upi: { enabled: boolean; details: IUPIDetails };
-        web3: { enabled: boolean; details: IWeb3Details };
+        web3: {
+            enabled: boolean;
+            details: IWeb3Details;
+            conversionCode?: string;
+            conversionSummary?: IConversionSummary | null;
+        };
         depositAddress?: {
             enabled: boolean;
             details: {
                 address: string;
-            }
+            };
+            conversionCode?: string;
+            conversionSummary?: IConversionSummary | null;
         };
     };
     withdrawal: {
         bankTransfer: { enabled: boolean; details: IBankTransferDetails; minAmount: number; maxAmount: number };
         upi: { enabled: boolean; details: IUPIDetails; minAmount: number; maxAmount: number };
-        web3: { enabled: boolean; details: IWeb3Details; mode: TMode; minAmount: number; maxAmount: number };
+        web3: {
+            enabled: boolean;
+            details: IWeb3Details;
+            mode: TMode;
+            minAmount: number;
+            maxAmount: number;
+            conversionCode?: string;
+            conversionSummary?: IConversionSummary | null;
+        };
         withdrawalRequest?: {
             enabled: boolean;
             minAmount: number;
@@ -68,6 +92,8 @@ export interface IPaymentConfig {
                 withdrawalFee: number;
                 description: string;
             };
+            conversionCode?: string;
+            conversionSummary?: IConversionSummary | null;
         };
         walletAddressWithdrawal?: {
             enabled: boolean;
@@ -77,6 +103,8 @@ export interface IPaymentConfig {
                 withdrawalFee: number;
                 description: string;
             };
+            conversionCode?: string;
+            conversionSummary?: IConversionSummary | null;
         };
     };
     web3: IWeb3Config;

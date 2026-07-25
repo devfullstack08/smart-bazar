@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { IPaymentConfig } from '@/types/paymentConfig';
+import { calculateConvertedAmount, formatConversionRateBadge } from '@/lib/utils/web3Helpers';
 
 type WithdrawalRequestFormData = { amount: number; description?: string };
 
@@ -37,9 +38,10 @@ export function WithdrawalRequestForm({
     const withdrawalFee = withdrawalRequestConfig?.details?.withdrawalFee ?? 0;
     const minAmount = withdrawalRequestConfig?.minAmount ?? 0;
     const maxAmount = withdrawalRequestConfig?.maxAmount ?? 0;
+    const conversionSummary = withdrawalRequestConfig?.conversionSummary || (paymentMethods?.withdrawal as any)?.web3?.conversionSummary;
 
     const withdrawalRequestSchema = useMemo(() => {
-        let amountSchema = z.number().min(0.01, 'Amount is required');
+        let amountSchema = z.number({ message: 'Amount is required' }).min(0.01, 'Amount is required');
         if (minAmount > 0) {
             amountSchema = amountSchema.min(minAmount, `Minimum withdrawal amount is ${minAmount}`);
         }
@@ -64,6 +66,7 @@ export function WithdrawalRequestForm({
     // Formula: (Amount * BPS) / 10000
     const calculatedFee = watchedAmount ? (watchedAmount * withdrawalFee) / 10000 : 0;
     const netAmount = (watchedAmount || 0) - calculatedFee;
+    const convertedInfo = calculateConvertedAmount(conversionSummary, netAmount, 'INR');
 
     return (
         <form
@@ -79,6 +82,28 @@ export function WithdrawalRequestForm({
             {adminDescription && (
                 <div className="p-3 bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 rounded-xl">
                     <p className="text-sm text-teal-800 dark:text-teal-200">{adminDescription}</p>
+                </div>
+            )}
+
+            {/* Conversion Rate Info */}
+            {conversionSummary && (
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between">
+                        <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                            <span>⚡</span> Live Conversion Rate
+                        </span>
+                        <span className="font-extrabold text-amber-300 font-mono text-sm">
+                            {formatConversionRateBadge(conversionSummary)}
+                        </span>
+                    </div>
+                    {netAmount > 0 && convertedInfo && (
+                        <div className="flex items-center justify-between pt-2 border-t border-amber-500/15 font-semibold text-emerald-400">
+                            <span>Crypto Payout:</span>
+                            <span className="font-extrabold font-mono text-sm">
+                                {convertedInfo.outputAmount.toFixed(6)} {convertedInfo.outputCurrency}
+                            </span>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -102,11 +127,6 @@ export function WithdrawalRequestForm({
                         <> &nbsp;·&nbsp; Min: {minAmount > 0 ? minAmount : '—'} &nbsp;·&nbsp; Max: {maxAmount > 0 ? maxAmount : 'Unlimited'}</>
                     )}
                 </p>
-                {watchedAmount > withdrawalAllowance && (
-                    <p className="mt-1 text-xs text-amber-600 dark:text-amber-300">
-                        Refresh allowance before withdrawing this amount. Current allowance: {withdrawalAllowance.toFixed(6)}
-                    </p>
-                )}
             </div>
 
             {/* Fee breakdown */}
@@ -114,19 +134,23 @@ export function WithdrawalRequestForm({
                 <div className="p-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl space-y-1">
                     <div className="flex justify-between text-sm">
                         <span className="text-[var(--muted-foreground)]">Withdrawal Amount</span>
-                        <span className="font-medium text-[var(--foreground)]">{watchedAmount.toFixed(2)}</span>
+                        <span className="font-medium text-[var(--foreground)]">₹{watchedAmount.toFixed(2)} INR</span>
                     </div>
                     {withdrawalFee > 0 && (
                         <div className="flex justify-between text-sm">
                             <span className="text-[var(--muted-foreground)]">Withdrawal Fee ({(withdrawalFee / 100).toFixed(2)}%)</span>
-                            <span className="font-medium text-red-600 dark:text-red-400">- {calculatedFee.toFixed(2)}</span>
+                            <span className="font-medium text-red-600 dark:text-red-400">- ₹{calculatedFee.toFixed(2)} INR</span>
                         </div>
                     )}
                     <hr className="border-[var(--border)]" />
                     <div className="flex justify-between text-sm font-bold">
                         <span className="text-[var(--foreground)]">You Will Receive</span>
                         <span className={netAmount > 0 ? 'text-emerald-500 font-bold' : 'text-red-600 dark:text-red-400'}>
-                            {netAmount > 0 ? netAmount.toFixed(2) : '0.00'}
+                            {netAmount > 0
+                                ? convertedInfo
+                                    ? `${convertedInfo.outputAmount.toFixed(6)} ${convertedInfo.outputCurrency}`
+                                    : `₹${netAmount.toFixed(2)} INR`
+                                : '0.00'}
                         </span>
                     </div>
                 </div>

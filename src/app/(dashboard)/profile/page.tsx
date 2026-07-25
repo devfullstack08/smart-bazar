@@ -12,6 +12,7 @@ import { userApi, authApi } from '@/lib/api/services';
 import { Modal } from '@/components/ui/Modal';
 import Web3ConfigService from '@/lib/services/web3Config.service';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
+import { useAccount } from 'wagmi';
 import UserProfileImage from '@/components/ui/UserProfileImage';
 import type { User } from '@/types';
 import { APP_NAME } from '@/constants/env';
@@ -43,6 +44,7 @@ interface KYCStatus {
 }
 
 export default function ProfilePage() {
+    const { address: connectedWagmiAddress } = useAccount();
     const { user } = useAppSelector((state) => state.auth);
     const savedWallet = ((user as { walletAddress?: string })?.walletAddress ?? '').trim();
     const primaryWalletLocked = savedWallet.length > 0;
@@ -780,38 +782,84 @@ export default function ProfilePage() {
                             )}
                         </div>
 
-                        {web3Enabled && (
-                            <div>
-                                <label className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1.5">
+                        <div>
+                            <div className="flex items-center justify-between mb-1.5">
+                                <label className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--muted-foreground)] flex items-center gap-1.5">
                                     <Wallet size={12} className="text-primary" /> Web3 Settlement Address
                                 </label>
-                                {editing ? (
-                                    <input
-                                        type="text"
-                                        value={formData.walletAddress ?? ''}
-                                        onChange={
-                                            primaryWalletLocked
-                                                ? undefined
-                                                : (e) => setFormData({ ...formData, walletAddress: e.target.value })
-                                        }
-                                        readOnly={primaryWalletLocked}
-                                        disabled={primaryWalletLocked}
-                                        placeholder="0x..."
-                                        className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-mono focus:ring-2 focus:ring-primary/45 outline-none transition-all disabled:opacity-80"
-                                    />
-                                ) : (
-                                    <p className="text-xs font-mono font-bold text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] px-3.5 py-2.5 rounded-xl break-all">
-                                        {(user as { walletAddress?: string })?.walletAddress || 'Not linked'}
-                                    </p>
+                                {primaryWalletLocked && (
+                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        Linked & Active
+                                    </span>
                                 )}
-                                <p className="text-[10px] text-[var(--muted-foreground)] mt-1.5 leading-relaxed">
-                                    Primary address for payout operations. 
-                                    {primaryWalletLocked && (
-                                        <> To change it, <Link href="/support" className="text-primary hover:underline font-bold">file an admin ticket</Link>.</>
-                                    )}
-                                </p>
                             </div>
-                        )}
+
+                            {primaryWalletLocked ? (
+                                <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-1.5">
+                                    <p className="text-xs font-mono font-bold text-[var(--foreground)] break-all">
+                                        {savedWallet}
+                                    </p>
+                                    <p className="text-[10px] text-[var(--muted-foreground)] pt-1.5 border-t border-emerald-500/10">
+                                        Primary settlement address for Web3 payouts. To request a change, <Link href="/support" className="text-primary hover:underline font-bold">file a support ticket</Link>.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                        <input
+                                            type="text"
+                                            value={formData.walletAddress ?? ''}
+                                            onChange={(e) => setFormData({ ...formData, walletAddress: e.target.value })}
+                                            placeholder="0x... (Enter your USDT BEP20/ERC20 wallet address)"
+                                            className="flex-1 px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-mono text-xs focus:ring-2 focus:ring-primary/45 outline-none transition-all"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                const addr = (formData.walletAddress ?? '').trim();
+                                                if (!addr || !/^0x[a-fA-F0-9]{40}$/.test(addr)) {
+                                                    toast.error('Please enter a valid Web3 wallet address (0x...)');
+                                                    return;
+                                                }
+                                                try {
+                                                    setSaving(true);
+                                                    const updatedUser = await userApi.updateProfile({
+                                                        name: formData.name || user?.fullName || '',
+                                                        email: formData.email || user?.email || '',
+                                                        phone: formData.phone || user?.phone || '',
+                                                        walletAddress: addr,
+                                                    });
+                                                    dispatch(updateUser(updatedUser));
+                                                    toast.success('Web3 Settlement Address linked successfully!');
+                                                } catch (err: any) {
+                                                    toast.error(err?.message || 'Failed to link wallet address');
+                                                } finally {
+                                                    setSaving(false);
+                                                }
+                                            }}
+                                            disabled={saving || !formData.walletAddress?.trim()}
+                                            className="px-4 py-2.5 rounded-xl bg-primary text-black font-bold text-xs hover:bg-primary/90 transition-all disabled:opacity-50 shrink-0"
+                                        >
+                                            {saving ? 'Linking...' : 'Link Address'}
+                                        </button>
+                                    </div>
+
+                                    {connectedWagmiAddress && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, walletAddress: connectedWagmiAddress })}
+                                            className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                                        >
+                                            <span>⚡ Fill Connected Wallet ({connectedWagmiAddress.slice(0, 6)}...{connectedWagmiAddress.slice(-4)})</span>
+                                        </button>
+                                    )}
+
+                                    <p className="text-[10px] text-[var(--muted-foreground)]">
+                                        Primary address required for Web3 withdrawals & payout operations.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

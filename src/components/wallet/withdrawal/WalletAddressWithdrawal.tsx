@@ -75,6 +75,7 @@ export function WalletAddressWithdrawal({
         register,
         handleSubmit,
         watch,
+        setValue,
         formState: { errors },
     } = useForm<FormData>({ resolver: zodResolver(schema) });
 
@@ -82,6 +83,13 @@ export function WalletAddressWithdrawal({
     const calculatedFee = watchedAmount ? (watchedAmount * withdrawalFee) / 10000 : 0;
     const netAmount = (watchedAmount || 0) - calculatedFee;
     const convertedInfo = calculateConvertedAmount(conversionSummary, netAmount, 'INR');
+
+    const handleSetPercent = (pct: number) => {
+        let maxAvailable = availableBalance;
+        if (maxAmount > 0) maxAvailable = Math.min(maxAvailable, maxAmount);
+        const targetVal = parseFloat(((maxAvailable * pct) / 100).toFixed(2));
+        setValue('amount', targetVal, { shouldValidate: true });
+    };
 
     if (profileWallet === 'pending' && !reduxWallet) {
         return (
@@ -176,42 +184,65 @@ export function WalletAddressWithdrawal({
 
             {/* Amount */}
             <div>
-                <label className="block text-sm font-medium text-[var(--muted-foreground)] mb-2">Amount</label>
-                <input
-                    {...register('amount', { valueAsNumber: true })}
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    className="w-full px-4 py-2.5 text-sm sm:text-base rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none"
-                    placeholder="0.00"
-                />
+                <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-semibold text-[var(--foreground)]">Withdrawal Amount</label>
+                    {/* Preset Amount Chips */}
+                    <div className="flex items-center gap-1.5">
+                        {[25, 50, 75, 100].map((pct) => (
+                            <button
+                                key={pct}
+                                type="button"
+                                onClick={() => handleSetPercent(pct)}
+                                className="px-2 py-0.5 text-[11px] font-bold rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-primary/15 hover:border-primary/50 text-[var(--foreground)] transition-all active:scale-95"
+                            >
+                                {pct === 100 ? 'MAX' : `${pct}%`}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <div className="relative">
+                    <input
+                        {...register('amount', { valueAsNumber: true })}
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        className="w-full px-4 py-3 pr-14 text-base sm:text-lg font-mono font-bold rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition-all"
+                        placeholder="0.00"
+                    />
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--muted-foreground)] font-mono bg-[var(--surface-elevated)] px-2 py-1 rounded border border-[var(--border)]">
+                        INR
+                    </span>
+                </div>
                 {errors.amount && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount.message}</p>
+                    <p className="mt-1 text-xs font-semibold text-red-500">{errors.amount.message}</p>
                 )}
-                <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                    Available: {availableBalance.toLocaleString()}
+                <p className="mt-1.5 text-xs text-[var(--muted-foreground)] flex items-center justify-between">
+                    <span>Available: <strong className="font-mono text-[var(--foreground)]">₹{availableBalance.toLocaleString()}</strong></span>
                     {(minAmount > 0 || maxAmount > 0) && (
-                        <> &nbsp;·&nbsp; Min: {minAmount > 0 ? minAmount : '—'} &nbsp;·&nbsp; Max: {maxAmount > 0 ? maxAmount : 'Unlimited'}</>
+                        <span>Min: {minAmount > 0 ? `₹${minAmount}` : '—'} · Max: {maxAmount > 0 ? `₹${maxAmount}` : 'Unlimited'}</span>
                     )}
                 </p>
             </div>
+
             {/* Fee breakdown */}
             {watchedAmount > 0 && (
-                <div className="p-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl space-y-1">
-                    <div className="flex justify-between text-sm">
+                <div className="p-4 rounded-xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent space-y-2 shadow-inner">
+                    <div className="flex justify-between text-xs sm:text-sm">
                         <span className="text-[var(--muted-foreground)]">Withdrawal Amount</span>
-                        <span className="font-medium text-[var(--foreground)]">₹{watchedAmount.toFixed(2)} INR</span>
+                        <span className="font-semibold font-mono text-[var(--foreground)]">₹{watchedAmount.toFixed(2)} INR</span>
                     </div>
                     {withdrawalFee > 0 && (
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-xs sm:text-sm">
                             <span className="text-[var(--muted-foreground)]">Fee ({(withdrawalFee / 100).toFixed(2)}%)</span>
-                            <span className="font-medium text-red-600 dark:text-red-400">- ₹{calculatedFee.toFixed(2)} INR</span>
+                            <span className="font-semibold font-mono text-red-400">- ₹{calculatedFee.toFixed(2)} INR</span>
                         </div>
                     )}
-                    <hr className="border-[var(--border)]" />
-                    <div className="flex justify-between text-sm font-bold">
-                        <span className="text-[var(--foreground)]">You Will Receive</span>
-                        <span className={netAmount > 0 ? 'text-emerald-500 font-bold' : 'text-red-600 dark:text-red-400'}>
+                    <hr className="border-emerald-500/15 my-1" />
+                    <div className="flex justify-between text-sm font-black">
+                        <span className="text-[var(--foreground)] flex items-center gap-1.5">
+                            <span>⚡</span> You Will Receive
+                        </span>
+                        <span className={netAmount > 0 ? 'text-emerald-400 font-black font-mono text-base' : 'text-red-400 font-mono'}>
                             {netAmount > 0
                                 ? convertedInfo
                                     ? `${convertedInfo.outputAmount.toFixed(6)} ${convertedInfo.outputCurrency}`

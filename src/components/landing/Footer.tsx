@@ -82,10 +82,6 @@ export default function Footer() {
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-[var(--pw-primary)]" />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-[var(--pw-primary)]" />
                 <span>Global • Remote-first</span>
               </div>

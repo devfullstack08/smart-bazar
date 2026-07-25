@@ -110,17 +110,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* overflow-x-hidden only on <main> so header nav can use overflow-x-auto */}
             {/* Top bar only — no sidebar, Linear/Stripe style */}
-            <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-md safe-area-inset-top">
-                <div className="mx-auto flex h-14 sm:h-16 max-w-[1600px] min-w-0 items-center justify-between gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8">
+            <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-md safe-area-inset-top shadow-sm">
+                <div className="mx-auto flex h-16 sm:h-20 max-w-[1600px] min-w-0 items-center justify-between gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8">
                     {/* Logo */}
                     <Link
                         href="/dashboard"
-                        className="flex shrink-0 items-center gap-2 min-w-0"
+                        className="flex shrink-0 items-center gap-2 min-w-0 py-1"
                     >
                         <img
                             src={APP_CONSTANTS.APP_LOGO_URL}
                             alt={APP_NAME}
-                            className="h-14 sm:h-16 md:h-18 w-auto max-w-[180px] sm:max-w-[220px] object-contain py-1 drop-shadow-sm transition-all"
+                            className="h-12 sm:h-14 md:h-16 w-auto max-w-[180px] sm:max-w-[220px] object-contain drop-shadow-sm transition-all"
                         />
                     </Link>
 

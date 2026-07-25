@@ -19,7 +19,7 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
 export default function DashboardPackages({ activePackages, loading = false }: { activePackages: ActivePackage[]; loading?: boolean }) {
   if (loading) {
     return (
-      <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+      <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
         <div className="px-6 py-5 border-b border-[var(--border)]">
           <div className="h-5 w-40 rounded shimmer-placeholder" />
         </div>
@@ -33,12 +33,12 @@ export default function DashboardPackages({ activePackages, loading = false }: {
   }
 
   return (
-    <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden">
+    <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-elevated)] overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl">
 
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-emerald-500/20 bg-emerald-500/10">
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center border border-emerald-500/20 bg-emerald-500/10">
             <Package size={18} className="text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
           </div>
           <h2 className="text-base font-black text-[var(--foreground)]" style={{ fontFamily: 'var(--font-sans)' }}>
@@ -48,24 +48,24 @@ export default function DashboardPackages({ activePackages, loading = false }: {
         {activePackages.length > 0 && (
           <Link
             href="/packages"
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all border border-emerald-500/20 bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 hover:bg-emerald-500/20 shadow-sm"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 shadow-sm"
           >
             Store <ArrowRight size={12} />
           </Link>
         )}
       </div>
 
-      {/* ── Package list ─────────────────────────────────────── */}
+      {/* ── Package list with Vertical Overflow Scroll ───────── */}
       {activePackages.length > 0 ? (
-        <div className="p-4 sm:p-5 flex flex-col gap-2.5 bg-[var(--surface)]">
-          {activePackages.slice(0, 5).map((pkg, i) => {
+        <div className="p-4 sm:p-5 flex flex-col gap-2.5 bg-[var(--surface)] max-h-[320px] overflow-y-auto no-scrollbar">
+          {activePackages.map((pkg, i) => {
             const s = STATUS_MAP[pkg.status ?? 'active'] ?? STATUS_MAP.active;
             return (
               <div key={i} className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]/40 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all duration-200 shadow-sm">
 
                 {/* Left: icon + value + date */}
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center border border-white/5 animate-pulse"
+                  <div className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center border border-white/5"
                     style={{ backgroundColor: s.bg }}>
                     <Package size={14} style={{ color: s.color }} strokeWidth={2.5} />
                   </div>

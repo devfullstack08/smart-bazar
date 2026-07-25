@@ -316,8 +316,6 @@ export default function DashboardPage() {
                     
                     <DashboardAutoPoolProgress income={income} incomeConfig={incomeConfig} loading={loadingIncome} />
 
-                    <DashboardMatchingPairsTracker income={income} incomeConfig={incomeConfig} teamStats={teamStats} loading={loadingIncome || loadingTeamStats} />
-
                     <DashboardRoyaltyTracker poolStatus={poolStatus} incomeConfig={incomeConfig} loading={loadingPoolStatus} />
                     
                     <DashboardPoolStatus poolStatus={poolStatus} loading={loadingPoolStatus} incomeConfig={incomeConfig} />
@@ -341,6 +339,8 @@ export default function DashboardPage() {
                     
                     <DashboardPackages activePackages={packages.activePackages} loading={loadingPackages} />
                     
+                    <DashboardMatchingPairsTracker income={income} incomeConfig={incomeConfig} teamStats={teamStats} loading={loadingIncome || loadingTeamStats} />
+
                     <OffersSection offers={offers} loading={loadingOffers} />
                 </div>
             </div>

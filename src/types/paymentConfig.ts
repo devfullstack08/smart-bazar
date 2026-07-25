@@ -8,12 +8,14 @@ export interface IBankTransferDetails {
     ifscCode: string;
     accountHolderName: string;
     branchName: string;
+    withdrawalFee?: number;
 }
 export interface IUPIDetails {
     upiId: string;
     payeeName: string;
     currency: TCurrency;
     qrCodeImage: string;
+    withdrawalFee?: number;
 }
 export interface IWeb3Details {
     contractAddress: string;

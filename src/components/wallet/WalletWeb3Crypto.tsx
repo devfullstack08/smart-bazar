@@ -794,7 +794,7 @@ export function WalletWeb3Crypto({
         return true;
     };
 
-    const approveAllowance = async (): Promise<boolean> => {
+    const approveAllowance = async (targetAmountInWei?: bigint): Promise<boolean> => {
         if (!address) {
             toast.error('Connect your wallet first');
             return false;
@@ -812,13 +812,20 @@ export function WalletWeb3Crypto({
             return false;
         }
 
+        const num = parseFloat(amount);
+        const requiredWei = targetAmountInWei ?? (num > 0 ? parseEther(amount) : BigInt(0));
+        if (requiredWei <= BigInt(0)) {
+            toast.error('Enter a valid amount to approve');
+            return false;
+        }
+
         setApproving(true);
         try {
             const hash = await client.writeContract({
                 address: tokenAddress,
                 abi: erc20Abi!,
                 functionName: 'approve',
-                args: [contractAddress, maxUint256],
+                args: [contractAddress, requiredWei],
                 account: address as Address,
             });
             toast.success('Approval submitted. Waiting for confirmation…');
@@ -841,7 +848,7 @@ export function WalletWeb3Crypto({
             setApproving(false);
 
             if (receipt?.status === 'success') {
-                toast.success('Allowance approved');
+                toast.success('Deposit allowance approved');
                 // Reload balances to update allowance state (don't await - let it run in background)
                 loadBalances().catch(console.error);
                 setNeedsApproval(false);
@@ -899,11 +906,13 @@ export function WalletWeb3Crypto({
             return;
         }
 
-        // Check if approval is needed
-        if (!isUnlimitedAllowance && parseFloat(allowance) < num) {
-            // Automatically trigger approval popup
+        const amountInWei = parseEther(amount);
+
+        // Check if approval is needed for the exact deposit amount
+        if (parseFloat(allowance) < num) {
+            // Automatically trigger approval popup for the exact deposit amount
             setNeedsApproval(true);
-            const approved = await approveAllowance();
+            const approved = await approveAllowance(amountInWei);
             if (!approved) {
                 setNeedsApproval(false); // Reset if approval failed/rejected
                 return; // User rejected or approval failed
